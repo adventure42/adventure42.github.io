@@ -1,0 +1,56 @@
+title: Data Analytics Problems
+description: My Personal Notes on Data Analytics and Machine Learning Studies
+author: Miscaminos
+github: https://github.com/miscaminos
+about: Use data to solve real world problems.
+disqus_shortname: dataanalytics
+google_analytics: UA-XXXXXXXX-Y
+
+enableTags: true
+tagarray: []
+
+collections:
+  project:
+    output: true
+    permalink: /project/:path/
+
+social:
+    - icon: fa-facebook
+      link: "#"
+    - icon: fa-twitter
+      link: "#"
+    - icon: fa-linkedin
+      link: "#"
+    - icon: fa-stack-exchange
+      link: "#"
+    - icon: fa-github
+      link: "https://github.com/miscaminos"
+
+share:
+  twitter_username: github.io
+  fb_appid: 1749788565247320
+
+urls:
+    - text: About Me
+      url: /about/
+    - text: My Projects
+      url: /projects/
+    - text: Resources
+      url: /projects/
+
+url: "https://miscaminos.github.io"
+baseurl: ""
+paginate: 20
+per_page: 20
+paginate_path: "/page/:num/"
+markdown: kramdown
+gems:
+  - jekyll-paginate
+  - jekyll-gist
+
+compress_html:
+  clippings: all
+  comments: ["<!-- ", " -->"]
+  endings: all
+  ignore:
+    envs: ['development']

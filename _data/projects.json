@@ -1,0 +1,17 @@
+[
+	{
+		"slug": "Object Detection Project",
+		"name": "Sign Language Education Project",
+		"image": "Lantern.JPG",
+		"url": "https://github.com/project-Lantern-2021",
+		"date": "May-June 2021",
+		"tags": ["Yolov4","API"]
+	},
+	{
+		"name": "Airline DB",
+		"image": "placeholder.jpg",
+		"url": "https://github.com/miscaminos/teamProjects",
+		"date": "March 2021",
+		"tags": ["Spring","Oracle"]
+	}
+]
