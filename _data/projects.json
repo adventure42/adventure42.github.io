@@ -1,17 +1,17 @@
 [
 	{
-		"slug": "Object Detection Project",
-		"name": "Sign Language Education Project",
-		"image": "Lantern.JPG",
-		"url": "https://github.com/project-Lantern-2021",
-		"date": "May-June 2021",
-		"tags": ["Yolov4","API"]
+		"slug": "Deep Learning",
+		"name": "Favorite video on deep learning",
+		"image": "3blue1brown.jpeg",
+		"url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi",
+		"date": "Aug 1, 2018",
+		"tags": ["deeplearning","gradientdescent","backpropagation"]
 	},
 	{
-		"name": "Airline DB",
+		"name": "모두의 딥러닝",
 		"image": "placeholder.jpg",
-		"url": "https://github.com/miscaminos/teamProjects",
-		"date": "March 2021",
-		"tags": ["Spring","Oracle"]
+		"url": "https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm",
+		"date": "Sep 2, 2018",
+		"tags": ["deeplearning"]
 	}
 ]
