@@ -24,7 +24,7 @@ optimization algorithm을 사용해서 model parameter를 estimate한다. 크게
 Parameter의 예시로는: weights in ANN, coefficients in linear regression or logistic regression, support vectors in SVM, 등이 있다.
 
 sigmoid function:
-<img src="https://render.githubusercontent.com/render/math?math={\sigma}(z) = \frac{1}{1+e^{-z}}">
+<img src="https://render.githubusercontent.com/render/math?math={\sigma}(z) = \frac{1}{1%2Be^{-z}}">
 
 example:
 <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">
