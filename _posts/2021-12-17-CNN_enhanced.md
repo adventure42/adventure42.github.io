@@ -35,15 +35,15 @@ CNN에서는 각 층이 2D로 표현되므로 뉴런을 그에 상응하는 입�
 
 다음 그림과 같이 stride값이 더 크면, 더 큰 pixel 크기의 이미지가 더 작은 feature map으로 추려질 수 있다.
 
-<img src="C:\SJL\VQML_VQA\VQML\figures\stride.gif" alt="stride" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/stride.gif" alt="stride" style="zoom:50%;" />
 
-<img src="C:\SJL\VQML_VQA\VQML\figures\stride2.gif" alt="stride1" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/stride2.gif" alt="stride1" style="zoom:50%;" />
 
 뉴런의 가중치는 수용장 크기의 작은 이미지로 표현될 수 있다. **filter (or convolutional kernel)**를 통해 이전층의 이미지에서 원하는 부분만 "filter"해서 학습할 수 있다 예를 들어서 수직 필터(가운데 열은 1로 채워져있고, 그 외에는 모두 0인 7x7 행렬)를 통해서 가운데 수직선 부분은 제외하고는 나머지는 모두 0이 곱해지기때문에 후속 층으로 전송되지 못하고 무시하게 된다.
 
 다음 그림과 같이 filter-right sobel을 통해서 오른쪽 수직선만 filter하는 경우 extract된 결과물이 어떤지 실제 이미지로 보여준다. 이렇게 전체 뉴런에 적용된 하나의 filter는 하나의 feature map을 만든다. feature map을 보면 filter를 가장 크게 활성화 시키는 이미지 영역이 강조된것을 확인할 수 있다. ![filter](C:\SJL\VQML_VQA\VQML\figures\filter_dog.png)
 
-![local_receptive](C:\SJL\VQML_VQA\VQML\figures\local_receptive_field.gif)
+![local_receptive](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/local_receptive_field.gif)
 
 feature map 쌓기
 
@@ -62,7 +62,7 @@ $$
 
 - filters - 적용될 일련의 filters (4D tensor). filter를 사용하는 이유는 입력 이미지속의 features들과 그들의 spatial orientation을 보존하기 위함이다. (e.g., 이미지에서 강아지의 얼굴, 다리, 꼬리를 인지해서 강아지라는결론을 내리는 것.) 아래 그림과 같이 이미지를 가로질러가며 filter(주황색)가 감지한 feature를 계산해서 output을 특성 map(분혹색)에 기록해둔다.
 
-  ![filter](C:\SJL\VQML_VQA\VQML\figures\filter_applied_numbers.gif)
+  ![filter](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/filter_applied_numbers.gif)
 
 - strides - 1 or 4개의 원소를 갖는 1D 배열로 지정할 수 있음. 4개에서 중간 2개는 수직, 수평 stride (s_h, s_w)이고 첫번째와 마지막 원소는 나중에 batch stride(일부 sample 건너뛰기위함)와 channel stride(이전 층의 특성 map이나 channel 건너뛰기위함)로 사용될 수 있다.
 
@@ -164,7 +164,7 @@ Image classification 성능 향샹 순서대로 model : **LeNet-5** --> **AlexNe
 
 장점: 더 깊은 CNN network를 구현했다. GoogLeNet은 inception module를 sub network로 가지고 있어서 GoogLeNet이 이전의 구조보다 훨씬 효과적으로 parameter를 사용한다. (GoogLeNet은 AlexNet대비 10배 적은 parameter를 가짐)
 
-![inception_module](C:\SJL\VQML_VQA\VQML\figures\inception_module.png)
+![inception_module](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/inception_module.png)
 
 An **Inception Module** is an image model block that aims to approximate an optimal local sparse structure in a CNN. Put simply, it allows for us to use multiple types of filter size, instead of being restricted to a single filter size, in a single image block, which we then concatenate and pass onto the next layer. Think of the inception module as 여러 크기의 복잡한 패턴이 담긴 특성 맵을 출력하는 합성곱 층 on steroids.
 
