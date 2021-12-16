@@ -18,13 +18,13 @@ perceptron - 가장 간단한 인공 신경만 구조 중 하나임. perceptron�
 
 
 
-![ANN](C:\SJL\VQML_VQA\VQML\figures\perceptron.png)
+![ANN](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/perceptron.png)
 
 
 
 입력에 bias라는 편향값이 더해져서 다음과 같은 공식으로 perceptron이 표현된다. 
 
-![perceptron_eqn](C:\SJL\VQML_VQA\VQML\figures\perceptron_eqn.png)
+![perceptron_eqn](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/perceptron_eqn.png)
 
 **w** : vector of weights
 
@@ -40,7 +40,7 @@ Input data 로 위그림과 같이 TLU를 훈련시켜서 최적의 parameters (
 
 
 
-![activation](C:\SJL\VQML_VQA\VQML\figures\neuron_activation.png)
+![activation](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/neuron_activation.png)
 
 
 
@@ -62,7 +62,7 @@ single-layered perceptron으로는 non-linearity나 data의 complexity가 포함
 
 
 
-![multilayer-perceptron](C:\SJL\VQML_VQA\VQML\figures\multilayer_perceptron.jpg)
+![multilayer-perceptron](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multilayer_perceptron.jpg)
 
 
 
@@ -76,7 +76,7 @@ Hidden layer들이 input data의 feature를 담고있다. 예를 들어서 MNIST
 
 
 
-![](C:\SJL\VQML_VQA\VQML\figures\multilayer-perceptron_network.PNG)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multilayer-perceptron_network.PNG)
 
 
 
@@ -84,21 +84,21 @@ Hidden layer들이 input data의 feature를 담고있다. 예를 들어서 MNIST
 
 
 
-![](C:\SJL\VQML_VQA\VQML\figures\multilayer-perceptron_matrix.PNG)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multilayer-perceptron_matrix.PNG)
 
 여기서 활성화 함수는 neural network의 output을 원하는 scale로 표현하도록 조정해주는 역할을 한다.  계단(step) 함수 또는 sigmoid 함수가 사용되는데, 계단 함수와 같이 0,1 으로 구분되는 binary가 아니라 0과 1 사이에서 어떤 값이든 가능하다. sigmoid는 small changes in weights and bias로 output에 small changes를 만들 수 있는 function이다.  
 
 sigmoid function:
-$$
-{\sigma}(z) = \frac{1}{1+e^{-z}}
-$$
-![sigmoid function](C:\SJL\VQML_VQA\VQML\figures\sigmoid.PNG)
+
+<img src="https://render.githubusercontent.com/render/math?math={\sigma}(z) = \frac{1}{1%2Be^{-z}}">
+
+![sigmoid function](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/sigmoid.PNG)
 
 간단하게 정리해보자면, 하나의 neuron을 input을 받으면 ouput을 내어주는 함수로 생각해볼 수 있다. 입력 data로 부터 output을 예측해내기위해 input과 ouput을 이어주는 network을 이 neuron들로 형성하고, 각 neuron들 간의 연결을 parameter값으로 조정한다. 더 정확한 output을 예측하기위해 parameter값의 최적화 과정을 거치게 된다.
 
 
 
-![](C:\SJL\VQML_VQA\VQML\figures\neuralnetwork.png)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/neuralnetwork.png)
 
 
 
@@ -111,9 +111,10 @@ $$
 다음과 같이 hypotheses h를 통해 output y를 예측하려한다면 linear 함수로 표현할 수 있다. 
 
 Input dataset에 두개의 features가 주어졌을 때, (x_0 =1)
-$$
-h_{\theta}(x) = {\theta}_0+{\theta}_1x_1+{\theta}_2x_2
-$$
+
+
+<img src="https://render.githubusercontent.com/render/math?math=h_{\theta}(x) = {\theta}_0%2B{\theta}_1x_1%2B{\theta}_2x_2">
+
 input x와 output y를 mapping하는 linear 함수이고 여기에서 θ가 weights 또는 parameter를 의미한다. (위와 같은 공식에서 θi가 space of linear functions를 parameterize해서 x와 y의 mapping을 수행하기때문에 θ를 "parameter"라고 불린다.)
 
 
@@ -124,24 +125,19 @@ input x와 output y를 mapping하는 linear 함수이고 여기에서 θ가 weig
 
 supervised learning에서는 우리가 y를 이미 알고있기때문에 y에 가장 가까운 h를 만드는 θ를 찾아볼 수 있다. Hypotheses h와 y의 차이를 계산하는 함수를 cost function J 라고 부르고 다음과 같이 정의한다. (input dataset에 총 n개의 samples/instances가 있고, ith번째 sample에 대한 예측값과 ground truth값의 차이를 계산하는 방식)
 
-
-$$
-J({\theta}) =\frac{1}{2}{\sum_{i=1}^{n}}(h_{\theta}(x^{(i)})-y^{(i)})^2
-$$
+<img src="https://render.githubusercontent.com/render/math?math=J({\theta}) =\frac{1}{2}{\sum_{i=1}^{n}}(h_{\theta}(x^{(i)})-y^{(i)})^2">
 
 
 J는 linear regression에서 주로 사용되는 least-square cost function이고 이는 ordinary least squares regression model에서 cost function으로 사용된다. 우리는 J를 가장 최소화 시킬 수 있는 θ를 찾아야 한다.
 
 gradient descent algorithm은 우리가 원하는 θ를 찾는 방법 중 하나이다. 처음 특정 값을 하나 guess를 해서 cost를 계산하고 이를 점차 줄여가는 방향으로 update를 반복적으로 진행하는 방법이다. 
-$$
-{\theta}_j := {\theta}_j - {\alpha}\frac{\partial}{{\partial}{\theta}_j}J({\theta})
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math={\theta}_j := {\theta}_j - {\alpha}\frac{\partial}{{\partial}{\theta}_j}J({\theta})">
+
 (여기에서 :=는 θ에 계산된 새로운 값을 assign하여 update한다는 것을 의미하고 α는 learning rate을 의미한다.) θ는 J가 가장 가파르게 감소하는 방향으로 update된다. 위 공식에서 partial derivative term을 x,y로 표현하면 다음과 같이 LMS update rule을 찾을 수 있다.
 
+<img src="https://render.githubusercontent.com/render/math?math={\theta}_j := {\theta}_j + {\alpha}(y^{(i)}-h_{\theta}(x^{(i)}))x_j^{(i)}">
 
-$$
-{\theta}_j := {\theta}_j + {\alpha}(y^{(i)}-h_{\theta}(x^{(i)}))x_j^{(i)}
-$$
 note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비례한다.
 
 이렇게 θ를 반복적으로 update하여 최적의 값을 찾는 방법을 ''경사하강법''이라고 한다.
@@ -154,7 +150,7 @@ note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비�
 
 
 
-![gradientdescent_meaning](C:\SJL\VQML_VQA\VQML\figures\gradient_descent.PNG)
+![gradientdescent_meaning](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/gradient_descent.PNG)
 
 
 
@@ -162,7 +158,7 @@ Gradient descent는 다음 그림과 같이 반복적인 계산을 통해 (미�
 
 
 
-![](C:\SJL\VQML_VQA\VQML\figures\Gradient_Descent_graph.PNG)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/Gradient_Descent_graph.PNG)
 
 
 
@@ -224,18 +220,18 @@ Xtheta - y
 matrix와 linear algebra를 사용해서 cost function J를 minimize하는 θ를 찾는다. 특히 소수의 features를 가진 dataset을 기반으로 model을 훈련하는 과정에서는 normal equation을 사용해서 더 빠르게 최적의 parameter θ를 찾을 수 있다.
 
 Matrix의 특성 중 다음과 같은 특성을 사용하면,
-$$
-z^Tz = \sum_iz_i^2
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=z^Tz = \sum_iz_i^2">
+
 cost function J와 J의 derivative를 다음과 같이 표현할 수 있다.
-$$
-J({\theta}) = \frac{1}{2}\sum_{i=1}^n(h_{\theta}(x^{(i)})-y^{(i)})^2 =  \frac{1}{2}(X{\theta}-\vec{y})^T(X{\theta}-\vec{y})\\
-{\gradient}_{\theta}J({\theta}) = X^TX{\theta} - X^T\vec{y}
-$$
-J의 derivative를 0으로 set해서 minimum cost function에 해당하는 parameter θ를 찾을 수 있다. matrix derivative 사용해서 얻을 수 있고 다음과 같이 찾은 θ를 normal equation이라고한다. 
-$$
-{\theta} = (X^TX)^{-1}X^T\vec{y}
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=J({\theta}) = \frac{1}{2}\sum_{i=1}^n(h_{\theta}(x^{(i)})-y^{(i)})^2 =  \frac{1}{2}(X{\theta}-\vec{y})^T(X{\theta}-\vec{y})">
+
+<img src="https://render.githubusercontent.com/render/math?math={\grad}_{\theta}J({\theta}) = X^TX{\theta} - X^T\vec{y}">
+
+J의 derivative를 0으로 set해서 minimum cost function에 해당하는 parameter θ를 찾을 수 있다. matrix derivative 사용해서 얻을 수 있고 다음과 같이 찾은 θ를 normal equation이라고한다.
+
+<img src="https://render.githubusercontent.com/render/math?math={\theta} = (X^TX)^{-1}X^T\vec{y}">
 
 Normal equations are equations obtained by setting equal to zero the partial derivatives of the sum of squared errors or cost function; normal equations allow one to estimate the parameters of multiple linear regression.
 
@@ -272,21 +268,23 @@ Types of regression:
 
 
 Logistic의  cost function은 linear regression의 cost function과는 조금의 차이가있다.
-$$
-J(W,b) = \frac{1}{m}\sum_{i=1}^m(H(x^{(i)})-y^{(1)})^2
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=J(W,b) = \frac{1}{m}\sum_{i=1}^m(H(x^{(i)})-y^{(1)})^2">
+
 linear regression 문제를 해결할때와 동일하게 input feature와 parameter를 linearly combine하지만, natural logarithm을 사용한다. linearyl combined된 input + parameter를 sigmoid function에 plug-in해서 probability(확률값)을 찾는다. 그래서 다음과 같이 공식으로 hypothesis를 찾을 수 있다.
-$$
-H(X) = \frac{1}{1+e^{-W^TX}}
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=H(X) = \frac{1}{1%2Be^{-W^TX}}">
+
 이를 기반으로 optimization을 진행한다. best parameter는 gradient ascent 또는 gradient descent를 통해서 찾을 수 있다. 
 
 binary logistics 문제의 경우
-$$
-P(y_i = 1 | x_i,{\theta}) = {\sigma}(z_i)=\frac{1}{1+e^{z_i}}\\
-P(y_i = 0 | x_i,{\theta}) = 1-{\sigma}(z_i)\\
-z_i = \hat{y}_i = log(odds_i)  = log(\frac{p_i}{1-p_i})
-$$
+
+<img src="https://render.githubusercontent.com/render/math?math=P(y_i = 1 | x_i,{\theta}) = {\sigma}(z_i)=\frac{1}{1%2Be^{z_i}}">
+
+<img src="https://render.githubusercontent.com/render/math?math=P(y_i = 0 | x_i,{\theta}) = 1-{\sigma}(z_i)">
+
+<img src="https://render.githubusercontent.com/render/math?math=z_i = \hat{y}_i = log(odds_i)  = log(\frac{p_i}{1-p_i})">
+
 
 ### Logit transformation
 
@@ -296,19 +294,20 @@ linear regression function을 사용하여 estimate한  y ("y-hat")의 값을 lo
 
 note: what is log-odds? odds= probability of success divided by failure = P(success)/P(failure)
 
-![log_odds](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_log_odds.png)
+![log_odds](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_log_odds.png)
 
 다음과 같은 순서로 변환해 나아간다.
 
 probability increase-> odds increase -> log-odds increase ("monotonic relationship")
 
-![probabillity](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_probability.png)
+![probabillity](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_probability.png)
+
 
 ### Likelihood (L(θ))
 
 training set의 sample(or instance)마다 randomly estimated parameters θ를 사용해서 log odds를 계산한다. 그리고 sigmoid function을 통해 probability를 예측한다. 모든 probabilities를 곱해서 likelihood를 찾을 수 있다. 
 
-![likelihood](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_likelihood.png)
+![likelihood](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_likelihood.png)
 
 likelihood를 maximize해서 optimal parameters로 converge할 수 있다. likelihood를 maximize해서 best parameter를 찾으면서 probability of Y를 maximize하게 된다. 이 방식은 MLE(Maximum Likelihood Estimation)으로 불린다. maximum에 도달하게되면 처음 설정된 initial parameter값이 최적의 값으로 수렴된다. gradient descent/ gradient ascent와 같은 optimization algorithm으로 인해 이 수렴하는 과정이 진행된다. 
 
@@ -318,17 +317,18 @@ log-likelhood의 partial derivative를 (with respect to each θ)계산한다. �
 
 linear regression때와 동일하게 learning rate (eta)으로 gradient ascent algorithm이 iteration마다 얼마나 큰 step으로 이동할지를 설정한다. (don’t want the learning rate to be too low, which will take a long time to converge, and we don’t want the learning rate to be too high, which can overshoot and jump around)
 
-![gradients](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_gradient.png)
+![gradients](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_gradient.png)
+
 
 ### Cost function
 
 gradient descent algorithm을 통해 다음과 같이 반복적으로 parameter를 update해서 cost function을 최소화할 수 있는 optimal parameter를 찾는다.
 
-![cost function](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_cost.png)
+![cost function](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_cost.png)
 
 cost function의 partial derivative (with respect to parameter)를 활용하여 parameter들이 optimal될때까지 parameter를 update한다.
 
-![optimal parameter](C:\SJL\VQML_VQA\VQML\figures\logistic_regression_gradient_descent.png)
+![optimal parameter](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_gradient_descent.png)
 
 Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽게 찾을 있다.
 
@@ -336,10 +336,12 @@ Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽
 
 # Reference
 
-**deep neural network에서 network & parameter들의 역할 및 operation: https://www.youtube.com/watch?v=aircAruvnKk** 
+1. deep neural network에서 network & parameter들의 역할 및 operation : https://www.youtube.com/watch?v=aircAruvnKk
 
-**gradient descent explained: https://www.youtube.com/watch?v=IHZwWFHWa-w**
+2. gradient descent explained : https://www.youtube.com/watch?v=IHZwWFHWa-w
 
-**backpropagation explained with graphics: https://www.youtube.com/watch?v=Ilg3gGewQ5U**
+3. backpropagation explained with graphics : https://www.youtube.com/watch?v=Ilg3gGewQ5U
 
-https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
+4. normal equation in linear regression : https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
+
+5. logistic regression : https://towardsdatascience.com/understand-implement-logistic-regression-in-python-c1e1a329f460
