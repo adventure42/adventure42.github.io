@@ -6,12 +6,12 @@ categories: [machinelearning]          # (custom) some categories, but makesure 
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
 
 ---
-
+<br>
 
 
 # DNN 훈련 효율/성능을 높이는 방법
 
-
+<br>
 
 1. 연결가중치에 좋은 초기화 전략 적용
 
@@ -29,23 +29,23 @@ tags: [test]                      # (custom) tags only for meta `property="artic
 
 8. 규제
 
-   
+<br>
 
 ## 연결가중치 초기화 설정
 
-
+<br>
 
 ### gradient 손실
 
 출력층에서 입력층으로 오차 gradients를 전파하면서 역전파 algorithm을 진행한다. 신경망의 모든 parameter에 대한 오차 함수의 gradient를 계산하면 SGD단계에서 이 gradient를 사용하여 각 parameter를 수정한다. 이때에 algorithm이 하위층으로 진행할 수 록 gradient가 점점 작아지는 경우가 발생할 수 있다. SGD를 통해 연결 가중치를 변경하지 않은채로 두게되어 결국 훈련이 좋은 솔루션으로 수렴되지 않는다.
 
-
+<br>
 
 ### gradient 폭주
 
 gradient 손실과는 반대로 gradient가 너무 커져서 비이상적으로 큰 가중치로 갱신되고 역전파 algorithm이 진행되다가 발산(diverse/explode)해 버리는 경우가 발생할 수 있다. Gradient 폭주는 주로 순환신경망에서 많이 발생한다. gradient 폭주의 경우, 불안정한 gradient로 인해 층마다 학습 속도가 매우 달라져서 심층 신경망의 훈련이 어려워 진다.
 
-
+<br>
 
 ### 적절한 gradient 역전파
 
@@ -71,6 +71,7 @@ fan_avg = (fan_in + fan_out)/2
 
 <img src="https://render.githubusercontent.com/render/math?math=or{\space}{\space}{\space}uniform{\space}distribution{\space}over{\space}range(-r,+r){\space}where:{\space}{\space}{\space}r = \sqrt{\frac{3}{fan_{avg}}}">
 
+<br>
 
 활성화 함수마다 적절한 초기화 전략이 있다.
 
@@ -80,25 +81,25 @@ fan_avg = (fan_in + fan_out)/2
 | He          | ReLU(ELU를 포함한 ReLU의 변종들)           | 2/fan_in          |
 | LeCun       | SELU                                       | 1/fan_in          |
 
-
+<br>
 
 ### 활성화 함수 
 
 적절한 활성화 함수를 선택해서 실행 속도 향상, 과대적합 억제, 등 network의 훈련과정과 성능을 개선할 수 있는 여러가지 효과를 만들어 낼 수 있다.
 
-
+<br>
 
 일반적으로 주로 선호하는 활성화 함수 순서대로 나열해보면:
 
 **SELU > ELU > LeakyReLU(그리고 변종들) > ReLU > tanh > logistics**
 
-
+<br>
 
 **ReLU**
 
 ReLU는 continuous한 함수이지만, z=0에서 미분가능하지 않다. (기울기가 갑자기 높아져서 경사 하강법이 어뚱한 곳으로 튈 수 있음) 그리고 z<0일 경우에도 함수는 0이지만, 실제로 잘 작동하고, 계산 속도가 빨라서 기본적인 활성화 함수로 많이 사용됨. 가장 큰 장점으로 출력에 최대값이 없다는 점이 경사 하강법에 있는 문제를 일부 완화해줌.
 
-
+<br>
 
 **LeakyReLU**
 
@@ -119,7 +120,7 @@ LeakyReLU의 종류로는 RReLU(Randomized leaky ReLU)와 PReLU(parametric leaky
 
 **PReLU(parametric leaky ReLU)** - alpha가 hyperparameter가 아니고 다른 model parameter들 처럼 역전파에 의해 변경된다. 소규모 데이터 input에서는 훈련세트에 과대적합 될 위험이 있다.
 
-
+<br>
 
 **ELU (Exponential linear unit)** -  
 
@@ -136,7 +137,7 @@ ELU의 장점:
 
 - 지수함수를 사용하기때문에 속도가 느린편이다. (ReLU나 그 변종들보다 계산이 느림.) 훈련하는 동안에는 수렴 속도가 빨라서 느린 계산이 상쇄되지만, test시에는 ELU를 사용한 network가 ReLU를 사용한 network보다 느리다.
 
-
+<br>
 
 **SELU(scaled ELU):**
 
@@ -148,19 +149,19 @@ SELU를 뉴런의 활성화 함수로 사용하면, 훈련하는 동안 각 층�
 
 perceptron의 activation 함수로 다음과 같이 다양한 option을 활용해서 알고리즘이 원하는 방향으로 작동할 수 있도록 유도할 수 있다.
 
-
+<br>
 
 **Logistics:**
 
 그림 1의 TLU에서 계단 함수는 수평선으로 되어있어서 gradient를 계산할 수 없기때문에 계단 함수를 logistic(sigmoid) 함수로 바꾼다. logistics 함수는 어디서든지 0이 아닌 continuous 값을 가지고있어서 gradient가 잘 정의될 수 있다.
 
-
+<br>
 
 **tanh (hyperbolic tangent function)**:
 
 logistic 함수처럼, 이 활성화함수 모양이 S이고, continuous해서 derivative를 찾을 수 있다. 출력 범위가 -1에서 1사이이고 훈련 초기에 각 층의 출력을 원점 근처로 모으는 경향이 있어서 model이 빠르게 수렴되도록 도와줌.
 
-
+<br>
 
 **softmax:**
 
@@ -176,7 +177,8 @@ def softmax(a):
     return y
 ```
 
-
+<br>
+<br>
 
 **언제 어떤 활성화 함수를 사용해야할까?**
 
@@ -195,14 +197,14 @@ network가 self-normalize되지 못하는 구조 --> SELU보다 ELU(SELU가 z=0�
 참고: 다양한 activation 함수 소개: https://himanshuxd.medium.com/activation-functions-sigmoid-relu-leaky-relu-and-softmax-basics-for-neural-networks-and-deep-8d9c70eed91e
 
 
-
+<br>
 
 
 ### Batch normalization (배치 정규화)
 
 gradient 손실과 폭주를 방지하기위해 개발한 기법임. ELU와 함께 He initialization을 사용하면 훈련 초기 단계에서 gradient 손실/폭주 문제를 억제할 수 있지만, 훈련하는동안 이런 문제가 아얘 발생하지 않는것이 보장되지는 못한다. 최근 Hongyi Zhang 등의 최근 논문에는 batch normalization 없이 가중치 초기화 기법만으로 심층 신경만을 훈련시켜서 매우 복잡한 이미지 분류 작업의 최고 성능을 확보했다(2019). 그러나 아직 이를 뒷받침할 추가 논문을 통해 타당성을 확인 해야함.
 
-
+<br>
 
 **how-to:**
 
@@ -228,13 +230,13 @@ batch normalization층 마다 4 prameter vectors가 학습된다.
 
 여기에서 mu와 sigma는 훈련하는 동안 추정되지만, 훈련이 끝난 후에 사용됨.
 
-
+<br>
 
 **활성화함수 이전/이후:**
 
 활성화 함수 이전에 batch normalization을 추가하려면 은닉층에서 활성화 함수를 지정하지말고 batch normalization 층 뒤에 별도의 층으로 추가해야함. batch normalization층 입력마다 이동 parameter를 포함하기 때문에 이전 층에서 편향을 뺄 수 있다. (층을 만들때, use_bias=False로 설정.)
 
-
+<br>
 
 BatchNormalization class에서 조정할 수 있는 hyperparameter:
 
@@ -261,6 +263,9 @@ BatchNormalization class에서 조정할 수 있는 hyperparameter:
 
 - 모델의 복잡도를 키워서 실행시간 면에서 손해, 층마다 추가되는 계산이 신경망 예측을 느리게 한다. 그러나 batch normalization을 사용하면 수렴이 훨씬 빨라지기때문에 보통 상쇄됨. 오히려 더 적은 epoch로 동일한 성능을 확보할 수도 있음.
 
+
+<br>
+
 #### gradient clipping
 
 gradient 폭주문제를 완화시키는 방식. 역전파가 진행될때 일정 임계값을 넘지못하게 gradient을 잘라내는것이다.
@@ -272,16 +277,17 @@ model compile시, optimizer를 생성할때에 clipvalue와 clipnorm 매개변�
 e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optimize가 정의되면, gradient vector = [0.9, 1.0]이 되어서 원래 두번째 축 방향을 향해야하는 것이 첫번째와 두번째의 대각선으로 바뀌여버린다. 만약 대신 clipnorm=1.0을 설정하면, gradient vector=[0.00899964, 0.9999595]로 방향이 유지된채 gradient값이 clipping될 수 있다.
 
 
-
+<br>
+<br>
 
 
 ### 고속 optimizer
 
 여기에서 논의하는 최적화 기법은 1차 편미분(Jacobian)에만 의존한다. 최적화 이론에는 2차 편미분(Hessian)을 기반으로한 뛰어난 algorithm들이 많다. BUT! Hessian algorithm들은 심층 신경망에 적용하기 어렵다. 2차 편미분 알고리즘을 사용하게되면 하나의 출력마다 n개의 1차 편미분이 아니라 n^2개의 2차 편미분을 계산해야하기 때문.(where n=parameter 개수). 심층 신경망은 보통 수만개의 parameter를 가지므로 2차 편미분 최적화 알고리즘은 memory 용량을 넘어서는 경우가 많다.
 
+<br>
 
-
-1. #### momentum optimization(모맨텀 최적화)
+#### momentum optimization(모맨텀 최적화)
 
    경사하강법(SGD)에서는 이전 gradient가 얼마였는지 고려하지않는다.(그래서 gradient가 아주 작으면 매우 느려지는 문제 발생). Momentum optimization에서는 gradient가 얼마였는지는 매우 중요하게 고려한다. 
 
@@ -303,9 +309,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9)
    ```
 
-   
+<br>   
 
-2. #### Nesterov accelerated gradient (NAG)
+#### Nesterov accelerated gradient (NAG)
 
    기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
    
@@ -321,9 +327,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9, nesterov=True)
    ```
 
-   
+<br>   
 
-3. #### AdaGrad
+#### AdaGrad
 
    기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다.
    
@@ -341,9 +347,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    AdaGrad는 신경망을 훈련할때에 너무 일찍 멈춰버리는 경향이 있다. 학습률이 너무 감소되어서 전역 최적점에 도착하기전에 알고리즘이 멈춰버린다. But linear regression과 같이 간단한 작업에는 효과적일 수 있다. keras에 포함된 optimizer이지만, 실제 심층 신경망을 훈련할때에는 사용하지 않는다. 
 
-    
+<br>
 
-4. #### RMSProp
+#### RMSProp
 
    AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
 
@@ -359,7 +365,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    아주 간단한 문제를 제외하고는 RMSProp가 AdaGrad보다 성능이 더 좋다.
 
-5. #### Adam
+<br>
+
+#### Adam
 
    Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
    
@@ -387,27 +395,28 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    Adam에서도 RMSProp과 AdaGrad에서 처럼 적응적 학습률/최적화 알고리즘이기때문에 학습률 hyperparameter (eta)를 튜닝할 필요가 적다.
 
-   
+<br>   
 
-6. Nadam
+#### Nadam
 
    Nadam (= Adaptive momtum optimizer + Nesterov 기법)
 
    Adam보다 조금 더 빠르게 수렴한다.
 
-   
+<br>   
 
-7. AdaMax
+#### AdaMax
 
    Adam은 시간에 따라 감쇠된 gradient의 L2 norm으로 parameter update scale을 낮춘다. Adamax는 L2 norm에서 L_inf norm으로 바꾸는 것이다. (L_inf는 vector max norm을 계산하는것과 같음.) theta를 갱신할때에 s에 비례하여 gradient update의 scale을 낮춘다. 시간에 따라 감쇠된 gradient의 최대값이다. 실전에서는 AdaMax가 Adam보다 더 안정적이다. 데이터셋에따라 다르기때문에 Adam이 잘 동작하지 않는다면, AdaMax를 시도해볼 수 있다.
 
-   
+<br>
+<br>
 
 ### 회소 모델 훈련 (sparse model trianing)
 
 모든 최적화 알고리즘은 대부분의 parameter가 0이 아닌 dense 모델을 만든다. 만약 엄청 빠르게 실행할 모델이 필요하거나 메모리를 적게 차지하는 모델이 필요하면 dense(밀집) model이 아닌, sparse(희소) model을 만들어서 훈련을 진행할 수 있다.
 
-
+<br>
 
 ### 학습률 scheduling
 
@@ -421,7 +430,7 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 - 성능 기반 스케쥴링 (performance scheduling)
 - 1 사이클 스케쥴링 (1cycle scheduling)
 
-
+<br>
 
 ### 규제(regularization)
 
@@ -438,7 +447,7 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
   - 릿지에서 alpha매개변수로 규제의 양을 조절했지만 LogisticRegression에서는 C매개변수를 사용한다.
   - C매개변수는 커지면 완화된다. 기본값이 1이지만, 완화하기위해 20으로 지정한다. (C 매개변수는 ridge의 alpha와는 반대 경향)
 
-
+<br>
 
 - **Ridge** 
 
@@ -453,6 +462,8 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
   Ridge는 coefficients를 zero에 가깝게는 감소시키지만, 완전히 zero로 만들어서 제외하지는 못한다.
 
   (official documentation: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html#sklearn.linear_model.Ridge)
+
+<br>
 
 - **Lasso**
 
@@ -478,10 +489,14 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 
   불안정한 gradient를 완화하는데에 활용한다. 매개변수 bias constraints를 조정하여 편향을 조정한다.
 
+<br>
+<br>
 
 ## 실용적 guideline
 
 모든 case에 맞는 명확한 기준은 없지만, hyperparameter tuning을 크게 하지 않고 대부분의 경우에 잘 맞는 조건은 다음과 같다:
+
+<br>
 
 기본 DNN설정:
 
@@ -493,6 +508,8 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 | 규제           | 조기 종료(필요시 L2 규제 추가)                           |
 | 옵티마이져     | momentum 최적화 (또는  RMSProp or Nadam)                 |
 | 학습률 스케쥴  | 1 cycle                                                  |
+
+<br>
 
 만약 network가 완전 연결층을 쌓은 단순한 모델이라면, 다음과 같이 자기 정규화를 사용할 수 있다.
 
