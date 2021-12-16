@@ -1,7 +1,7 @@
 ---
 layout: post                          # (require) default post layout
 title: "CNN_enhanced"                   # (require) a string title
-date: 2021-12-17       # (require) a post date
+date: 2021-12-15       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
 

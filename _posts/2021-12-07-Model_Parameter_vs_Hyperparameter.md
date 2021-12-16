@@ -1,7 +1,7 @@
 ---
 layout: post                          # (require) default post layout
 title: "Parameters vs. Hyperparameter"                   # (require) a string title
-date: 2021-12-10       # (require) a post date
+date: 2021-12-07       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
 
