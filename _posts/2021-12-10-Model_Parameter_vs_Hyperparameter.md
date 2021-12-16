@@ -168,3 +168,9 @@ https://github.com/rsteca/sklearn-deap
 7. ###### iteration 횟수
 
    대부분의 경우 훈련 반복횟수는 튜닝할 필요가 없다. 대신 조기 종료를 사용한다.
+
+   
+
+# References
+
+1. comparison between parameters vs. hyperparamenter: https://machinelearningmastery.com/difference-between-a-parameter-and-a-hyperparameter/
