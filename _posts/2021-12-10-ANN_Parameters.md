@@ -132,7 +132,7 @@ J는 linear regression에서 주로 사용되는 least-square cost function이�
 
 gradient descent algorithm은 우리가 원하는 θ를 찾는 방법 중 하나이다. 처음 특정 값을 하나 guess를 해서 cost를 계산하고 이를 점차 줄여가는 방향으로 update를 반복적으로 진행하는 방법이다. 
 
-<img src="https://render.githubusercontent.com/render/math?math={\theta}_j := {\theta}_j - {\alpha}\frac{\partial}{{\partial}{\theta}_j}J({\theta})">
+![gradient_update](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/gradient_update.PNG)
 
 (여기에서 :=는 θ에 계산된 새로운 값을 assign하여 update한다는 것을 의미하고 α는 learning rate을 의미한다.) θ는 J가 가장 가파르게 감소하는 방향으로 update된다. 위 공식에서 partial derivative term을 x,y로 표현하면 다음과 같이 LMS update rule을 찾을 수 있다.
 
