@@ -5,8 +5,6 @@ date: 2021-12-10       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
 
-
-
 ---
 
 
@@ -67,12 +65,13 @@ fan_in과 fan_out이 같지 않다면, 위 두가지 사항이 지켜지기 어�
 fan_avg = (fan_in + fan_out)/2
 
 이런 현상을 도입하기 위해, 각 층의 연결 가중치를 다음 공식대로 무작위로 초기화한다. 이를 Xavier initialization 또는 Glorot initialization이라고 부른다. 
-$$
-normal{\space}distribution{\space}where:{\space}{\space}{\space}mean = 0{\space}{\space}{\space}and{\space}{\space}{\space}
-variance={\space}{\sigma}^2 = \frac{1}{fan_{avg}}\\ 
-or{\space}{\space}{\space}uniform{\space}distribution{\space}over{\space}range(-r,+r){\space}where:{\space}{\space}{\space}
-r = \sqrt{\frac{3}{fan_{avg}}}
-$$
+
+
+<img src="https://render.githubusercontent.com/render/math?math=normal{\space}distribution{\space}where:{\space}{\space}{\space}mean = 0{\space}{\space}{\space}and{\space}{\space}{\space}variance={\space}{\sigma}^2 = \frac{1}{fan_{avg}}">
+
+<img src="https://render.githubusercontent.com/render/math?math=or{\space}{\space}{\space}uniform{\space}distribution{\space}over{\space}range(-r,+r){\space}where:{\space}{\space}{\space}r = \sqrt{\frac{3}{fan_{avg}}}">
+
+
 활성화 함수마다 적절한 초기화 전략이 있다.
 
 | 초기화 전략 | 활성화 함수                                | 정규분포(sigma^2) |
@@ -106,12 +105,13 @@ ReLU는 continuous한 함수이지만, z=0에서 미분가능하지 않다. (기
 ReLu함수를 주로 사용하지만, "죽은 ReLU(dying ReLU)"로 알려진 문제가 있다. 훈련하는 동안 일부 뉴런이 0 이외의 값을 출력하지 않는다는 의미임. 특히 큰 학습률을 사용하면, 신경망의 뉴런 절반이 죽어있기도 함. (모든 샘플에 대해 입력의 가중치 합이 음수가되면, 뉴런이 죽게된다. 가중치 합이 음수이면 ReLU함수의 gradient가 0이 되기때문에 SGD가 더 작동하지 않음.)
 
 이런 경우 문제해결을 위해 LeakyReLU와 같은 ReLU의 변종을 사용한다. 
-$$
-LeakyReLU_{\alpha}(z) = max({\alpha}z, z)
-$$
+
+
+<img src="https://render.githubusercontent.com/render/math?math=LeakyReLU_{\alpha}(z) = max({\alpha}z, z)">
+
 Hyperparameter alpha가 이 함수가 '새는(leaky)' 정도를 결정한다. (새는 정도: z<0일때에 이 함수의 기울기이며, 일반적으로 0.01로 설정함. 이 작은 기울기때문에 LeakyReLU가 절대 죽지않는다. 즉 혼수상태로 떨어지지만, 죽지는않고 다시 깨어날 가능성을 유지하는 것이다.) 다음 graph와 같이 음수부분이 작은 기울기를 가지게되어 0이 되지는 않는다.
 
-<img src="C:\SJL\VQML_VQA\VQML\figures\leakyReLU.png" alt="leakyReLU" style="zoom: 50%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/leakyReLU.png" alt="leakyReLU" style="zoom: 50%;" />
 
 LeakyReLU의 종류로는 RReLU(Randomized leaky ReLU)와 PReLU(parametric leaky ReLU)가 있다.
 
@@ -123,9 +123,9 @@ LeakyReLU의 종류로는 RReLU(Randomized leaky ReLU)와 PReLU(parametric leaky
 
 **ELU (Exponential linear unit)** -  
 
-<img src="C:\SJL\VQML_VQA\VQML\figures\ELU.png" alt="ELU" style="zoom:50%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/ELU.png" alt="ELU" style="zoom:50%;" />
 
-![ELU_formula](C:\SJL\VQML_VQA\VQML\figures\ELU_formla.png)
+![ELU_formula](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/ELU_formla.png)
 
 ELU의 장점:
 
@@ -245,9 +245,10 @@ BatchNormalization class에서 조정할 수 있는 hyperparameter:
 - axis - 정규화할 축을 결정한다. 기본값은 -1
 
 - 이동 평균 V_hat을 다음 공식을 사용해서 update한다.
-  $$
-  \hat{v} \leftarrow \hat{v} \cross momentum + v\cross(1-momentum)
-  $$
+
+
+<img src="https://render.githubusercontent.com/render/math?math=  \hat{v} \leftarrow \hat{v} \cross momentum %2B  v\cross(1-momentum)">
+
 
 **장점:**
 
@@ -285,10 +286,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    경사하강법(SGD)에서는 이전 gradient가 얼마였는지 고려하지않는다.(그래서 gradient가 아주 작으면 매우 느려지는 문제 발생). Momentum optimization에서는 gradient가 얼마였는지는 매우 중요하게 고려한다. 
 
    모멘텀 알고리즘:
-   $$
-   1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta})\\
-   2. {\space}{\theta}\leftarrow{\theta+m}
-   $$
+   
+   <img src="https://render.githubusercontent.com/render/math?math= 1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta})">
+   
+   <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta%2B m}">
+   
    매 반복에서 현재 gradient를 학습률을 곱한 후, momentum vector m에 더하고 이 값을 빼는 방식으로 가중치를 갱신한다. 즉 gradient가 속도(velocity)가 아니라 가속도(acceleration)로 사용되는 것이다. (momentum의 차이 만큼 gradient가 변하기때문에, velocity의 차이만큼 acceleration이 변하는 것과 동등하다고 보면 된다?) 여기에서 Beta는 일종의 마찰저항을 표현하고 momentum이 너무 커지는것을 막아준다. Beta=(0,1) 일반적인 momentum값은 0.9이다.
 
    terminal velocity (종단속도)를 구할때에 위 공식에서 1번의 좌우변을 equal하게 set해서 m을 구해보면 --> 종단속도는 학습률을 곱한 gradient에 (1/(1-beta))를 곱한것과 같은을 확인할 수 있다. beta가 0.9라면,  (1/(1-beta))는 10이 되고, momentum 최적화가 SGD보다 10배는 더 빠르게 진행된다는것을 확인할 수 있다. 
@@ -297,7 +299,7 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    compile시, SGD optimizer를 정의할때에 매개변수로 momentum을 전달하면된다.
 
-   ```Py
+   ```python
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9)
    ```
 
@@ -306,15 +308,16 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 2. #### Nesterov accelerated gradient (NAG)
 
    기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
-   $$
-   1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta+{\beta}m})\\
-   2. {\space}{\theta}\leftarrow{\theta+m}
-   $$
+   
+   <img src="https://render.githubusercontent.com/render/math?math=1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta%2B {\beta}m})">
+   
+   <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta%2B m}">
+   
    NAG는 진동을 감소시키고 수렴을 빠르게 만들어준다. 
 
    **code 구현 방법:**
 
-   ```py
+   ```python
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9, nesterov=True)
    ```
 
@@ -323,10 +326,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 3. #### AdaGrad
 
    기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다.
-   $$
-   1.{\space}s\leftarrow s+ \grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})\\
-   2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s+{\epsilon}}
-   $$
+   
+   <img src="https://render.githubusercontent.com/render/math?math=1. {\space}s\leftarrow s%2B  \grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
+   
+   <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
+   
    NOTE: 여기에서 1의 multiply와 2의 divide는 각각 원소별 곱셈과 원소별 나눗셈을 의미한다.
 
    첫번째 단계에서는 gradient의 제곱을 vector s에 누적한다. vector화된 식은 vector s의 각 원소 s_i는 parameter theta_i에 대한 비용함수의 편미분을 제곱하여 누적한다. (비용함수가 i번째 차원을 따라 가파르다면 s_i는 반복이 진행됨에 따라 점점 더 커질것임.)
@@ -342,10 +346,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 4. #### RMSProp
 
    AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
-   $$
-   1.{\space}s\leftarrow {\beta}s+ (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})\\
-   2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s+{\epsilon}}
-   $$
+
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}s\leftarrow {\beta}s%2B  (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
+   
+   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
+   
    code 구현:
 
    ```Python
@@ -357,17 +362,13 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 5. #### Adam
 
    Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
-   $$
-   1. {\space}m \leftarrow {\beta}_1{m}-(1-{\beta}_1)\grad_{\theta}J({\theta})\\
    
-   2.{\space}s\leftarrow {\beta}_2s+ (1-{\beta}_2)\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})\\
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}_1{m}-(1-{\beta}_1)\grad_{\theta}J({\theta})">
+   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}s\leftarrow {\beta}_2s%2B  (1-{\beta}_2)\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
+   <img src="https://render.githubusercontent.com/render/math?math=3.{\space}\hat{m}\leftarrow\frac{m}{1-{\beta}_1^t}">
+   <img src="https://render.githubusercontent.com/render/math?math=4.{\space}\hat{s}\leftarrow\frac{s}{1-{\beta}_2^t}">
+   <img src="https://render.githubusercontent.com/render/math?math=5.{\space}{\theta}\leftarrow{\theta}%2B {\eta}\hat{m}\div\sqrt{\hat{s}%2B {\epsilon}}">
    
-   3.{\space}\hat{m}\leftarrow\frac{m}{1-{\beta}_1^t} \\
-   
-   4.{\space}\hat{s}\leftarrow\frac{s}{1-{\beta}_2^t} \\
-   
-   5.{\space}{\theta}\leftarrow{\theta}+{\eta}\hat{m}\div\sqrt{\hat{s}+{\epsilon}}
-   $$
    t는 (1부터 시작하는) 반복횟수를 의미한다.
 
    beta_1는 momentum 감쇠 hyperparameter이고
@@ -442,9 +443,9 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 - **Ridge** 
 
   L2 regularization. 기존 cost function에 다음과 같이 penalty를 더한다.
-  $$
-  \sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2+\alpha\sum_{j=0}^{p}w_j^2
-  $$
+  
+  <img src="https://render.githubusercontent.com/render/math?math=\sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2%2B \alpha\sum_{j=0}^{p}w_j^2">
+
   ridge는 parameter (i.e. weights)에 규제를 더한다. penalty term lambda를 통해서 regression의 coefficient를 감소시킨다. 이는 model complexity와 multicollinearity를 감소시켜준다.
 
   when λ → 0 , the cost function becomes similar to the linear regression cost function (eq. 1.2). So *lower the constraint (low λ) on the features, the model will resemble linear regression model.* 
@@ -456,18 +457,12 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 - **Lasso**
 
   L1 regularization. Least absolute shrinkage와 selection operator를 통해서 다음과 같이 penalty를 더한다.
-  $$
-  \sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2+\alpha\sum_{j=0}^{p}\abs{w_j}
-  $$
+  
+  <img src="https://render.githubusercontent.com/render/math?math=\sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2%2B\alpha\sum_{j=0}^{p}\abs{w_j}">
+
   ridge와 비슷하지만 penalty로 가져가는 값이 squared가 아닌 magnitude라는 점이 다르다. Lasso와 같은 방식으로 규제를 하게되면 zero coefficient를 갖게될 수도 있다. 즉, 특정 feature이 output evaluation에서 완전히 제외되도록 설정할 수 있는것이다. Lasso는 overfitting을 방지하는 목적외에도 feature selection에도 활용될 수 있는 technique이다. (official documentation: https://scikit-learn.org/stable/modules/linear_model.html#lasso)
 
   feature를 selectively 사용할 수 있게 해주는것을 compressive sensing이라고도 부름.
-
-  
-
-  
-
-  *need to review the following three topics*
 
 - dropout
 
@@ -482,6 +477,7 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 - max-norm regularization
 
   불안정한 gradient를 완화하는데에 활용한다. 매개변수 bias constraints를 조정하여 편향을 조정한다.
+
 
 ## 실용적 guideline
 
