@@ -249,7 +249,7 @@ BatchNormalization class에서 조정할 수 있는 hyperparameter:
 - 이동 평균 V_hat을 다음 공식을 사용해서 update한다.
 
 
-<img src="https://render.githubusercontent.com/render/math?math=  \hat{v} \leftarrow \hat{v} \cross momentum %2B  v\cross(1-momentum)">
+<img src="https://render.githubusercontent.com/render/math?math=\hat{v}\leftarrow\hat{v}\cross momentum%2Bv\cross(1-momentum)">
 
 
 **장점:**
@@ -293,7 +293,7 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    모멘텀 알고리즘:
    
-   <img src="https://render.githubusercontent.com/render/math?math= 1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta})">
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta})">
    
    <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta%2B m}">
    
@@ -315,9 +315,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
    
-   <img src="https://render.githubusercontent.com/render/math?math=1. {\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta%2B {\beta}m})">
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta%2B {\beta}m})">
    
-   <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta%2B m}">
+   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta%2B m}">
    
    NAG는 진동을 감소시키고 수렴을 빠르게 만들어준다. 
 
