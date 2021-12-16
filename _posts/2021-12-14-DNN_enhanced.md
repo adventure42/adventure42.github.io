@@ -1,7 +1,7 @@
 ---
 layout: post                          # (require) default post layout
 title: "DNN enhancement"                   # (require) a string title
-date: 2021-12-10       # (require) a post date
+date: 2021-12-14       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
 
@@ -292,11 +292,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    경사하강법(SGD)에서는 이전 gradient가 얼마였는지 고려하지않는다.(그래서 gradient가 아주 작으면 매우 느려지는 문제 발생). Momentum optimization에서는 gradient가 얼마였는지는 매우 중요하게 고려한다. 
 
    모멘텀 알고리즘:
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta})">
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta%2B m}">
-   
+
    매 반복에서 현재 gradient를 학습률을 곱한 후, momentum vector m에 더하고 이 값을 빼는 방식으로 가중치를 갱신한다. 즉 gradient가 속도(velocity)가 아니라 가속도(acceleration)로 사용되는 것이다. (momentum의 차이 만큼 gradient가 변하기때문에, velocity의 차이만큼 acceleration이 변하는 것과 동등하다고 보면 된다?) 여기에서 Beta는 일종의 마찰저항을 표현하고 momentum이 너무 커지는것을 막아준다. Beta=(0,1) 일반적인 momentum값은 0.9이다.
 
    terminal velocity (종단속도)를 구할때에 위 공식에서 1번의 좌우변을 equal하게 set해서 m을 구해보면 --> 종단속도는 학습률을 곱한 gradient에 (1/(1-beta))를 곱한것과 같은을 확인할 수 있다. beta가 0.9라면,  (1/(1-beta))는 10이 되고, momentum 최적화가 SGD보다 10배는 더 빠르게 진행된다는것을 확인할 수 있다. 
@@ -314,11 +314,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 #### Nesterov accelerated gradient (NAG)
 
    기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta%2B {\beta}m})">
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta%2B m}">
-   
+
    NAG는 진동을 감소시키고 수렴을 빠르게 만들어준다. 
 
    **code 구현 방법:**
@@ -332,11 +332,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 #### AdaGrad
 
    기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다.
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=1. {\space}s\leftarrow s%2B  \grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=2. {\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
-   
+
    NOTE: 여기에서 1의 multiply와 2의 divide는 각각 원소별 곱셈과 원소별 나눗셈을 의미한다.
 
    첫번째 단계에서는 gradient의 제곱을 vector s에 누적한다. vector화된 식은 vector s의 각 원소 s_i는 parameter theta_i에 대한 비용함수의 편미분을 제곱하여 누적한다. (비용함수가 i번째 차원을 따라 가파르다면 s_i는 반복이 진행됨에 따라 점점 더 커질것임.)
@@ -354,9 +354,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
 
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}s\leftarrow {\beta}s%2B  (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
-   
+
    code 구현:
 
    ```Python
@@ -370,13 +370,13 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 #### Adam
 
    Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
-   
+
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}_1{m}-(1-{\beta}_1)\grad_{\theta}J({\theta})">
    <img src="https://render.githubusercontent.com/render/math?math=2.{\space}s\leftarrow {\beta}_2s%2B  (1-{\beta}_2)\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
    <img src="https://render.githubusercontent.com/render/math?math=3.{\space}\hat{m}\leftarrow\frac{m}{1-{\beta}_1^t}">
    <img src="https://render.githubusercontent.com/render/math?math=4.{\space}\hat{s}\leftarrow\frac{s}{1-{\beta}_2^t}">
    <img src="https://render.githubusercontent.com/render/math?math=5.{\space}{\theta}\leftarrow{\theta}%2B {\eta}\hat{m}\div\sqrt{\hat{s}%2B {\epsilon}}">
-   
+
    t는 (1부터 시작하는) 반복횟수를 의미한다.
 
    beta_1는 momentum 감쇠 hyperparameter이고
