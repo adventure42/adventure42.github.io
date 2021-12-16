@@ -22,7 +22,6 @@ local receptive field(국부 수용장) - 뉴런들이 시야의 일부 범위 �
 e.g., 강아지의 눈, 코, 입이 제대로된 위치에 존재하는것을 인지해야지만 해당 이미지가 강아지얼굴이라는 결론을 내릴 수 있을것이다.
 
 
-
 ## Convolutional layer(합성곱층)
 
 첫번째 합성곱층의 뉴런은 input layer(입력 이미지)의 모든 pixel에 연결되는것이 아니라 합성곱층 뉴런의 수용장 안에 있는 pixel에만 연결된다. --> 두번째 합성곱증에있는 각 뉴런은 첫번째층의 작은 시각 영역 안에 위치한 뉴런에 연결된다.
@@ -41,7 +40,7 @@ CNN에서는 각 층이 2D로 표현되므로 뉴런을 그에 상응하는 입�
 
 뉴런의 가중치는 수용장 크기의 작은 이미지로 표현될 수 있다. **filter (or convolutional kernel)**를 통해 이전층의 이미지에서 원하는 부분만 "filter"해서 학습할 수 있다 예를 들어서 수직 필터(가운데 열은 1로 채워져있고, 그 외에는 모두 0인 7x7 행렬)를 통해서 가운데 수직선 부분은 제외하고는 나머지는 모두 0이 곱해지기때문에 후속 층으로 전송되지 못하고 무시하게 된다.
 
-다음 그림과 같이 filter-right sobel을 통해서 오른쪽 수직선만 filter하는 경우 extract된 결과물이 어떤지 실제 이미지로 보여준다. 이렇게 전체 뉴런에 적용된 하나의 filter는 하나의 feature map을 만든다. feature map을 보면 filter를 가장 크게 활성화 시키는 이미지 영역이 강조된것을 확인할 수 있다. ![filter](C:\SJL\VQML_VQA\VQML\figures\filter_dog.png)
+다음 그림과 같이 filter-right sobel을 통해서 오른쪽 수직선만 filter하는 경우 extract된 결과물이 어떤지 실제 이미지로 보여준다. 이렇게 전체 뉴런에 적용된 하나의 filter는 하나의 feature map을 만든다. feature map을 보면 filter를 가장 크게 활성화 시키는 이미지 영역이 강조된것을 확인할 수 있다. ![filter](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/filter_dog.png)
 
 ![local_receptive](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/local_receptive_field.gif)
 
