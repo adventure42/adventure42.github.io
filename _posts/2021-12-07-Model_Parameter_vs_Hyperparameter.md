@@ -119,7 +119,7 @@ official : [https://keras.io/api/keras_tuner/tuners/hyperband/](https://keras.io
 
 <br>
 
-1. #### hidden layer 개수
+#### hidden layer 개수
 
 복잡한 문제일수록 심층 신경망이 (얕은 신경망보다) parameter efficiency가 훨씬 좋다.
 심층 신경만은 복잡한 함수를 modeling하는데에 얕은 신경망보다 훨씬 적은 neuron을 사용하기때문에 동일한 양의 훈련 데이터에서 더 높은 성능을 확보할 수 있다.
@@ -130,7 +130,7 @@ official : [https://keras.io/api/keras_tuner/tuners/hyperband/](https://keras.io
 
 <br>
 
-2. #### hidden layer의 neuron 개수
+#### hidden layer의 neuron 개수
 
 은닉층의 구성 방식은 일반적으로 각 층의 뉴런을 점점 줄여서 깔대기 모양을 구성한다.
 (e.g., MNIST문제의 신경망의 경우에는 각 은닉층의 뉴런수를 300, 200, 100으로 차례대로 구성했음.)
@@ -142,20 +142,20 @@ official : [https://keras.io/api/keras_tuner/tuners/hyperband/](https://keras.io
 
 <br>
 
-3. #### learning rate
+#### learning rate
 
 매우 낮은 학습률에서 시작해서 점진적으로 매우 큰 학습률까지 수백번 반복하여 모델을 훈련하는것이다. 
 e.g., 10^-5부터 시작해서 10까지 exp(log(10^6)/500)를 500번 반복
 
 <br>     
 
-4. #### optimizer
+#### optimizer
 
 SGD보다 더 좋은 optimizer
 
 <br>    
 
-5. #### batch size
+#### batch size
 
 GPU RAM에 맞는 가장 큰 batch 크기를 권장한다. 단, 주의할 점은 일반화 성능이 떨어질 수도 있다는 점이다. 큰 batch를 사용해서 훈련하면, 작은 batch로 훈련된 모델만큼 일반화 성능을 내지 못할 수 있다. 
 
@@ -163,14 +163,14 @@ GPU RAM에 맞는 가장 큰 batch 크기를 권장한다. 단, 주의할 점은
 
 <br>     
 
-6. #### activation function
+#### activation function
 
 일반적으로 ReLU가 모든 은닉층에 좋은 기본값이다.
 출력층의 활성화 함수는 수행하는 작업에 따라 달라진다.
 
 <br>  
 
-7. #### iteration 횟수
+#### iteration 횟수
 
 대부분의 경우 훈련 반복횟수는 튜닝할 필요가 없다. 대신 조기 종료를 사용한다.
 
