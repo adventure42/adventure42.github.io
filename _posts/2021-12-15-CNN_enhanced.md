@@ -183,7 +183,7 @@ inception module은 1 x 1 kernel의 합성곱층을 가진다. 이 층은 한번
 
 ### ResNet
 
-
+to be updated
 
 
 
@@ -191,7 +191,7 @@ inception module은 1 x 1 kernel의 합성곱층을 가진다. 이 층은 한번
 
 ### YOLO
 
-
+to be updated
 
 
 
@@ -199,5 +199,5 @@ inception module은 1 x 1 kernel의 합성곱층을 가진다. 이 층은 한번
 
 ## CNN의 Hyperparameters
 
-- kernel수
+to be updated
 
