@@ -100,9 +100,11 @@ sigmoid function:
 
 ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/neuralnetwork.png)
 
+<br>
 
+<br>
 
-## Linear regression
+# Linear regression
 
 아주 간단한 supervised learning중 하나인, linear regression문제에서 model의 parameter들이 어떻게 설정되는지 알아볼 수 있다.
 
@@ -144,7 +146,7 @@ note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비�
 
 
 
-### 경사하강법 Gradient descent 
+## 경사하강법 Gradient descent 
 
 경사하강법은 어떤 가중치에 얼만큼의 변화를 주어야지 손실 함수 C(θ)를 최소화하는 최적의 θ를 찾아서 가장 정확한 output을 예측할 수 있는지 알려준다. 
 
@@ -170,7 +172,7 @@ stochastic gradient descent는 random으로 dataset을 보기때문에 보통 co
 
 
 
-### 역전파(back propagation)
+## 역전파(back propagation)
 
 model들이 어떻게 자신의 error/mistakes를 바탕으로 학습하는 과정은 두가지 방법으로 진행된다. 
 
@@ -205,7 +207,7 @@ note: hidden layer의 연결 가중치를 random하게 초기화 하는것이 �
 
 
 
-### Normal equations
+## Normal equations
 
 반드시 경사 하강법을 통해 반복적으로 parameter θ를 update하는 방식을 사용해야하는 것은 아니다. Parameter optimization을 위해 iteration없이 analytical 방식인 normal equation을 사용할 수 있다. Normal equation을 통한 optimization은 matrix를 사용하기때문에 multiple linear regression의 parameter를 한번에 계산해준다.
 
@@ -241,16 +243,18 @@ Normal equations are equations obtained by setting equal to zero the partial der
 
 |      | Gradient  Descent                                           | Normal Equation                                              |
 | ---- | ----------------------------------------------------------- | ------------------------------------------------------------ |
-| 1    | In gradient descenet , we need to choose learning  rate.    | In normal equation , no need to choose learning rate.        |
-| 2    | It is an iterative algorithm.                               | It is analytical approach.                                   |
-| 3    | Gradient descent works well with large number of  features. | Normal equation works well with small number of  features.   |
-| 4    | Feature scaling can be used.                                | No need for feature scaling.                                 |
-| 5    | No need to handle non-invertibility case.                   | If (X) is non-invertible , regularization can    be used to handle this. |
-| 6    | Algorithm complexity is O(k). n is the number of features.  | Algorithm complexity is O(). n is the number of features.    |
+|      | In gradient descenet , we need to choose learning  rate.    | In normal equation , no need to choose learning rate.        |
+|      | It is an iterative algorithm.                               | It is analytical approach.                                   |
+|      | Gradient descent works well with large number of  features. | Normal equation works well with small number of  features.   |
+|      | Feature scaling can be used.                                | No need for feature scaling.                                 |
+|      | No need to handle non-invertibility case.                   | If (X) is non-invertible , regularization can    be used to handle this. |
+|      | Algorithm complexity is O(k). n is the number of features.  | Algorithm complexity is O(). n is the number of features.    |
 
+<br>
 
+<br>
 
-## Logistic regression
+# Logistic regression
 
 Regression에는 linear regression외에도 다른 유형의 문제들을 해결 할 수 있는 regression 기법들이 있다. 
 
@@ -262,77 +266,134 @@ Types of regression:
    - simple linear regression: predict output based on one feature
    - multiple linear regression: predict output based on multiple features
 2. **logistic regression**
-   - binary: based on features, predict an output that is one of two possible classes (e.g., 0 or 1) logistic regression은 회귀이지만 확률값을 계산해서 분류를 하는 모델이다.
+   - binary: based on features, predict an output that is one of two possible classes (e.g., 0 or 1) logistic regression은 회귀이지만 확률값을 계산해서 분류를 하는 모델이다. used when the input data cannot be modeled by a linear regression line. (in other words, when we need non linearity to trace the data points & when applying linear regression wil result in outputs that are neither 0 or 1 which doenst fit into the givens scenario.)
    - multinomial: based on features, predict an outputs that is one of many possible classes (i.e., multiple categories, two or more discrete outcomes) (e.g., predict what will be the most used transportation type in 2030 - possible outputs can be train, bus, tram, bikes.)
 
+<br>
+
+## Logistic regression은 언제 사용할면 될까?
+
+![logistics_why](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_why.png)
+
+만약 주어진 input data로 0 또는 1이 되어야하는 output을 예측해야하는 문제가 있다면, 위 그래프와 같이 linear regression으로 modeling할 수가 없다. (regression line으로는 (0,1) range밖의 값이 output으로 나오기 때문에) 우리가 원하는 0 or 1의 output을 얻으려면 다음과 같이 sigmoid curve를 통해 예측 값을 찾을 수 있다.
+
+<br>
 
 
-Logistic의  cost function은 linear regression의 cost function과는 조금의 차이가있다.
 
-<img src="https://render.githubusercontent.com/render/math?math=J(W,b) = \frac{1}{m}\sum_{i=1}^m(H(x^{(i)})-y^{(1)})^2">
+<img src="https://render.githubusercontent.com/render/math?math=hypothesis= \frac{1}{1%2Be^{-W^TX}}">
 
-linear regression 문제를 해결할때와 동일하게 input feature와 parameter를 linearly combine하지만, natural logarithm을 사용한다. linearyl combined된 input + parameter를 sigmoid function에 plug-in해서 probability(확률값)을 찾는다. 그래서 다음과 같이 공식으로 hypothesis를 찾을 수 있다.
+<br>
 
-<img src="https://render.githubusercontent.com/render/math?math=H(X) = \frac{1}{1%2Be^{-W^TX}}">
+linear regression 문제를 해결할때와 동일하게 input feature와 parameter를 linearly combine하지만, linearly combined된 input과 parameter를 sigmoid function에 plug-in해서 probability(확률값)을 찾는다.
 
-이를 기반으로 optimization을 진행한다. best parameter는 gradient ascent 또는 gradient descent를 통해서 찾을 수 있다. 
+Binary logistics 문제의 경우 1 또는 0의 output을 얻을 확률을 표현해보면 다음과 같다.
 
-binary logistics 문제의 경우
+<br>
+
+
 
 <img src="https://render.githubusercontent.com/render/math?math=P(y_i = 1 | x_i,{\theta}) = {\sigma}(z_i)=\frac{1}{1%2Be^{z_i}}">
 
 <img src="https://render.githubusercontent.com/render/math?math=P(y_i = 0 | x_i,{\theta}) = 1-{\sigma}(z_i)">
 
-<img src="https://render.githubusercontent.com/render/math?math=z_i = \hat{y}_i = log(odds_i)  = log(\frac{p_i}{1-p_i})">
+<img src="https://render.githubusercontent.com/render/math?math=where{\space}{\space}{\space}z_i = \hat{y}_i = log(odds_i)  = log(\frac{p_i}{1-p_i})">
 
+<br>
 
-### Logit transformation
+x_i= single input instance (training set에서 하나의 observation) 
 
-logit transformation= processing of wrapping log around odds or odds ratio. probability를 계산하기위해 0에서 1사이의 값으로 제한해야하는데, log-odds가 linear과 probability form 사이의 gap을 매꾸어준다. 
+y_i= 해당 instance의 output (0 or 1)
 
-linear regression function을 사용하여 estimate한  y ("y-hat")의 값을 log-odds하고 한다. 
+“p(y_i |x_i ; θ)” = ith x가 주어졌을때, θ로 parameterized 된 i번째 y의 distribution 
 
-note: what is log-odds? odds= probability of success divided by failure = P(success)/P(failure)
+odds = p / (1-p) 즉, probability of success divided by failure = P(success)/P(failure))
+
+log-odds값은 linear regression function을 사용하여 estimate한 "y-hat"으로 표현된다. log-odds는 logit transformation으로도 불리며, linear form과 probability form 사이의 gap을 연결해주는 역할을 한다.
 
 ![log_odds](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_log_odds.png)
 
-다음과 같은 순서로 변환해 나아간다.
+logit transformation이란? = odds or odds ratio의 log값으로 처리하는 tranformation. sigmoid function의 inverse이며 통계나 machine learning에서 data transformation을 위해 자주 활용된다. (https://en.wikipedia.org/wiki/Logit) 
 
-probability increase-> odds increase -> log-odds increase ("monotonic relationship")
+<img src="https://render.githubusercontent.com/render/math?math=definition: logit(p) =\sigma^{-1}(p) = ln(\frac{p}{1-p})">
+
+<br>
+
+logistic regression model을 graph해보면, 다음과 같이 0와 1사이에서 continuous 값을 가진 function으로 확인할 수 있다.
+
+![logistic_regression_model](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_graph.png)
+
+주어진 data로 model을 하기위해 다음과 같은 순서로 변환해 나아간다: probability -> odds -> log-odds
+
+이 셋을 monotonic relationship을 갖고있기때문에 (즉, probability increase-> odds increase -> log-odds increase) parameter를 estimate할 수 있다. 
+
+<br>
+
+## Likelihood (L(θ))
+
+training set의 sample(or instance)마다 randomly estimated parameters θ를 사용해서 log odds를 계산한다. 그리고 sigmoid function을 통해 probability를 예측한다. 
+
+<br>
 
 ![probabillity](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_probability.png)
 
+<br>
 
-### Likelihood (L(θ))
+각 sample의 probabilities를 곱해서 likelihood를 찾을 수 있다.
 
-training set의 sample(or instance)마다 randomly estimated parameters θ를 사용해서 log odds를 계산한다. 그리고 sigmoid function을 통해 probability를 예측한다. 모든 probabilities를 곱해서 likelihood를 찾을 수 있다. 
+<br>
 
 ![likelihood](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_likelihood.png)
 
-likelihood를 maximize해서 optimal parameters로 converge할 수 있다. likelihood를 maximize해서 best parameter를 찾으면서 probability of Y를 maximize하게 된다. 이 방식은 MLE(Maximum Likelihood Estimation)으로 불린다. maximum에 도달하게되면 처음 설정된 initial parameter값이 최적의 값으로 수렴된다. gradient descent/ gradient ascent와 같은 optimization algorithm으로 인해 이 수렴하는 과정이 진행된다. 
+<br>
 
-maximum을 찾는 방법:
+Likelihood를 maximize해서 optimal parameters로 converge할 수 있다. likelihood를 maximize해서 best parameter를 찾을 수 있다. 이 방식은 MLE(Maximum Likelihood Estimation)으로 불린다. maximum에 도달하게되면 처음 설정된 initial parameter값이 최적의 값으로 수렴된다. gradient descent/ gradient ascent와 같은 optimization algorithm으로 인해 이 수렴하는 과정이 진행된다. 
 
-log-likelhood의 partial derivative를 (with respect to each θ)계산한다. 즉 각 parameter의 gradient를 찾아서 optimal 방향으로 수렴하기 위한 방향으로 magnitude와 direction을 찾아간다.
+Likelihood의 maximum을 찾기위해 likelihood의 log을 활용한다. (probablilties와 같이 작은 scale의 값이 여러번 곱해지면 값이 너무 작아지기때문에 log를 활용) likelihood의 log를 계산하고 다음 log properties를 활용해서 summation operation으로 변환시킬 수 있다. 
+
+(log(XY) = log(X)+log(Y) and log(X^b) = b*log(X))
+
+log of likelihood LL(θ)를 다음과 같이 계산한다.
+
+<br>
+
+![log_likelihood](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/log_likelihood.png)
+
+<br>
+
+log-likelihood의 최대값을 찾기위해서 derivative를 활용한다. log-likelhood의 partial derivative를 (with respect to each θ)계산한다. 각 parameter의 gradient를 찾아서 optimal 방향으로 수렴하기 위한 방향으로 magnitude와 direction을 찾아간다.
 
 linear regression때와 동일하게 learning rate (eta)으로 gradient ascent algorithm이 iteration마다 얼마나 큰 step으로 이동할지를 설정한다. (don’t want the learning rate to be too low, which will take a long time to converge, and we don’t want the learning rate to be too high, which can overshoot and jump around)
 
+<br>
+
 ![gradients](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_gradient.png)
 
+<br>
 
-### Cost function
+## Cost Function
 
-gradient descent algorithm을 통해 다음과 같이 반복적으로 parameter를 update해서 cost function을 최소화할 수 있는 optimal parameter를 찾는다.
+경사하강법을 통해 다음과 같은 cost function cross entropy loss equation을 최소화할 수 있는 최적의 parameter를 찾는다.
+
+<br>
 
 ![cost function](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_cost.png)
 
-cost function의 partial derivative (with respect to parameter)를 활용하여 parameter들이 optimal될때까지 parameter를 update한다.
+<br>
+
+cost function의 partial derivative (with respect to parameter)를 활용하여 parameter들이 optimal될때까지 반복적으로 parameter를 update한다.
+
+<br>
 
 ![optimal parameter](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/logistic_regression_gradient_descent.png)
 
+<br>
+
 Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽게 찾을 있다.
 
+<br>
 
+<br>
 
 # Reference
 

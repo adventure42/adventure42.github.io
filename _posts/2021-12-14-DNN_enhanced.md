@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "DNN enhancement"                   # (require) a string title
+title: "DNN enhanced"                   # (require) a string title
 date: 2021-12-14       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
