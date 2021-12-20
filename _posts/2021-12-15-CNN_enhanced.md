@@ -380,3 +380,33 @@ model = keras.applications.resnet50.ResNet50(weights="imagenet")
 ```
 
 ResNet-50 모델은 input 이미지의 크기를 224 x 224 pixel 크기로 생각하고 동작하기때문에 만약 다른 크기의 이미지를 input해야한다면 model의 preprocess_input()함수를 사용해서 이미지를 resize할 수 있다. (가로세로 비율이 유지되는지 확인 필수! 필요시 tf.image.crop_and_resize()함수를 사용하면된다.)
+
+
+
+## Classification & localization (분류 & 위치추정)
+
+물체를 분류하는것 외에도 물체의 위치를 추정하기위해서는 위치를 나타낼 수 있는 bounding box의 정보를 찾아야한다. 가장 일반적인 방법은 다음 숫자 4개를 예측하는 것이다 - 물체 중심의 수평, 수직(x,y) 좌표와 높이, 너비(height, width).
+
+분류 및 위치 추정을 진행할때에 가장 어려운 점은 label된 data set이 확보되어야 한다는 것이다. 수천, 수만개의 이미지에 bounding box를 label하는 작업은 training data를 확보하기위해 필수적인 단계이지만, 많은 시간/비용이 소모되는 단계이다. 
+
+물체의 위치를 추정하는 것은 회귀 작업으로 나타낼 수 있다. 일반적인 전역 평균 풀링 층 (global average pooling layer)에 4개의 unit을 가진 두번째 dense layer를 추가하고 MSE 손실을 사용해서 훈련을 진행할 수 있다. 그러나 모델의 성능을 더 잘 표현하는 더 좋은 지표는 IoU라는 지표이다. 
+
+IoU(intersection over union) = bounding box에 널리 사용되는 지표. 예측한 bounding박스가 target box와 얼마나 겹쳐있는지를 ratio로 표현한다. (IoU ratio = "겹친 부분"/"전체" = 교집합/합집합)
+
+
+
+## Object detection (객체 탐지)
+
+하나의 이미지에서 여러 물체를 분류하고 위치를 추정하는 작업을 object detection이라고 한다. 
+
+기존 사용되었던 CNN 방식:
+
+이미지를 n by m grid로 나누고, 하나의 CNN이 모든 p by p (p<n,m) 영역을 지나가면서 이미지속의 객체를 감지한다. p by p 영역의 scan이 모두 끝나면 p+1 by p+1 영역으로 영역을 조금 더 키워서 똑같은 scanning을 진행한다. 이런 방식으로는 CNN이 작은 크기의 영역을 지정해서 조금씩 움직이며 전체 이미지를 scan하기 때문에, 동일한 물체를 여러번 감지하게 된다. 그래서 non-max suppression이라는 방법을 적용한다. 
+
+Non-max suppression:
+
+- 객체의 존재여부 확인 - CNN의 영역에 또 다른 객체가 정말 존재하는지 확률을 추정하기위해서 존재여부 (objectness)  출력을 추가한다. sigmoid 활성화 함수와 binary cross entropy를 손실함수로 사용해서 훈련한다. 어떤 threshold를 지정해서 존재여부 점수가 threshold 이하인 bounding box는 모두 삭제한다. (객체가 들어있지 않다고 판단하기 때문에)
+- 존재여부가 가장 높은 bounding box를 찾는다. 그리고 이 박스와 많이 중첩된 (e.g., IoU > 60% 인 bounding box)를 모두 제거한다. 그러면 동일한 객체위에 위치해서 최대값을 가진 bounding box와 상당히 겹쳐있는 박스들이 제거될 것이다.
+- 더 이상 제거할 bounding box가 없을 때까지 위 두 단계를 반복한다. 
+
+위와 같은 객체 탐지 방식을 성능은 좋지만 CNN을 여러번 실행 시켜야해서 속도가 많이 느리다. 이를 보완하기위해 완전 합성곱 신경망 FCN(fully convolutional network)을 사용하면 CNN을 훨씬 더 빠르게 이미지에 sliding 시킬 수 있다.  
