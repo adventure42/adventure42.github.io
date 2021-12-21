@@ -525,3 +525,11 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
 | 학습률 스케쥴  | 1 cycle                                  |
 
 pytorch - compile 및 fit 방식 확인 필요  (build, etc)
+
+<br>
+
+<br>
+
+# Reference
+
+1. Geron, Aurelien. Hands on Machine Learning. O'Reilly, 2019 

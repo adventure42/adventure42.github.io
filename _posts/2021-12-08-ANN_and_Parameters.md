@@ -397,12 +397,9 @@ Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽
 
 # Reference
 
-1. deep neural network에서 network & parameter들의 역할 및 operation : https://www.youtube.com/watch?v=aircAruvnKk
-
-2. gradient descent explained : https://www.youtube.com/watch?v=IHZwWFHWa-w
-
-3. backpropagation explained with graphics : https://www.youtube.com/watch?v=Ilg3gGewQ5U
-
-4. normal equation in linear regression : https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
-
+1.  Geron, Aurelien. Hands on Machine Learning. O'Reilly, 2019 
+2. deep neural network에서 network & parameter들의 역할 및 operation : https://www.youtube.com/watch?v=aircAruvnKk
+3. gradient descent explained : https://www.youtube.com/watch?v=IHZwWFHWa-w
+4. backpropagation explained with graphics : https://www.youtube.com/watch?v=Ilg3gGewQ5U
+5. normal equation in linear regression : https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
 5. logistic regression : https://towardsdatascience.com/understand-implement-logistic-regression-in-python-c1e1a329f460
