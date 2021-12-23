@@ -2,7 +2,7 @@
 layout: post                          # (require) default post layout
 title: "VQA paper review"                   # (require) a string title
 date: 2021-12-20       # (require) a post date
-categories: [VQA]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
+categories: [paperreview]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [VQA]                      # (custom) tags only for meta `property="article:tag"`
 
 
