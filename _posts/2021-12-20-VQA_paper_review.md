@@ -48,7 +48,7 @@ computational efficiency - 저자의 실험 환경= Intel Core i7-6700K CPU@4.00
 
 - **BRISQUE**(blind/referenceless image spatial quality evaluator) - use scene statistics of locally normalized luminance coefficients to quantify possible losses of "naturalness" in the image due to the presnce of distortions, leading to a holistic measure of quality
 
-  관련 논문: https://live.ece.utexas.edu/publications/2012/TIP%20BRISQUE.pdf
+  관련 논문: [https://live.ece.utexas.edu/publications/2012/TIP%20BRISQUE.pdf](https://live.ece.utexas.edu/publications/2012/TIP%20BRISQUE.pdf)
 
 - **NIQE**(Natural Image Quality Evaluator) - completely blind image quality analyzer that only makes use of measurable deviations from statistical regularities observed in natural images, without training on human-rated distorted images, and, indeed without any exposure to distorted images.
 
@@ -56,11 +56,11 @@ computational efficiency - 저자의 실험 환경= Intel Core i7-6700K CPU@4.00
 
   unsupervised feature learning 방식으로 human perceived image quality 를 예측하는 model. computationally efficient- how? used soft-assignment coding with max pooling to obtain effective image representations for quality estimation. 더 상세한 내용은 아래 논문 읽어봐야함.
 
-  관련 논문: https://ieeexplore.ieee.org/document/6247789
+  관련 논문: [https://ieeexplore.ieee.org/document/6247789](https://ieeexplore.ieee.org/document/6247789)
 
 - **VIIDEO**(video intrinsic integrity and distortion evaluation oracle) - embodies models of intrinsic statistical regularities that are observed in natural vidoes, which are used to quantify disturbances introduced due to distortions. An algorithm derived from the VIIDEO model is thereby able to predict the quality of distorted videos without any external knowledge about the pristine source, anticipated distortions, or human judgments of video quality.
 
-  관련 논문: https://live.ece.utexas.edu/publications/2016/07332944.pdf
+  관련 논문: [https://live.ece.utexas.edu/publications/2016/07332944.pdf](https://live.ece.utexas.edu/publications/2016/07332944.pdf)
 
 - **VBLIINDS**(Video BLIINDS) - non-distortion specific 방식이다. This approach relies on a spatio-temporal model of video scenes in the discrete cosine transform (DCT) domain, and on a model that characterizes the type of motion occurring in the scenes, to predict video quality. The video quality assessment (VQA) algorithm does not require the presence of a pristine video to compare against in order to predict a quality score. The contributions of this work are three-fold.
 
@@ -68,7 +68,7 @@ computational efficiency - 저자의 실험 환경= Intel Core i7-6700K CPU@4.00
 
 - **DIIVINE** (Distortion Identification-based Image Verity and INtegrity Evalutation)
 
-- 연구된 타 model: (2019) https://link.springer.com/content/pdf/10.1007/s11760-019-01510-8.pdf 그 외 매우 다양한 새로운 모델들이 개발되고 있다. 
+- 연구된 타 model: (2019) [https://link.springer.com/content/pdf/10.1007/s11760-019-01510-8.pdf](https://link.springer.com/content/pdf/10.1007/s11760-019-01510-8.pdf) 그 외 매우 다양한 새로운 모델들이 개발되고 있다. 
 
 <br>
 
