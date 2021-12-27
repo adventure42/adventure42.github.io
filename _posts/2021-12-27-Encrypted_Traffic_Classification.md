@@ -27,13 +27,13 @@ Internet traffic classification을 다음과 같은 구조로 세분화 할 수 
 
 **Data Network Traffic > Encrypted Traffic > SSL/TLS > HTTPS service-level monitoring** 
 
-![HTTPS_service_level](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/gradularity_of_internet_traffic_classification.PNG)
+![HTTPS_service_level](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/gradularity_of_internet_traffic_classification.PNG)
 
 communication을 secure하는 방법은 여러가지 이다. TCP/IP protocol layer에서 각자의 위치에 관련된 mechanism을 통해 다양한 방법들이 존재한다. 여러 security protocol들이 각각의 각각 장/단점을 가지고있지만, 그 중 security를 위해 주로 사용되는 security protocol은 SSL과 TLS이다. 
 
 각 TCP/IP layers에서 주로 사용되는 security protocol:
 
-![where is SSL,TLS](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TCP_IP_stack_security_related_protocols.PNG)
+![where is SSL,TLS](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TCP_IP_stack_security_related_protocols.PNG)
 
 SSL and TLS security protocols는 application layer와 transport layer사이에 있다. SSL과 TLS는 Public Key Infrastructure (PKI)를 사용해서 authentication을 제공하고 그 다음 confidentiality를 위한 symmetric key를 제공한다. 
 
@@ -71,7 +71,7 @@ HTTPS의 monitoring이 필요한 이유
 
 TLS는 두 개의 protocol layers로 형성되어있다. top-layer & lower-layer:
 
-<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_layer_sub_protocols.PNG" style="zoom:80%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_layer_sub_protocols.PNG" style="zoom:80%;" />
 
 **top-layer:** 세 개의 handshaking sub-protocol로 구성되어있다 -the Handshake, the Change Cipher Specification, and the Alert protocol. 이 protocol들은 TLS exchanges를 관리하는데에 사용된다. allow peers to agree on an encryption algorithm and a shared secret key, to authenticate themselves, and to report errors to each other.
 
@@ -83,7 +83,7 @@ TLS는 두 개의 protocol layers로 형성되어있다. top-layer & lower-layer
 
 **TLS handshake diagram:**
 
-<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_handshake_protocol.PNG" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_handshake_protocol.PNG" style="zoom:67%;" />
 
 handshake는 처음 interactions를 define하고 여러 configuration aspects를 책임지고있다 - cipher suite negotiation, server/client authentication, session key exchanges, 등등
 
@@ -101,7 +101,7 @@ handshake과정을 통해 client와 server 양쪽이 "finished" message를 받�
 
 **Full TLS handshake:**
 
-![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_handshake_protocol_detailed.PNG)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_handshake_protocol_detailed.PNG)
 
 <br>
 
@@ -119,7 +119,7 @@ handshake과정을 통해 client와 server 양쪽이 "finished" message를 받�
 
 <br>
 
-<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_handshake_parameters.PNG" style="zoom:67%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_handshake_parameters.PNG" style="zoom:67%;" />
 
 <br>
 
@@ -127,7 +127,7 @@ TLS connection이 resume될때 실행 속도를 높이기 위해 간소화된 TL
 
 **TLS handshake resume시:** 
 
-![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_handshake_shortened.PNG)
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_handshake_shortened.PNG)
 
 resumed session은 client가 이전 connection의 ClientHello 단계로 부터 존재하는 session ID를 submit하면서 trigger된다. (server는 동일한 session ID로 respond해야한다 ID가 틀리다면, full handshake가 요구된다.)
 
@@ -167,7 +167,7 @@ Google Chrome - NSS libraries (but Google has developed its own fork of OpenSSL,
 
 HTTPS에서 client와 server는 server의 domain name와 연관된 public-key를 가진 X.509 digital certificate을 보여주면서 TLS handshake를 완성한다. 이 certificate들은 trusted CA로 부터 issue된것으로 간주한다. 
 
-<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/SSL_certificate.PNG" style="zoom: 67%;" />
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SSL_certificate.PNG" style="zoom: 67%;" />
 
 위 그림에서 보이는바와 같이 X.509 certificate은 website domain과 link되어있고 temporal validity period, a public key, 그리고 trusted CA로부터 제공된 digital signature를 가지고있다. web browser는 certificate의 identity가 request된 domain name과 match 하는지, certificate이 validity period내에 포함되는지, 그리고 certificate의 digital signature이 valid한지를 확인한다. certificate의 public key는 client가 server와 session secret을 공유해서 end-to-end encrypted channel을 형성하기위해 사용된다. 
 
@@ -187,25 +187,17 @@ SSL certificates는 validation process depth에 따라서 3 가지 type들이 �
 
 Encrypted traffic의 여러 type들 중에서 TLS traffic을 감지한다. TLS traffic identification 은 다음과 같이 세가지 방식으로 나누어볼 수 있다. Port-based와 structure-based method는 TLS vs. non-TLS를 구분하는 identification에 집중되어있고, machine learning-based method는 identification외에도 TLS traffic의 분류에도 집중되어있다. 
 
-<br>
-
-![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/identification_of_TLS.PNG)
-
-<br>
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/identification_of_TLS.PNG)
 
 - **port-based method**
 
   (transport layer port number들이 Internet Assigned Numbers Authority(IANA)로 부터 배정되기 때문에) port-based method는 Internet application들과 protocol들을 identify하는 직관적인 방법이다. 그러나 TLS protocol은 여러 application layer protocols에서 널리 사용되기때문에, port-number 만으로 TLS traffic을 identify하는 것은 불가능하다. (e.g.,  For instance, HTTPS, FTPS and SMTPS protocols use TLS over port 443, 990, 465 respectively. Moreover, 8% of non-TLS traffic use standard TLS ports, while 6.8% of TLS traffic use ports not officially associated with TLS.) 그래서 deeper and more robust identification method for TLS가 필요하다.
 
-<br>
-
 - **protocol structure-based method**
 
   TLS-level DPI(deep packet inspection) 기법은 packet의 payload를 분석해서 TLS format을 알아보도록 활용되어왔다. 더 자세하게는 TLS Record Protocol structure을 기반으로 packet의 payload를 분석해서 TLS traffic을 detect한다. 
 
-  ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_record_format.PNG)
-
-  <br>
+  ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_record_format.PNG)
 
   한가지 방법으로 standard TLS format을 사용해서 ServerHello packets를 detect할 수 있다. (ServerHello packet은 TLS handshake protocol의 한 부분이고, TLS connection의 parameter를(TLS version, Selected Cipher, 등) 설정한다.) 그래서 valid ServerHello packet이 존재한다는 사실은 현재 monitoring하고있는 flow가 TLS라는 알려주는 중요한 근거가 될 수 있다. 
 
@@ -215,15 +207,11 @@ Encrypted traffic의 여러 type들 중에서 TLS traffic을 감지한다. TLS t
 
   또 다른 structure-based method는 Double Record Protocol Structure Detection (DRPSD)이다. 첫 8 packet를 활용해서 TLS traffic을 identify한다. Record Protocol Structure를 기반으로 TLS protocol를 identify하기위해 Record Protocol Structure가 몇개가 detect되었는지가 중요하다. 거의 모든 TLS flow는 하나 또는 그 이상의 packet들이 두 개의 Record Protocol Structure을 가지고있다는 사실을 활용한다. 그래서 packet의 payload를 확인해서, 만약 packet의 payload에서 double Record Protocol Structure가 확인된다면, 해당 flow는 TLS flow로 identify된다. DRPSD 기법의 연구 결과로 99.17% 의 identification 정확도가 확인되었다. [Liu et al. (2012) DRPSD: An novel method of identifying SSL/TLS traffic](https://ieeexplore.ieee.org/document/6321091) 
 
-<br>
-
 - **machine learning-based method**
 
   flow의 feature들을 활용해서 machine learning 기법으로 encrypted traffic을 classify하는 방법들이 많이 연구되었다. 
 
-  <br>
-
-  <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/identify_TLS_flow_ML.PNG" style="zoom:80%;" />
+  <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/identify_TLS_flow_ML.PNG" style="zoom:80%;" />
 
   flow duration, packet size, inter-arrival time와 같은 flow의 statistics가 feature들로 사용되어서 TLS protocol을 위한 statistical signature를 만들었다. 
 
@@ -233,11 +221,7 @@ Encrypted traffic의 여러 type들 중에서 TLS traffic을 감지한다. TLS t
 
   **machine learning process:**
 
-  <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/TLS_traffic_ML_phases.PNG" style="zoom:80%;" />
-
-  
-
-  <br>
+  <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TLS_traffic_ML_phases.PNG" style="zoom:80%;" />
 
   training에서는 statistical feature들과 machine learning algorithms가 훈련되어서 prediction을 만든다. training phase의 output은 classification phase에서 unseen data를 identify할때에 사용되는 model이다. validation phase에서는 classification의 결과가 validate되어서 model의 classification 성능을 측정한다. 
 
