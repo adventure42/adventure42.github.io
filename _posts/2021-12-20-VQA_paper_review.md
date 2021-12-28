@@ -17,24 +17,15 @@ tags: [VQA]                      # (custom) tags only for meta `property="articl
 1. Quality Assessment of In-the-Wild Videos by Dingquan Li (2019)
 2. KonVid-150k: A Dataset for No-Reference Video Quality Assessment of Videos in-the-Wild by Franz Götz-Hahn (Mar 2021) 
 3. UGC-VQA: Benchmarking Blind Video Quality Assessment for User Generated Content by Zhengzhong Tu (Apr 2021)
-4. Study on the Assessment of the Quality of  Experience of Streaming Video by Aleksandr Ivchenko(2020)
+4. RAPIQUE: Rapid and Accurate Video Quality Prediction of User Generated Content by Zhengzhong Tu (Nov 2021) 
+5. A STRONG BASELINE FOR IMAGE AND VIDEO QUALITY ASSESSMENT by Shaoguo Wen (Nov 2021)
+6. Study on the Assessment of the Quality of  Experience of Streaming Video by Aleksandr Ivchenko (2020)
 
 <br>
 
 <br>
 
 ## Quality Assessment of In-the-Wild Videos
-
-새로운 video quality assessment model을 제시함. human visual system (HVS)를 기반의 content-dependency와 temporal-memory effect 요소가 video quality assessment에 끼치는 영향을 고려하여 deep learning model을 설계함. 
-
-- content dependency - pre-trained image classification neural network (inherent content-aware property를 가진)
-- temporal-memory effect - temporal hysteresis와 같은 요소가 포함된 long-term dependencies를 network에 GRU(gates recurrent unit) & subjectively-inspired temporal pooling layer와 함께 integrate했음. 
-
-저자의 model을 주요 video databses (: KoNViD-1k, CVD2014, and LIVE-Qualcomm)로 훈련시켜서 assessment 결과를 SROCC, KROCC, PLCC, RMSE 값으로 평가함.
-
-다른 주요 video quality assessment model(BRISQUE, NIQE, CORNIA, VIIDEO, VBLIINDS)과 함께 평가 결과를 비교하여 저자의 model의 월등히 우수하다는 것을 확인함.
-
-<br>
 
 **Pytorch를 통해 model을 구현했고 source code는 [https://github.com/lidq92/VSFA](https://github.com/lidq92/VSFA)**
 
@@ -72,6 +63,164 @@ computational efficiency - 저자의 실험 환경= Intel Core i7-6700K CPU@4.00
 
 <br>
 
+새로운 video quality assessment model을 제시함. human visual system (HVS)를 기반의 content-dependency와 temporal-memory effect 요소가 video quality assessment에 끼치는 영향을 고려하여 deep learning model을 설계함. 
+
+- content dependency - pre-trained image classification neural network (inherent content-aware property를 가진)
+- temporal-memory effect - temporal hysteresis와 같은 요소가 포함된 long-term dependencies를 network에 GRU(gates recurrent unit) & subjectively-inspired temporal pooling layer와 함께 integrate했음. 
+
+저자의 model을 주요 video databses (: KoNViD-1k, CVD2014, and LIVE-Qualcomm)로 훈련시켜서 assessment 결과를 SROCC, KROCC, PLCC, RMSE 값으로 평가함.
+
+다른 주요 video quality assessment model(BRISQUE, NIQE, CORNIA, VIIDEO, VBLIINDS)과 함께 평가 결과를 비교하여 저자의 model의 월등히 우수하다는 것을 확인함.
+
+<br>
+
+### content effect
+
+같은 compression ratio로 compress된 두개의 video이지만 다른 content를 가지고있다면 각자 다른 subjective quality 평가 결과를 얻은 결과를 보면, video 속의 scene/object categories가 사람이 평가하는 visual quality에 영향을 준다는 것을 확인할 수 있다. 
+
+In order to verify, 저자가 소규모로 side study를 진행함 - We ask 10 human subjects to do the cross-content pairwise comparison for 201 image pairs. More than 7 of 10 subjects prefer one image to the other image in 82 image pairs. For illustration, two pairs of in-the-wild images are shown in Figure 1. Each image pair is taken in the same shooting conditions (e.g., focus length, object distance). For the in-focus image pair in the first row, 9 of 10 subjects prefer the left one. For the out-of-focus image pair in the second row, 8 of 10 subjects prefer the left one to the right one. The only difference within a pair is the image content, so from our user study, we can infer that image content can affect human perception on quality assessment of in-the-wild images. We also conduct a user study for 43 video pairs, where every two videos in a pair are taken in similar settings. Similar results are found that video content could have impacts on judgments of visual quality for in-the-wild videos.
+
+content-aware feature를 활용한 다른 참고 cases - 
+
+1. handcrafted content-relevant features를 extract해서 현재 존재하는 quality measures를 tune했다.  - Jaramillo et al[13]
+2. pre-trained image classification network의 top layer에서부터 semantic 정보를 활용해서 traditional quality features에 incorporate했다.  -Siahaan et al[41] & Wu et al[49]
+3. multiple patch들의 deep semantic feature aggregation을 활용해서 image quality assessment를 수행했다.  -Li et al[17]
+
+--> image classification tasks에 pre-trained된 CNN으로 부터 content-aware feature extraction을 수행했다. CNN classification model들은 방대한 content 정보를 discriminate할 수 있다. Predicted image/video quality의 content-dependency에 대응하기 위해 content-aware feature들을 활용하고 결국 objective models의 성능을 향상시킬 수 있다. 
+
+--> 여기에서 참고한 다른 case들을 통해 deep semantic feature들은 content가 quality assessment task에 주는 영향을 완화 ("alleviates the impact") 시켜준다는 것을 알게되었다. 그래서 pre-trained image classification network을 사용해서 content-aware feature extraction을 활용하기로 했다. 이 저자는 다른 참고 case들 과는 다르게 feature들을 extract했다. whole frame을 network에 feed하고, global average pooling 외에도 global standard deviation pooling을 함께 output semantic feature maps에 적용했다. VQA task이 최종적으로 구현하려는 목적이기때문에, we further put forward a new module for modeling temporal characteristics of human behavior when rating video quality.
+
+
+
+### temporal effect
+
+temporal memory - human judgements of video quality are affected by their temporal memory. 현재 frame에 대한 judgements는 이전 frame으로부터 받은 information으로 영향을 받게된다. "temporal hystersis"라고도 불리는 영향은 이전 frame들의 quality가 poor했다면, 이 후 더 나은 quality로 개선되어도 나쁜 quality가 한동안 기억되어 user의 quality assessment에 영향을 끼친다. 현 model에서는 이런 temporal effect를 taking to account 하고 있음.
+
+간단한 average pooling 전략으로는 video의 quality를 overestimate하는 경향이 있다. in-the-wild video는 synthetically distorted video보다 더 temporally heterogeneous한 distortions를 가지고있기때문에 사람이 평가하는 in-the-wild video들의 visual quality에 hysteresis effect가 더 강하게 reflect된다.
+
+--> GRU(gated recurrent unit)를 통해 long-term dependencies를 modeling하고 frame quality를 예측했다. 그리고 마지막으로 temporal hysteresis effect를 가만하기 위해 differentiable subjectively-inspired temporal pooling model을 제안하고 이를 network에 하나의 층으로 embed해서 overall video quality를 output했다.
+
+--> 저자가 구현한 VQA field에서의 temporal modeling은 다음 두 가지 aspect로 보열질 수 있다 - feature aggregation & quality pooling.
+
+**feature aggregation:**
+
+most methods aggregate frame-level features to video-level features by averaging them over the temporal axis. 1D convolutional netural network to aggregate the primary features for a time interval. 저자는 GRU network를 사용해서 feature integration을 위한 long-term dependencies를 model했다.
+
+**quality pooling:**
+
+simple average pooling strategies를 여러 방법을 통해 adopt했다. several pooling strategies considering the recency effect or worst quality section influence가 다른 연구 cases에서 논의되었다. 또 다른 연구 case에서는 CNAN(convoutional neural aggregation network) for learning frame weights가 adopt되었고 weighted average of frame quality scores를 통해 overall video quality를 계산했다.  Temporal hyteresis effect에 대응하기위해 Seshadrinathan and Bovik[37]이 temporal hysteresis pooling strategy를 제안했다. 이 방법은 관련 다른 연구 cases를 통해 effective한것으로 확인되었지만, differentiable하지 않기때문에 저자는 새로운 방식을 제안했다 - new one with subjectively-inspired weights which can be embedded into the neural network and be trained with back propagation.
+
+
+
+### overall model architecture
+
+저자가 제안하는 overall model architecture는 다음과 같이 크게 두 개의 module로 구성되어있다:
+
+1. pre-trained CNN with effective global pooling(GP) serving as a feature extractor for each video frame. extract된 content-aware feature들은 fully-connected(FC)층으로 전송되어서 dimensional reduction이 수행된다.
+2. modeling of temporal-memory effects
+   1. GRU network for modeling long-term dependencies. GRU는 frame-wise quality scores를 output한다.
+   2. overall video quality  is pooled from these frame quality scores by subjectively-inspired temporal pooling layer in order to account for temporal hysteresis effects
+
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/CNN_GRU_VQA _model.PNG)
+
+<br>
+
+각 module 상세 내용:
+
+#### 1. content aware feature extraction
+
+다른 video content/ scene마다 각각 다른 complexities of distortions, human tolerance thresholds for distortions, and human preferences가 존재한다. 그래서 distortion sensitive한 feature 뿐만이 아니라 content-ware한 feature들을 추출해서 model을 학습시켜야 한다. 
+
+ImageNet에서 pretrained된 CNN을 기반의  image classification model은 다른 content 정보를 분별할 수 있는 discriminatory power를 가지고있기때문에 ResNet과 같은 model들로 부터 extract한 deep feature들은 content-aware한것으로 판단된다. deep feature들은 또한 distortion-sensitive하기 때문에 it's reasonable to extract content-aware preceptual features from pre-trained image classification models.
+
+<br>
+
+#### 2. modeling temporal-memory effects
+
+**- long-term dependencies modeling:**
+
+먼저 feature integration aspect로, GRU network을 adopt해서 long-term dependencies를 modeling한다. GRU의 장점은 feature을 integrate하는 동시에 long-term dependencies를 학습할 수 있다는것이다. GRU를 활용해서 content-aware perceptual feature들을 integrate하고 frame-wise quality scores를 예측한다. 
+
+먼저 content-aware feature들은 high dimension이기때문에 GRU training에 바로 사용되기 어렵다. 그래서 dimension reduction을 먼저 수행 한 뒤에 GRU로 전송한다. FC layer를 통해 dimension reduction을 진행한다. 
+
+<br>
+
+**- subjectively-inspired temporal pooling:**
+
+참고한 연구 case에서는 hysteresis effect를 가만하기 위해 다음과 같이 define했다. [Kalpana Seshadrinathan and Alan C Bovik. 2011. Temporal hysteresis model of time varying subjective video quality. In ICASSP. IEEE, 1153–1156]
+
+Seshadrinathan의 temporal pooling은 NR-VQA model에는 그대로 적용될 수 없다 - 해당 model은 reliable frame quality score가 input으로 필요하다. 그리고 해당 model은 current quality element의 definition대로 sort-order-based이기때문에 differentiable하지 않다. 
+
+NR-VQA와 같은 문제에서는 overall subjective video quality만 access하기때문에 frame-level supervision없이 neural network학습이 진행되어야한다. 그래서 sort-order-based weight function을 differentiable weight function으로 대신한다.
+
+**memory quality element** = minimum of the quality scores over the previous frames (몇개의 previos frames를 상대로 minimum quality score를 찾을지는 hyperparameter tau로 지정가능한다.)
+
+**current quality element** = sort-order-based weighted average of the quality scores over the next frames. current quality element를 계산할때에 더 큰 weights를 worse quality frames에 배정한다. (drop in quality는 빠르게 인지하고 improvement in quality에는 느리게 반응하는 "temporal hysteresis"를 반영하기위해) 몇개의 next frame을 고려할지는 hyperparameter tau로 지정가능하다. 여기에서 설정되는 weight는 differentiable softmin function이다(a composition of the negative linear function and the softmax function)
+
+**overall quality score** = weighted average of the memory and current element. 먼저 subjective frame quality score q_t는 memory quality and current quality elements를 linearly combine해서 계산한다. 그리고 overall video quality Q는 temporal global average pooling(GAP)을 통해서 계산한다. 
+
+q_t를 계산할때에 hyperparameter gamma를 설정해서 memory와 current elements가 각각 contribute하는 정도를 제어할 수 있다. 
+
+<br>
+
+### model 구현 
+
+ResNet-50를 사용했고, dimension of feature vector은 4096이며, long-term dependencies FC layer가 4096을 128로 feature dimension을 축소시킨후, single layer GRU network와 연결된다. (hidden size=32) 그후 연결되는 subjective temporal pooling layer에서 hyperparameter tau는 12, gamma는 0.5로 설정되었다. 나머지 hyperparameter로는 L1 loss, Adam optimizer(learning rate=0.00001)와 훈련 시 batch size=16이 사용되었다.
+
+<br>
+
+### experiment
+
+database - 
+
+총 4개의 database가 사용됨 -  
+
+- LIVE Video Quality Challenge Database (LIVE-VQC) [42]
+
+- Konstanz Natural Video Database (KoNViD-1k) [12] 
+
+  1,200 videos of resolution 960 x 540
+
+  videos ar 8 sec long with 24/25/30fps
+
+  MOS range: 1.22 ~ 4.64
+
+- LIVE-Qualcomm Mobile In-Capture Video Quality Database (LIVE-Qualcomm) [10] 
+
+  208 videos of resolution 1920x1080 captured by 8 diff smart-phones and models 6 in-capture distortions (artifacts, color, exposure, focus, sharpness and stabilization)
+
+  videos are 15 sec long with 30fps
+
+  MOS range: 16.56 ~ 73.64
+
+- Camera Video Database (CVD2014) [31]
+
+  234 videos of resolution 640x480 / 1280x720 recorded by 78 diff cameras
+
+  videos are 10~25 sec long with 11~31fps (이정도면 wide range of time span and fps임.)
+
+  MOS range: -6.50 ~ 93.38
+
+<br>
+
+### 평가지표 (evaluation criteria)
+
+다음 4 가지 performance criteria를 사용 함.
+
+Spearman's rank-order correlation coefficien (SROCC)
+
+Kendall's rank-order correlation coefficient (KROCC)
+
+Pearson's linear correlation coefficient (PLCC)
+
+Root mean square error (RMSE)
+
+SROCC와 KROCC는 prediction monotonicity를 가르키고, PLCC와 RMSE는 prediction accuracy(정확도)를 표현한다. 더 좋은 VQA method일수록 더 높은 SROCC/KROCC/PLCC 값과 더 낮은 RMSE값을 가져야 함.
+
+video의 objective score(VAQ method로 예측한 quality score)가 다른 scale이 subjective score들과 다른 scale이라면, VQEG(Video Quality Experts Group)이 제안한 방식으로 PLCC와 RSME 값을 계산한다. four-parameter logistics function을 adopt해서 objective score o를 subjective score s로 mapping한다.
+
+<br>
+
 <br>
 
 ## A Dataset for No-Reference Video Quality Assessment of Videos in-the-Wild
@@ -103,6 +252,21 @@ Our study protocol also defines a reliable benchmark for the UGC-VQA problem, wh
 <br>
 
 **source code: https://github.com/vztu/VIDEVAL**
+
+<br>
+
+논문이 주요 구성:
+
+1. 가장 최신 large-scale UGC-VQA databases의 review 및 analysis
+2. Blind VQA model의 발전 과정 review
+3. 저자가 새롭게 제안하는 VIDEVAL model
+4. VIDEVAL의 성능과 결론
+
+<br>
+
+주요 public VQA databases (인위적으로 단순 distortion만 구현한 "legacy" database에서 부터 authentic한 distortion이 구현된 crowdsourced user-generated content(UGC) video dataset 까지)
+
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/evolution_of_popular_public_VQA_databases.PNG)
 
 <br>
 
