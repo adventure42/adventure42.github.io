@@ -14,11 +14,12 @@ tags: [VQA]                      # (custom) tags only for meta `property="articl
 
 <br>
 
+주요 papers:
+
 1. Quality Assessment of In-the-Wild Videos by Dingquan Li (2019)
 2. KonVid-150k: A Dataset for No-Reference Video Quality Assessment of Videos in-the-Wild by Franz Götz-Hahn (Mar 2021) 
 3. UGC-VQA: Benchmarking Blind Video Quality Assessment for User Generated Content by Zhengzhong Tu (Apr 2021)
 4. RAPIQUE: Rapid and Accurate Video Quality Prediction of User Generated Content by Zhengzhong Tu (Nov 2021) 
-5. A STRONG BASELINE FOR IMAGE AND VIDEO QUALITY ASSESSMENT by Shaoguo Wen (Nov 2021)
 6. Study on the Assessment of the Quality of  Experience of Streaming Video by Aleksandr Ivchenko (2020)
 
 <br>
@@ -233,7 +234,7 @@ Konstanz Natural Video Quality Database (KoNViD-1k) is the only publicly availab
 
 저자는 새로운 VQA 방식을 제안한다 - MLSP-VQA relying on multi-level spatially pooled deep features(MLSP) 이 방식은 기존 deep transfer learning 방식보다 큰 scale에서 훈련을 진행하는데에 더 특화되어있다.  저자가 제안하는 방식 중에 MLSP-VQA-FF가 KoNViD-1k dataset으로 평가했을때에 0.82수준의 가장 좋은 SRCC(Spearman rank-order correlation coefficient)를 보여주었다. 
 
-MLSP-VQA models trained on KonVid-150k sets the new state-of-the-art for cross-test performance on KoNViD-1k, LIVEVQC, and LIVE-Qualcomm with a 0.83, 0.75, and 0.64 SRCC, respectively.
+MLSP-VQA models trained on KonVid-150k sets the new state-of-the-art for cross-test performance on KoNViD-1k, LIVE-VQC, and LIVE-Qualcomm with a 0.83, 0.75, and 0.64 SRCC, respectively.
 
 <br>
 
@@ -267,6 +268,99 @@ Our study protocol also defines a reliable benchmark for the UGC-VQA problem, wh
 주요 public VQA databases (인위적으로 단순 distortion만 구현한 "legacy" database에서 부터 authentic한 distortion이 구현된 crowdsourced user-generated content(UGC) video dataset 까지)
 
 ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/evolution_of_popular_public_VQA_databases.PNG)
+
+**content diversity & MOS distribution** 
+
+content diversity를 characterize하기 위해, spatial activity, temporal activity, colorfulness에 관련된 low-level attribute을 사용했다 - brightness, contrast, colorfulness, sharpness, spatial information(SI), temporal information(TI) 이런 attribute들을 통해서 a larger visual space in which to plot and analyze content diversities of the three UGC-VQA databases 제공한다. 
+
+또한, 각 database의 content diversity는 이 attribute들을 기반으로 계산된 range와 uniformity로도 표현된다. 
+
+위 3개의 database의 주요 특성을 뽑아보면:
+
+- brightness vs. contrast
+
+  KoNViD-1K와 YouTube-UGC는 비슷한 coverage를 가지고있다. LIVE-VQC는 이 둘 사이의 중간정도이다.
+
+- colorfulness
+
+  KoNViD-1K가 더 높은 점수를 보여준다.
+
+- sharpness & SI
+
+  KoNViD-1K는 낮은 점수쪽에 집중되어있고, YouTube-UGC가 가장 넓게 퍼져있다
+
+- TI & deep feature graphed using tSNE
+
+  위 3개의 database로 부터 4,096 dimensional VGG19 deep feature들을 추출해서 t-SNE를 통해 2D subspace에 embed한 결과를 보면, KoNViD-1K와 YouTube-UGC가 LIVE-VQC대비 feature space에서 더 넓게 퍼져있어서 더 큰 content diversity difference를 가지고 있다.
+
+<br>
+
+### Blind VQA model의 발전 과정 review
+
+conventional feature-based BVQA models --> deep CNN-based BVQA models
+
+**conventional feature-based BVQA models**
+
+기존에는 blur, blockiness, ringing등과 같이 특정 distortion type을 assess하는 BVQA model들이 처음 등장했지만, learning-based model들로 발전했다. Learning-based model들은 feature selection과정과 machine learning regression을 통해 더 "versatile"하고 generalizable하게 되도록 개선되엇다.
+
+NSS(natural scene statistics)를 기반으로 개발된 모델들이 있는데, these models are based on algorithms that deploy perceptually relevant, low-level features based on simple, yet highly regular parametric bandpass models of good quality scene statistics.
+
+**주요 learning-based BQVA models:**
+
+**BRISQUE** [38, "“No-reference image quality assessment in the spatial domain" by A. Mittal (2012)]
+
+**GM-LOG** [57, "Blind image quality assessment using joint statistics of gradient magnitude and laplacian features" by Bovik (2014)]
+
+**HIGRADE** [40, "No-reference quality assessment of tone-mapped HDR pictures" by D. Kundu (2017)]
+
+**FRIQUEE** ["Perceptual quality prediction on authentically distorted images using a bag of features approach" by Bovik at UT Austin(2017)]
+
+**CORNIA** ["Unsupervised feature learning framework for no-reference image quality assessment" by P. Ye (2012)]
+
+**TLVQM**-Two level video quality model["Two-level approach for no-reference consumer video quality assessment" by J. Korhonen (2019)] <-- two-level feature extraction mechanism을 통해서 carefully-defined impairment와 distortion관련 feature들을 추출해낸다.
+
+<br>
+
+**deep CNN-based BVQA models**
+
+주요 구현 방식:
+
+- patch-wise training using global scores
+- pretraining deep nets on ImageNet, then fine-tuning
+
+주요 models:
+
+**DeepVQA** - learn spatio-temporal visual sensitivity maps using deep CNN and convolutional aggregation network [Deep Video quality assessor: from spatio temporal visual sensitivity to a convolutional neural aggregation network by Kim (2018)]
+
+**V-MEON** - uses multi-task CNN framework which jointly optimizes a 3D-CNN for feature extraction and a codec classifier using a fully-connected layers to predict video quality ["End-to-End Blind Quality Assessment of Compressed Videos Using Deep Neural Networks" by W. Liu (2018)]
+
+leveraging transfer learning to develop general-purpose BVQA framework based on weakly supervised learning and a resampling strategy ["Blind video quality assessment with weakly supervised learning and resampling strategy" by Y. Zhang]
+
+**VSFA** - apply pre-trained image classification CNN as a deep feature extractor and integrate the frame-wise deep features using a GRU and subjectively inspired temporal pooling layer [Quality Assessment of In-the-Wild Videos by Dingquan Li (2019)]
+
+<br>
+
+### VIDEVAL model
+
+feature selection과 machine learning algorithm을 통해 blind VQA를 구현하는 여러 주요 모델들의 feature들을 활용해서 하나의 통합적인 모델은 만든것이 이 저자가 만든 VIDEVAL 모델의 형태이다. 저자는 각 모델에서 추출한 feature들이 statistics of the signal in different perceptual domains를 표현한다고 생각하고, BVQA 모델들의 fusion이 subjective assessment에 대한 더 좋은 consistency와 다른 여러 database에도 더 reliable한 performance를 만들어 줄 것이라고 판단했다. 
+
+<br>
+
+**feature extraction**
+
+top performing BVQA model들의 feature들을 모두 모으면 다음과 같이 763개의 feature들이 확보된다.
+
+![features_all](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/BVQA_models_features_all.PNG)
+
+<br>
+
+**feature selection** 
+
+- model based feature selector - machine learning algorithm을 통해 중요한 feature을 선별한다.
+
+  먼저 random forest model을 통해 regression model을 fit해서 permutation importance 순서로 significance가 가장 낮은 feature들을 제거했다. 그 다음 linear kernel로 SVM을 훈련해서 feature들의 순위를 매겼다. 
+
+- greedy search approach를 통해서 good feature subset을 구할 수도 있다. employed Sequential Forward Floating Selection (SFFS), and used SVM as the target regressor with its corresponding mean squared error between the predictions and MOS as the cost function. The mean squared error is calculated by cross-validation measures of predictive accuracy to avoid overfitting.
 
 <br>
 
