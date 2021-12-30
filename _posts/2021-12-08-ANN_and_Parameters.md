@@ -4,8 +4,6 @@ title: "ANN and parameters"                   # (require) a string title
 date: 2021-12-08       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [test]                      # (custom) tags only for meta `property="article:tag"`
-
-
 ---
 
 
@@ -86,7 +84,7 @@ Hidden layer들이 input data의 feature를 담고있다. 예를 들어서 MNIST
 
 ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multilayer-perceptron_matrix.PNG)
 
-여기서 활성화 함수는 neural network의 output을 원하는 scale로 표현하도록 조정해주는 역할을 한다.  계단(step) 함수 또는 sigmoid 함수가 사용되는데, 계단 함수와 같이 0,1 으로 구분되는 binary가 아니라 0과 1 사이에서 어떤 값이든 가능하다. sigmoid는 small changes in weights and bias로 output에 small changes를 만들 수 있는 function이다.  
+여기서 활성화 함수는 neural network의 output을 원하는 scale로 표현하도록 조정해주는 역할을 한다.  계단(step) 함수 또는 sigmoid 함수가 사용되는데, sigmoid는 계단 함수와 같이 0,1 으로 구분되는 binary가 아니라 0과 1 사이에서 어떤 값이든 가능하다. sigmoid는 small changes in weights and bias로 output에 small changes를 만들 수 있는 function이다.  
 
 sigmoid function:
 
@@ -117,7 +115,7 @@ Input dataset에 두개의 features가 주어졌을 때, (x_0 =1)
 
 <img src="https://render.githubusercontent.com/render/math?math=h_{\theta}(x) = {\theta}_0%2B{\theta}_1x_1%2B{\theta}_2x_2">
 
-input x와 output y를 mapping하는 linear 함수이고 여기에서 θ가 weights 또는 parameter를 의미한다. (위와 같은 공식에서 θi가 space of linear functions를 parameterize해서 x와 y의 mapping을 수행하기때문에 θ를 "parameter"라고 불린다.)
+input x와 output y를 mapping하는 linear 함수이고 여기에서 θ가 weights 또는 parameter를 의미한다. (위와 같은 공식에서 θi가 space of linear functions를 parameterize해서 x와 y의 mapping을 수행하기때문에 θ를 "parameter"라고 부른다.)
 
 
 
@@ -136,11 +134,11 @@ gradient descent algorithm은 우리가 원하는 θ를 찾는 방법 중 하나
 
 ![gradient_update](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/gradient_update.PNG)
 
-(여기에서 :=는 θ에 계산된 새로운 값을 assign하여 update한다는 것을 의미하고 α는 learning rate을 의미한다.) θ는 J가 가장 가파르게 감소하는 방향으로 update된다. 위 공식에서 partial derivative term을 x,y로 표현하면 다음과 같이 LMS update rule을 찾을 수 있다.
+(여기에서 :=는 θ에 계산된 새로운 값을 assign하여 update한다는 것을 의미하고 α는 learning rate을 의미한다.) θ는 J가 가장 가파르게 감소하는 방향으로 update된다. 위 공식에서 cost function J의 partial derivative를 input x와 output y로 표현하면 다음과 같은 공식이 확인된다. 이런 방식을 LMS("least mean squares") update rule이라고 부른다.
 
-<img src="https://render.githubusercontent.com/render/math?math={\theta}_j := {\theta}_j + {\alpha}(y^{(i)}-h_{\theta}(x^{(i)}))x_j^{(i)}">
+<img src="https://render.githubusercontent.com/render/math?math={\theta}_j := {\theta}_j %2B {\alpha}(y^{(i)}-h_{\theta}(x^{(i)}))x_j^{(i)}">
 
-note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비례한다.
+parameter θ가 update되는 변화의 크기는 the error term (output y - hypothesis h)와 비례한다.
 
 이렇게 θ를 반복적으로 update하여 최적의 값을 찾는 방법을 ''경사하강법''이라고 한다.
 
@@ -148,7 +146,9 @@ note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비�
 
 ## 경사하강법 Gradient descent 
 
-경사하강법은 어떤 가중치에 얼만큼의 변화를 주어야지 손실 함수 C(θ)를 최소화하는 최적의 θ를 찾아서 가장 정확한 output을 예측할 수 있는지 알려준다. 
+위 공식에서 설명한 것과 같이 경사하강법은 가중치(parameter)에 얼만큼의 변화를 주어야지 손실 함수 C(θ)를 (C for cost) 최소화할 수 있는지 알려준다. 
+
+다음 그림을 보면  가중치와 이 가중치들의 gradient cost function이 vector로 표현되어 있다. gradient of cost function은 어떤 방향으로 각각의 가중치 값이을 얼마나 움직여야 하는지를 알려준다. (w_0는 증가, w_1는 조금만 증가, w_2는 많이 감소, ....etc)
 
 
 
@@ -156,7 +156,7 @@ note: the update의 크기는 the error term (y-h) 즉, y와 h의 차이와 비�
 
 
 
-Gradient descent는 다음 그림과 같이 반복적인 계산을 통해 (미분 가능한) 해당 함수의 가장 낮은 위치를 찾아가는 것이다. 
+Gradient descent는 다음 그림과 같이 반복적인 계산을 통해 (미분 가능한) 해당 함수의 가장 낮은 위치를 찾아간다. 즉, 가장 정확한 output을 예측할 수 있는 최적의 θ 또는 parameter를 찾아주는것이다. 
 
 
 
@@ -164,7 +164,7 @@ Gradient descent는 다음 그림과 같이 반복적인 계산을 통해 (미�
 
 
 
-Gradient descent algorithm은 stochastic gradient descent(or incremental gradient descent)와 batch gradient descent로 두가지 방법이 존재한다. 
+Gradient descent를 구현하는 방식을 간단하게 몇가지 얘기해보자면, gradient descent algorithm은 stochastic gradient descent(or incremental gradient descent)와 batch gradient descent로 두가지 방법이 존재한다. 
 
 Batch gradient descent는 매번 update를 진행할때에 entire training dataset를 모두 훌터보기 때문에 특히 training dataset이 크다면 속도와 cost가 나쁜편이다.
 
