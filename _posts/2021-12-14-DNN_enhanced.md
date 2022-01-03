@@ -2,8 +2,8 @@
 layout: post                          # (require) default post layout
 title: "DNN enhanced"                   # (require) a string title
 date: 2021-12-14       # (require) a post date
-categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
-tags: [test]                      # (custom) tags only for meta `property="article:tag"`
+categories: [deeplearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
+tags: [deeplearning]                      # (custom) tags only for meta `property="article:tag"`
 
 ---
 <br>
@@ -83,7 +83,7 @@ fan_avg = (fan_in + fan_out)/2
 
 <br>
 
-### 활성화 함수 
+## 활성화 함수 
 
 적절한 활성화 함수를 선택해서 실행 속도 향상, 과대적합 억제, 등 network의 훈련과정과 성능을 개선할 수 있는 여러가지 효과를 만들어 낼 수 있다.
 
@@ -199,8 +199,7 @@ network가 self-normalize되지 못하는 구조 --> SELU보다 ELU(SELU가 z=0�
 
 <br>
 
-
-### Batch normalization (배치 정규화)
+## Batch normalization (배치 정규화)
 
 gradient 손실과 폭주를 방지하기위해 개발한 기법임. ELU와 함께 He initialization을 사용하면 훈련 초기 단계에서 gradient 손실/폭주 문제를 억제할 수 있지만, 훈련하는동안 이런 문제가 아얘 발생하지 않는것이 보장되지는 못한다. 최근 Hongyi Zhang 등의 최근 논문에는 batch normalization 없이 가중치 초기화 기법만으로 심층 신경만을 훈련시켜서 매우 복잡한 이미지 분류 작업의 최고 성능을 확보했다(2019). 그러나 아직 이를 뒷받침할 추가 논문을 통해 타당성을 확인 해야함.
 
@@ -266,7 +265,7 @@ BatchNormalization class에서 조정할 수 있는 hyperparameter:
 
 <br>
 
-#### gradient clipping
+### gradient clipping
 
 gradient 폭주문제를 완화시키는 방식. 역전파가 진행될때 일정 임계값을 넘지못하게 gradient을 잘라내는것이다.
 
@@ -280,16 +279,15 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 <br>
 <br>
 
-
-### 고속 optimizer
+## 고속 optimizer
 
 여기에서 논의하는 최적화 기법은 1차 편미분(Jacobian)에만 의존한다. 최적화 이론에는 2차 편미분(Hessian)을 기반으로한 뛰어난 algorithm들이 많다. BUT! Hessian algorithm들은 심층 신경망에 적용하기 어렵다. 2차 편미분 알고리즘을 사용하게되면 하나의 출력마다 n개의 1차 편미분이 아니라 n^2개의 2차 편미분을 계산해야하기 때문.(where n=parameter 개수). 심층 신경망은 보통 수만개의 parameter를 가지므로 2차 편미분 최적화 알고리즘은 memory 용량을 넘어서는 경우가 많다.
 
 <br>
 
-#### momentum optimization(모맨텀 최적화)
+### momentum optimization(모맨텀 최적화)
 
-   경사하강법(SGD)에서는 이전 gradient가 얼마였는지 고려하지않는다.(그래서 gradient가 아주 작으면 매우 느려지는 문제 발생). Momentum optimization에서는 gradient가 얼마였는지는 매우 중요하게 고려한다. 
+경사하강법(SGD)에서는 이전 gradient가 얼마였는지 고려하지않는다.(그래서 gradient가 아주 작으면 매우 느려지는 문제 발생). Momentum optimization에서는 gradient가 얼마였는지는 매우 중요하게 고려한다. 
 
    모멘텀 알고리즘:
 
@@ -309,11 +307,11 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9)
    ```
 
-<br>   
+<br>
 
-#### Nesterov accelerated gradient (NAG)
+### Nesterov accelerated gradient (NAG)
 
-   기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
+기본 momentum 방식에서 변종된 기법이다. 기본 momentum기법보다 더 빠르다. 현재 위치가 기존 gradient가 아니라 momentum 방향으로 조금 더 앞선 theta = theta + beta*m 에서 비용함수의 gradient를 계산한다.
 
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}m-{\eta}\grad_{\theta}J({\theta%2B {\beta}m})">
 
@@ -327,9 +325,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    optimizer = keras.optimizers.SGD(lr=0.001, momentun=0.9, nesterov=True)
    ```
 
-<br>   
+<br>
 
-#### AdaGrad
+### AdaGrad
 
    기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다.
 
@@ -349,9 +347,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
 <br>
 
-#### RMSProp
+### RMSProp
 
-   AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
+AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
 
    <img src="https://render.githubusercontent.com/render/math?math=1.{\space}s\leftarrow {\beta}s%2B  (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
 
@@ -367,7 +365,7 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
 <br>
 
-#### Adam
+### Adam
 
    Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
 
@@ -395,30 +393,32 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
    Adam에서도 RMSProp과 AdaGrad에서 처럼 적응적 학습률/최적화 알고리즘이기때문에 학습률 hyperparameter (eta)를 튜닝할 필요가 적다.
 
-<br>   
+<br>
 
-#### Nadam
+### Nadam
 
-   Nadam (= Adaptive momtum optimizer + Nesterov 기법)
+Nadam (= Adaptive momtum optimizer + Nesterov 기법)
 
-   Adam보다 조금 더 빠르게 수렴한다.
+Adam보다 조금 더 빠르게 수렴한다.
 
-<br>   
+<br>
 
-#### AdaMax
+### AdaMax
 
-   Adam은 시간에 따라 감쇠된 gradient의 L2 norm으로 parameter update scale을 낮춘다. Adamax는 L2 norm에서 L_inf norm으로 바꾸는 것이다. (L_inf는 vector max norm을 계산하는것과 같음.) theta를 갱신할때에 s에 비례하여 gradient update의 scale을 낮춘다. 시간에 따라 감쇠된 gradient의 최대값이다. 실전에서는 AdaMax가 Adam보다 더 안정적이다. 데이터셋에따라 다르기때문에 Adam이 잘 동작하지 않는다면, AdaMax를 시도해볼 수 있다.
+Adam은 시간에 따라 감쇠된 gradient의 L2 norm으로 parameter update scale을 낮춘다. Adamax는 L2 norm에서 L_inf norm으로 바꾸는 것이다. (L_inf는 vector max norm을 계산하는것과 같음.) theta를 갱신할때에 s에 비례하여 gradient update의 scale을 낮춘다. 시간에 따라 감쇠된 gradient의 최대값이다. 실전에서는 AdaMax가 Adam보다 더 안정적이다. 데이터셋에따라 다르기때문에 Adam이 잘 동작하지 않는다면, AdaMax를 시도해볼 수 있다.
 
 <br>
 <br>
 
-### 회소 모델 훈련 (sparse model trianing)
+## 회소 모델 훈련 (sparse model trianing)
 
 모든 최적화 알고리즘은 대부분의 parameter가 0이 아닌 dense 모델을 만든다. 만약 엄청 빠르게 실행할 모델이 필요하거나 메모리를 적게 차지하는 모델이 필요하면 dense(밀집) model이 아닌, sparse(희소) model을 만들어서 훈련을 진행할 수 있다.
 
 <br>
 
-### 학습률 scheduling
+<br>
+
+## 학습률 scheduling
 
 한가지 전략은 - 큰 학습률로 시작하고 학습 속도가 느려질때 학습률을 낮추면 최적의 고정 학습률보다 좋은 솔루션을 더 빨리 발견할 수 있다. 훈련하는 동안 학습률을 어떻게 감소시킬지 - 감소시키는 전략에는 여러 방법이 있다. 이런 다양한 전략을 학습률 scheduling이라고 한다.
 
@@ -432,7 +432,9 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
 <br>
 
-### 규제(regularization)
+<br>
+
+## 규제(regularization)
 
 dataset에서 feature들이 지나치게 많거나 training대비 testing 성능이 부족한경우, model의 generalization 부족하여 overfitting 이슈가 발생할 수 있다. 즉, 주어진 input에만 상세하게 맞춰진 model이 생성되어서 새로운 data가 주어졌을때에 정확도가 떨어지는 prediction output을 만들어내는 것이다. 이를 방지하기위해 cost function의 최소값을 위한 parameter를 계산할때에 규제를 적용한다. 
 
@@ -490,9 +492,10 @@ dataset에서 feature들이 지나치게 많거나 training대비 testing 성능
   불안정한 gradient를 완화하는데에 활용한다. 매개변수 bias constraints를 조정하여 편향을 조정한다.
 
 <br>
+
 <br>
 
-## 실용적 guideline
+# 실용적 guideline
 
 모든 case에 맞는 명확한 기준은 없지만, hyperparameter tuning을 크게 하지 않고 대부분의 경우에 잘 맞는 조건은 다음과 같다:
 

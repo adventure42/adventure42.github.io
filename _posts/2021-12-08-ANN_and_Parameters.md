@@ -2,8 +2,8 @@
 layout: post                          # (require) default post layout
 title: "ANN and parameters"                   # (require) a string title
 date: 2021-12-08       # (require) a post date
-categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
-tags: [test]                      # (custom) tags only for meta `property="article:tag"`
+categories: [deeplearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
+tags: [deeplearning]                      # (custom) tags only for meta `property="article:tag"`
 ---
 
 
@@ -211,13 +211,7 @@ note: hidden layer의 연결 가중치를 random하게 초기화 하는것이 �
 
 반드시 경사 하강법을 통해 반복적으로 parameter θ를 update하는 방식을 사용해야하는 것은 아니다. Parameter optimization을 위해 iteration없이 analytical 방식인 normal equation을 사용할 수 있다. Normal equation을 통한 optimization은 matrix를 사용하기때문에 multiple linear regression의 parameter를 한번에 계산해준다.
 
-Normal equation 방식에서는 우리에게 주어진 input, output data set을 matrix형태로 다음과 같이 표현하고, 
-
-X (input feature 값들)
-
-y (output 값들)
-
-Xtheta - y
+Normal equation 방식에서는 우리에게 주어진 input, output data set을 matrix형태로 다룬다.
 
 matrix와 linear algebra를 사용해서 cost function J를 minimize하는 θ를 찾는다. 특히 소수의 features를 가진 dataset을 기반으로 model을 훈련하는 과정에서는 normal equation을 사용해서 더 빠르게 최적의 parameter θ를 찾을 수 있다.
 
@@ -241,14 +235,14 @@ Normal equations are equations obtained by setting equal to zero the partial der
 
 ### Gradient descent vs. Normal equation
 
-|      | Gradient  Descent                                           | Normal Equation                                              |
-| ---- | ----------------------------------------------------------- | ------------------------------------------------------------ |
-|      | In gradient descenet , we need to choose learning  rate.    | In normal equation , no need to choose learning rate.        |
-|      | It is an iterative algorithm.                               | It is analytical approach.                                   |
-|      | Gradient descent works well with large number of  features. | Normal equation works well with small number of  features.   |
-|      | Feature scaling can be used.                                | No need for feature scaling.                                 |
-|      | No need to handle non-invertibility case.                   | If (X) is non-invertible , regularization can    be used to handle this. |
-|      | Algorithm complexity is O(k). n is the number of features.  | Algorithm complexity is O(). n is the number of features.    |
+|      | Gradient  Descent                                            | Normal Equation                                              |
+| ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|      | In gradient descenet , we need to choose learning  rate.     | In normal equation , no need to choose learning rate.        |
+|      | It is an iterative algorithm.                                | It is analytical approach.                                   |
+|      | Gradient descent works well with large number of  features.  | Normal equation works well with small number of  features.   |
+|      | Feature scaling can be used.                                 | No need for feature scaling.                                 |
+|      | No need to handle non-invertibility case.                    | If (X^T X) is non-invertible , regularization can    be used to handle this. |
+|      | Algorithm complexity is O(kn^2). n is the number of features. | Algorithm complexity is O(n^3). n is the number of features. |
 
 <br>
 
@@ -305,7 +299,7 @@ x_i= single input instance (training set에서 하나의 observation)
 
 y_i= 해당 instance의 output (0 or 1)
 
-“p(y_i |x_i ; θ)” = ith x가 주어졌을때, θ로 parameterized 된 i번째 y의 distribution 
+“p(y_i / x_i ; θ)” = ith x가 주어졌을때, θ로 parameterized 된 i번째 y의 distribution 
 
 odds = p / (1-p) 즉, probability of success divided by failure = P(success)/P(failure))
 
@@ -389,7 +383,7 @@ cost function의 partial derivative (with respect to parameter)를 활용하여 
 
 <br>
 
-Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽게 찾을 있다.
+Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽게 찾을 수 있다.
 
 <br>
 
@@ -398,8 +392,8 @@ Cross entropy의 경우, convex graph이기때문에 gobal minimum을 보다 쉽
 # Reference
 
 1.  Geron, Aurelien. Hands on Machine Learning. O'Reilly, 2019 
-2. deep neural network에서 network & parameter들의 역할 및 operation : https://www.youtube.com/watch?v=aircAruvnKk
-3. gradient descent explained : https://www.youtube.com/watch?v=IHZwWFHWa-w
-4. backpropagation explained with graphics : https://www.youtube.com/watch?v=Ilg3gGewQ5U
-5. normal equation in linear regression : https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
-5. logistic regression : https://towardsdatascience.com/understand-implement-logistic-regression-in-python-c1e1a329f460
+2. deep neural network에서 network & parameter들의 역할 및 operation : [https://www.youtube.com/watch?v=aircAruvnKk](https://www.youtube.com/watch?v=aircAruvnKk)
+3. gradient descent explained : [https://www.youtube.com/watch?v=IHZwWFHWa-w](https://www.youtube.com/watch?v=IHZwWFHWa-w)
+4. backpropagation explained with graphics : [https://www.youtube.com/watch?v=Ilg3gGewQ5U](https://www.youtube.com/watch?v=Ilg3gGewQ5U)
+5. normal equation in linear regression : [https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/](https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/)
+5. logistic regression : [https://towardsdatascience.com/understand-implement-logistic-regression-in-python-c1e1a329f460](https://towardsdatascience.com/understand-implement-logistic-regression-in-python-c1e1a329f460)

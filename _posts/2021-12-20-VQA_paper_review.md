@@ -366,6 +366,24 @@ top performing BVQA model들의 feature들을 모두 모으면 다음과 같이 
 
 <br>
 
+## RAPIQUE: Rapid and Accurate Video Quality Prediction of User Generated Content 
+
+by Zhengzhong Tu (Nov 2021) 
+
+implemented in MATLAB (source code available in .mat extension) **source code: https://github.com/vztu/RAPIQUE**
+
+새롭게 개발한 efficient BVQA 모델을 제안한다. (written in MATLAB)
+
+다음 그림과 같이 two branch framework 형태의 구조로 quality-aware low-level NSS features와 high-level semantic-aware CNN features를 통합했다. 
+
+NSS features operate on higher-resolution spatial and temporal bandpass feature maps, while the CNN feature extractor is applied on a resized low-resolution frames for practical considerations. Then sparse frame sampling strategy를 사용해서 runtime을 더 가속화할 수 있도록 features를 extract했다. 
+
+![RAPIQUE_architecture](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/RAPIQUE_architecture.PNG)
+
+<br>
+
+<br>
+
 ## Study on the Assessment of the Quality of  Experience of Streaming Video
 
 Zhengfang Duanmu group의 연구 결과에 더해서 experiment를 진행 함.
