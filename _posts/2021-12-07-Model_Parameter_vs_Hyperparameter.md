@@ -49,9 +49,11 @@ Model의 hyperparameter는 model의 **configuration역할**을 수행하는 **�
 
 Parameter와 hyperparameter를 model parameter로 통합하여 명칭하는 경우도 있다. 그러나 사용자가 manually 설정한 model parameter이라면, 해당 parameter는 hyperparameter로 구분할 수 있다. hyperparameter는 parameter와는 다르게 analytical formula를 통해서 적절한 값을 계산하기가 어려운 variable이다.  
 
-
-
 Hyperparameter의 예시로는: ANN(Artificial Neural Network)의 learning rate, SVM(Support Vector Machine)의 C와 sigma, KNN(k-Nearest Neighbor)의 k, 등이 있다.
+
+<br>
+
+hyper parameters are attributes or properties that dictate the entire training process and need to be predefined. (predefined, because they cannot be directly learned from the training process.) hyperparameter가 설정하는 것 - model complexity, model's capacity to learn, and rate of convergence for model parameters. 그래서 hyperparameter optimization으로 better efficiency와 results를 얻을 수 있다.
 
 <br>
 <br>
@@ -147,11 +149,19 @@ official : [https://keras.io/api/keras_tuner/tuners/hyperband/](https://keras.io
 매우 낮은 학습률에서 시작해서 점진적으로 매우 큰 학습률까지 수백번 반복하여 모델을 훈련하는것이다. 
 e.g., 10^-5부터 시작해서 10까지 exp(log(10^6)/500)를 500번 반복
 
+**정의** learning rate = the speed at which the network learns (or how fast the wrights of the nework) converge. the weights
+
+stochastic gradient descent를 통한 back propagation으로 objective function의 최적점을 찾아갈때에 한발씩 움직이는 step size를 의미한다. 
+
+"Learning rate will tell us how much amount of weights we have to change in backpropagation, so that our model predicts better."
+
+learning rate이 너무 크면, training will diverse and the model can perform worse. optimal rate으로 설정해야 model can perform better.
+
 <br>     
 
 #### optimizer
 
-SGD보다 더 좋은 optimizer
+SGD보다 더 좋은 optimizer? like... Nesterov Accelerated Gradient, Adagrad, AdaDelta, Adam, 
 
 <br>    
 
@@ -161,7 +171,23 @@ GPU RAM에 맞는 가장 큰 batch 크기를 권장한다. 단, 주의할 점은
 
 한가지 전략은 학습률 예열을 사용해 큰 배치 크기를 시도해보고 만약 훈련이 불안정하거나 최종 성능이 만족스럽지 못하면 작은 batch size를 사용해보는것이다.
 
-<br>     
+batch size - batch size는 network의 weights를 update하기 전에 몇개의 samples를 network에게 보여주고 학습하게 할지를 제어하는 역할을 한다. (batch size used when fitting your model controls how many predictions you must make at a time.) 
+
+By providing, a number of samples, a batch at a time, we can introduce a set of samples to the model so the model can distinguish the common features by looking at all the introduced samples of the batch.
+
+training을 통해 model parameter를 update할때에 몇개의 sample들을 사용할 지를 batch size로 설정한다. CNN model의 경우 단 하나의 이미지로도 update될 수 있겠지만 noise와 loss가 매우 클것이다. model network을 대신 batch of images로 training시키면 error gradient를 더 정확하게 estimate할 수 있을 것 이다.
+
+**why use power of 2 for batch sizes?**
+
+This is a problem of alignment of the virtual processors (VP) onto the physical processors (PP) of the GPU. Since the number of PP is often a power of 2, using a number of VP different from a power of 2 leads to poor performance.
+
+CPU and GPU memory architecture usually organizes the memory in power of 2. (check page size in your CPU by getconf PAGESIZE in Linux) For efficiency reason it is good idea to have mini-batch sizes power of 2, as **they will be aligned to page boundary**. This can speed up the fetch of data to memory.
+
+refer to: https://datascience.stackexchange.com/questions/20179/what-is-the-advantage-of-keeping-batch-size-a-power-of-2
+
+<br>
+
+​     
 
 #### activation function
 
@@ -174,9 +200,14 @@ GPU RAM에 맞는 가장 큰 batch 크기를 권장한다. 단, 주의할 점은
 
 대부분의 경우 훈련 반복횟수는 튜닝할 필요가 없다. 대신 조기 종료를 사용한다.
 
+<br>
+
+그 외에 **kernel size, filter수, weight initialization ,regularization, 등**이 있다. to be continued...
+
 <br><br>  
 
 # References
 
 1. comparison between parameters vs. hyperparamenter: [https://machinelearningmastery.com/difference-between-a-parameter-and-a-hyperparameter/](https://machinelearningmastery.com/difference-between-a-parameter-and-a-hyperparameter/)
+1. Various Optimization Algorithms for Training Neural Network by Sanket Doshi, from https://towardsdatascience.com/optimizers-for-training-neural-network-59450d71caf6
 1. Geron, Aurelien. Hands on Machine Learning. O'Reilly, 2019 

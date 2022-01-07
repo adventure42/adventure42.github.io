@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Transfer learning"                   # (require) a string title
+title: "Transfer learning and optimization"                   # (require) a string title
 date: 2021-12-29       # (require) a post date
 categories: [deeplearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [CNN]                      # (custom) tags only for meta `property="article:tag"`
@@ -8,7 +8,7 @@ tags: [CNN]                      # (custom) tags only for meta `property="articl
 
 
 
-# Transfer learning
+# Transfer learning & Optimization
 
 **transfer learning vs. retraining**
 

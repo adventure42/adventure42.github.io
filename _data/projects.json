@@ -1,7 +1,15 @@
 [
 	{
-		"slug": "Deep Learning",
+		"slug": "Machine Learning - Andrew Ng",
 		"name": "Favorite video on deep learning",
+		"image": "neuralnetwork.png",
+		"url": "https://www.youtube.com/playlist?list=PLLssT5z_DsK-h9vYZkQkYNWcItqhlRJLN",
+		"date": "Feb 9, 2017",
+		"tags": ["machinelearning"]
+	},
+	{
+		"slug": "Deep Learning",
+		"name": "Favorite video on deep learning by 3Blue1brown",
 		"image": "3blue1brown.jpeg",
 		"url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi",
 		"date": "Aug 1, 2018",
@@ -13,5 +21,19 @@
 		"url": "https://www.youtube.com/playlist?list=PLlMkM4tgfjnLSOjrEJN31gZATbcj_MpUm",
 		"date": "Sep 2, 2018",
 		"tags": ["deeplearning"]
+	},
+	{
+		"name": "밑바닥부터 시작하는 딥러닝",
+		"image": "multilayer_perceptron.jpg",
+		"url": "https://www.youtube.com/channel/UC84GVMTZO0jmiRmJtnq2CTw",
+		"date": "Jul 7, 2020",
+		"tags": ["deeplearning"]
+	},
+	{
+		"name": "Hands on Machine Learning 2",
+		"image": "handsonML.PNG",
+		"url": "https://www.youtube.com/playlist?list=PLJN246lAkhQjX3LOdLVnfdFaCbGouEBeb",
+		"date": "Sep 26, 2020",
+		"tags": ["machinelearning"]
 	}
 ]
