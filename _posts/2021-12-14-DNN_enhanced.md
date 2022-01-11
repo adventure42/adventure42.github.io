@@ -281,7 +281,59 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
 ## 고속 optimizer
 
-여기에서 논의하는 최적화 기법은 1차 편미분(Jacobian)에만 의존한다. 최적화 이론에는 2차 편미분(Hessian)을 기반으로한 뛰어난 algorithm들이 많다. BUT! Hessian algorithm들은 심층 신경망에 적용하기 어렵다. 2차 편미분 알고리즘을 사용하게되면 하나의 출력마다 n개의 1차 편미분이 아니라 n^2개의 2차 편미분을 계산해야하기 때문.(where n=parameter 개수). 심층 신경망은 보통 수만개의 parameter를 가지므로 2차 편미분 최적화 알고리즘은 memory 용량을 넘어서는 경우가 많다.
+여기에서 논의하는 최적화 기법은 1차 편미분(Jacobian)에만 의존한다. 최적화 이론에는 2차 편미분(Hessian)을 기반으로한 뛰어난 algorithm들이 많다. BUT! Hessian algorithm들은 심층 신경망에 적용하기 어렵다. 2차 편미분 알고리즘을 사용하게되면, n=parameter 개수일때, 하나의 출력마다 n개의 1차 편미분이 아니라 n^2개의 2차 편미분을 계산해야하기 때문이다. 심층 신경망은 보통 수만개의 parameter를 가지므로 2차 편미분 최적화 알고리즘은 memory 용량을 넘어서는 경우가 많다.
+
+<br>
+
+1차 편미분이 사용되는 SGD 대신 최적화를 위해 주로 사용되는 optimizer는 RMSProp과 Adam이다. 
+
+While SGD makes weight and bias updates independently, RMSprop makes its updates based upon the root mean square of the differentials of weights and biases, allowing a straighter trajectory towards the optimal loss value. The Adam optimizer works similar to RMSprop but includes a moving average of the second order moment of gradients for an adaptive learning rate.
+
+### RMSProp
+
+RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
+
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}s\leftarrow {\beta}s%2B  (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
+
+   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
+
+   code 구현:
+
+   ```Python
+optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9)
+   ```
+
+   아주 간단한 문제를 제외하고는 RMSProp가 AdaGrad보다 성능이 더 좋다.
+
+<br>
+
+### Adam
+
+   Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
+
+   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}_1{m}-(1-{\beta}_1)\grad_{\theta}J({\theta})">
+   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}s\leftarrow {\beta}_2s%2B  (1-{\beta}_2)\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
+   <img src="https://render.githubusercontent.com/render/math?math=3.{\space}\hat{m}\leftarrow\frac{m}{1-{\beta}_1^t}">
+   <img src="https://render.githubusercontent.com/render/math?math=4.{\space}\hat{s}\leftarrow\frac{s}{1-{\beta}_2^t}">
+   <img src="https://render.githubusercontent.com/render/math?math=5.{\space}{\theta}\leftarrow{\theta}%2B {\eta}\hat{m}\div\sqrt{\hat{s}%2B {\epsilon}}">
+
+   t는 (1부터 시작하는) 반복횟수를 의미한다.
+
+   beta_1는 momentum 감쇠 hyperparameter이고
+
+   beta_2는 scale감회 hyperparamter이다.
+
+   3,4번은 m과 s가 0으로 초기화되기때문에, 훈련 초기에 0으로 쏠리게되어있어서 이 둘의 값을 증폭시키는 역할을 한다.
+
+   1,2,5번은 RMSProp과 momentum 최적화 방식과 비슷함. 단, 1에서 지수 감소의 평균을 구한다. 
+
+   code 구현:
+
+   ```Python
+optimizer = keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
+   ```
+
+   Adam에서도 RMSProp과 AdaGrad에서 처럼 적응적 학습률/최적화 알고리즘이기때문에 학습률 hyperparameter (eta)를 튜닝할 필요가 적다.
 
 <br>
 
@@ -329,7 +381,7 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
 
 ### AdaGrad
 
-   기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다.
+기본 SGD는 가장 가파른 경사를 따라 빠르게 내려가기 시작한다. AdaGrad는 이와 다르게 좀 더 정확한 방향으로 이동한다. 가장 가파른 차원을 따라 gradient vector의 scale을 감소시켜서 전역 최적점 쪽으로 좀 더 정확한 방향을 잡는다. 단, AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다는 점을 주의해야한다.
 
    <img src="https://render.githubusercontent.com/render/math?math=1. {\space}s\leftarrow s%2B  \grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
 
@@ -344,54 +396,6 @@ e.g. if gradient vector = [0.9, 100.0], then clipvalue=1.0 매개변수로 optim
    AdaGrad는 학습률을 감소시키지만 경사가 완만한 차원보다 가파른 차원에 대해 더 빠르게 감소된다. (이를 adaptive learning rate이라고 한다.) 전역 최적점 방향으로 더 곧장 가도록 갱신되는데에 도움이 된다. 그래서 AdaGrad에서는 학습률을 덜 tuning해도 된다. 
 
    AdaGrad는 신경망을 훈련할때에 너무 일찍 멈춰버리는 경향이 있다. 학습률이 너무 감소되어서 전역 최적점에 도착하기전에 알고리즘이 멈춰버린다. But linear regression과 같이 간단한 작업에는 효과적일 수 있다. keras에 포함된 optimizer이지만, 실제 심층 신경망을 훈련할때에는 사용하지 않는다. 
-
-<br>
-
-### RMSProp
-
-AdaGrad가 너무 빨리 느려져서 최적점에 수렴하지 못하는 위험이 있다. RMSProp은 훈련 시작부터 모든 gradient가 아닌, 가장 최근 반복에서 비롯된 graidnet만 누적한다. 그래서 알고리즘의 첫번째 단계에세 지수 감소를 사용한다.
-
-   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}s\leftarrow {\beta}s%2B  (1-{\beta})\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
-
-   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}{\theta}\leftarrow{\theta}-{\eta}\grad_{\theta}J({\theta})\div\sqrt{s%2B {\epsilon}}">   
-
-   code 구현:
-
-   ```Python
-   optimizer = keras.optimizers.RMSprop(lr=0.001, rho=0.9)
-   ```
-
-   아주 간단한 문제를 제외하고는 RMSProp가 AdaGrad보다 성능이 더 좋다.
-
-<br>
-
-### Adam
-
-   Adam = (적응적 모멘텀 최적화) Adaptive momtum optimizer (=momentum최적화 +RMSProp)
-
-   <img src="https://render.githubusercontent.com/render/math?math=1.{\space}m \leftarrow {\beta}_1{m}-(1-{\beta}_1)\grad_{\theta}J({\theta})">
-   <img src="https://render.githubusercontent.com/render/math?math=2.{\space}s\leftarrow {\beta}_2s%2B  (1-{\beta}_2)\grad_{\theta}J({\theta})\cross\grad_{\theta}J({\theta})">
-   <img src="https://render.githubusercontent.com/render/math?math=3.{\space}\hat{m}\leftarrow\frac{m}{1-{\beta}_1^t}">
-   <img src="https://render.githubusercontent.com/render/math?math=4.{\space}\hat{s}\leftarrow\frac{s}{1-{\beta}_2^t}">
-   <img src="https://render.githubusercontent.com/render/math?math=5.{\space}{\theta}\leftarrow{\theta}%2B {\eta}\hat{m}\div\sqrt{\hat{s}%2B {\epsilon}}">
-
-   t는 (1부터 시작하는) 반복횟수를 의미한다.
-
-   beta_1는 momentum 감쇠 hyperparameter이고
-
-   beta_2는 scale감회 hyperparamter이다.
-
-   3,4번은 m과 s가 0으로 초기화되기때문에, 훈련 초기에 0으로 쏠리게되어있어서 이 둘의 값을 증폭시키는 역할을 한다.
-
-   1,2,5번은 RMSProp과 momentum 최적화 방식과 비슷함. 단, 1에서 지수 감소의 평균을 구한다. 
-
-   code 구현:
-
-   ```Python
-   optimizer = keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999)
-   ```
-
-   Adam에서도 RMSProp과 AdaGrad에서 처럼 적응적 학습률/최적화 알고리즘이기때문에 학습률 hyperparameter (eta)를 튜닝할 필요가 적다.
 
 <br>
 
