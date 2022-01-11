@@ -168,6 +168,13 @@ They achieve their best results using **Decision Tree** and **Random Forest clas
 
 이 논문에서는 packet size와 time of arrival만 특성으로 활용하고 (ANN이 아닌) SNN(spiking neural networks)를 훈련시켜서 encrypte traffic 분류 모델을 만들었다. 
 
+보통 classification은 두 가지 문제로 나뉨 
+
+- traffic categorization: VoIP, file transfer, video, browsing, chat, P2P, etc...
+- application identification: applications like Kazaa, BitTorrent, Google Hangouts Chat, AIM, WhatsApp Web, etc...
+
+이 논문에서는 traffic categorization을 구현했다. (application identification level까지는 구현하지 못한것같다.)
+
 성능을 확인할 때에 Tor, VPN traffic의 분류에서도 accuracy를 확인했음. --> The average accuracy for Tor traffic rises from 67.8% to 98.6%, and for unencrypted traffic from 85% to 99.4%. For VPN traffic it rises from 98.4% to 99.8%. The number of errors is thus divided by a factor 8 for VPN traffic and by a factor 20 for Tor and unencrypted traffic.
 
 SNN : ANN inspired by how biological neurons operate, used for two reasons - 
