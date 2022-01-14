@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "DNN enhanced"                   # (require) a string title
+title: "DNN Enhanced"                   # (require) a string title
 date: 2021-12-14       # (require) a post date
 categories: [deeplearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [deeplearning]                      # (custom) tags only for meta `property="article:tag"`
@@ -440,60 +440,116 @@ Adam은 시간에 따라 감쇠된 gradient의 L2 norm으로 parameter update sc
 
 ## 규제(regularization)
 
-dataset에서 feature들이 지나치게 많거나 training대비 testing 성능이 부족한경우, model의 generalization 부족하여 overfitting 이슈가 발생할 수 있다. 즉, 주어진 input에만 상세하게 맞춰진 model이 생성되어서 새로운 data가 주어졌을때에 정확도가 떨어지는 prediction output을 만들어내는 것이다. 이를 방지하기위해 cost function의 최소값을 위한 parameter를 계산할때에 규제를 적용한다. 
+Regularization은 regression의 한 형태이다. regression equation의 coefficient를 constrain/regularize하거나 zero값으로 estimate하는 것이다. 
 
-예측하려는 샘플의 분류가능한 class가 2개 이상일때에 다중 분류 모델을 활용한다.
+"this technique discourages learning a more complex or flexible model, so as to avoid the risk of overfitting."
 
-- C매개변수 & max_iter
+dataset에서 feature들이 지나치게 많거나, training data에 noise가 많거나, training대비 testing 성능이 부족한경우, model의 generalization 부족하여 overfitting 이슈가 발생할 수 있다. 즉, 주어진 input에만 상세하게 맞춰진 model이 생성되어서 새로운 data가 주어졌을때에 정확도가 떨어지는 prediction output을 만들어내는 것이다. 
 
-  - 반복적인 알고리즘을 사용하기 때문에 max_iter 매개변수의 값을 어느정도 큰 값으로 설정한다. (참고: 기본값 100에서 1,000으로 늘려야 경고가 발생하지 않는다.)
+이를 방지하기위해 모델의 학습 과정동안 cost/loss function의 최소값을 위한 parameter를 계산할때에 규제(regularization)을 활용할 수 있다. 
 
-  - LogisticRegressioin은 기본적으로 릿지 회귀와 같이 계수의 제곱을 규제한다.(L2)
+예측하려는 샘플의 분류가능한 class가 2개 이상일때에 다중 분류 모델을 활용한다. 주로 C매개변수 & max_iter가 사용된다. 
 
-  - 릿지에서 alpha매개변수로 규제의 양을 조절했지만 LogisticRegression에서는 C매개변수를 사용한다.
-  - C매개변수는 커지면 완화된다. 기본값이 1이지만, 완화하기위해 20으로 지정한다. (C 매개변수는 ridge의 alpha와는 반대 경향)
+- 반복적인 알고리즘을 사용하기 때문에 max_iter 매개변수의 값을 어느정도 큰 값으로 설정한다. (참고: 기본값 100에서 1,000으로 늘려야 경고가 발생하지 않는다.)
 
-<br>
+- LogisticRegressioin은 기본적으로 릿지 회귀와 같이 계수의 제곱을 규제한다.(L2)
 
-- **Ridge** 
-
-  L2 regularization. 기존 cost function에 다음과 같이 penalty를 더한다.
-  
-  <img src="https://render.githubusercontent.com/render/math?math=\sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2%2B \alpha\sum_{j=0}^{p}w_j^2">
-
-  ridge는 parameter (i.e. weights)에 규제를 더한다. penalty term lambda를 통해서 regression의 coefficient를 감소시킨다. 이는 model complexity와 multicollinearity를 감소시켜준다.
-
-  when λ → 0 , the cost function becomes similar to the linear regression cost function (eq. 1.2). So *lower the constraint (low λ) on the features, the model will resemble linear regression model.* 
-
-  Ridge는 coefficients를 zero에 가깝게는 감소시키지만, 완전히 zero로 만들어서 제외하지는 못한다.
-
-  (official documentation: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html#sklearn.linear_model.Ridge)
+- 릿지에서 alpha매개변수로 규제의 양을 조절했지만 LogisticRegression에서는 C매개변수를 사용한다.
+- C매개변수는 커지면 완화된다. 기본값이 1이지만, 완화하기위해 20으로 지정한다. (C 매개변수는 ridge의 alpha와는 반대 경향)
 
 <br>
 
-- **Lasso**
+### Ridge (L2)
 
-  L1 regularization. Least absolute shrinkage와 selection operator를 통해서 다음과 같이 penalty를 더한다.
-  
-  <img src="https://render.githubusercontent.com/render/math?math=\sum_{i=1}^{n}(y_i-\sum_{j=0}^{p}w_j\cross{x_{ij}})^2%2B\alpha\sum_{j=0}^{p}\abs{w_j}">
+loss function에 더할 shrinkage quantity를 정의해서 penality의 크기를 정한다. 즉, coefficient를 얼만큰 규제할 지를 정의하는 것이다. ridge regression은 constrain하려는 coefficient를 완전하게 zero로 만들지는 못하지만, zero에 가깝게 constrain할 수 있다.
 
-  ridge와 비슷하지만 penalty로 가져가는 값이 squared가 아닌 magnitude라는 점이 다르다. Lasso와 같은 방식으로 규제를 하게되면 zero coefficient를 갖게될 수도 있다. 즉, 특정 feature이 output evaluation에서 완전히 제외되도록 설정할 수 있는것이다. Lasso는 overfitting을 방지하는 목적외에도 feature selection에도 활용될 수 있는 technique이다. (official documentation: https://scikit-learn.org/stable/modules/linear_model.html#lasso)
+L2 regularization. 기존 cost function에 다음과 같이 penalty를 더한다.
 
-  feature를 selectively 사용할 수 있게 해주는것을 compressive sensing이라고도 부름.
+![ridge regression](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/regularization_ridge_regression.png)
 
-- dropout
+ridge는 parameter (i.e. weights)에 규제를 더한다. penalty term lambda를 통해서 regression의 coefficient를 감소시킨다. 이는 model complexity와 multicollinearity를 감소시켜준다.
 
-  dropout 비율 p를 설정해서 매 훈련 step에서 각 neuron이 임시적으로 dropout될 활률을 의미한다. (즉, 이번 step에서는 와전히 무시되지만, 다음 스텝에서는 활성화될 수 있다.) 보통 10~50%사이 값을 지정한다. 순환 신경망에서는 20~30%, 합곱신경망에서는 40~50%사이 값을 지정.
+"λ is the tuning parameter that decides how much we want to penalize the flexibility of our model"
 
-- MonteCarlo dropout(MC dropout)
+when λ → 0 , the cost function becomes similar to the linear regression cost function (eq. 1.2). So *lower the constraint (low λ) on the features, the model will resemble linear regression model.* 
 
-  monte class에서 설정하는 dropout 
+Ridge는 coefficients를 zero에 가깝게는 감소시키지만, 완전히 zero로 만들어서 제외하지는 못한다.
 
-  dropout층 상속, call method override하고, training 매개변수를 True로 설정
+반대로, as λ→∞, the impact of the shrinkage penalty grows, and the ridge regression coeﬃcient estimates will approach zero.
 
-- max-norm regularization
+적절한 λ를 찾는것이 매우 critical하다. cross validation을 통해 최적을 λ를 찾을 수 있다. The coefficient estimates produced by this method are also known as the L2 norm.
 
-  불안정한 gradient를 완화하는데에 활용한다. 매개변수 bias constraints를 조정하여 편향을 조정한다.
+한가지 주의할 점은 - ridge regression을 수행하기 전에 predictor를 standardize하거나 predictor를 ridge regression과 동일한 scale로 변한시켜놓아야 한다.
+
+<br>
+
+### Lasso (L1)
+
+L1 regularization. Least absolute shrinkage와 selection operator를 통해서 다음과 같이 penalty를 더한다. Lasso는 제외하고싶은 coefficient는 완전하게 제외할 수 있는 강점이 있다.
+
+"This variation differs from ridge regression only in penalizing the high coefficients. It uses |βj|(modulus)instead of squares of β, as its penalty. In statistics, this is known as the L1 norm."
+
+![lasso](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/regularization_lasso.png)
+
+ridge와 비슷하지만 penalty로 가져가는 값이 squared가 아닌 magnitude라는 점이 다르다. Lasso와 같은 방식으로 규제를 하게되면 zero coefficient를 갖게될 수도 있다. 즉, 특정 feature이 output evaluation에서 완전히 제외되도록 설정할 수 있는것이다. Lasso는 overfitting을 방지하는 목적외에도 feature selection에도 활용될 수 있는 technique이다. (official documentation: https://scikit-learn.org/stable/modules/linear_model.html#lasso)
+
+feature를 selectively 사용할 수 있게 해주는것을 compressive sensing이라고도 부름.
+
+ridge & lasso in different perspective:
+
+*"The ridge regression can be thought of as solving an equation, where summation of squares of coefficients is less than or equal to s*. And *the Lasso can be thought of as an equation where summation of modulus of coefficients is less than or equal to s.(Here, s is a constant that exists for each value of shrinkage factor λ. These equations are also referred to as constraint functions.)"* 
+
+regularization을 constraint function으로 생각하며 다음 exmaple들에 regularization이 어떤 영향을 주는지 확인해볼 수 있다. 
+
+2개의 parameter가 주어진 problem에서,
+
+ridge regression은:
+
+β1² + β2² ≤ s
+
+이 equation은 geometrically a circle를 의미한다. therefore  implies that ridge regression coefficients have the smallest RSS(loss function) for all points that lie within the circle given by β1² + β2² ≤ s.
+
+lasso는:
+
+|β1|+|β2|≤ s
+
+이 equation은 geometrically a diamond를 의미한다. therefore implies that lasso coefficients have the smallest RSS(loss function) for all points that lie within the diamond given by |β1|+|β2|≤ s.
+
+<br>
+
+다음 그림에서 red ellipse contour는 RSS를 의미하고, constraint functions (green areas)는 왼쪽은 lasso, 오른쪽은 ridge regression을 표현한다. 
+
+![ridge_lasso_graph](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/ridge_lasso_geometric_interpretation.png)
+
+s 값이 커질수록 the green regions will contain the center of the ellipse (ridge/lasso techniques의 coefficient estimate가 least square estimates와 동일해짐.) 
+
+ridge regression이 circular constraints을 가지고 (no sharp points)있기때문에 intersection will not generally occur on an axis, so the ridge regression coefficientwill be exclusively non-zero. 
+
+ridge와는 다르게, lasso constraint는 each of the axes에 corner를 가지고있기때문에 ellipse will often intersect the constraint region at an axis. RSS(loss function) ellipse가 더 자주 constraint region at an axis와 intersect할 것 이다. 이렇게 intersect하는 경우, coefficient가 zero가 된다.  
+
+coefficient가 constrain되는 정도에서 ridge와 lasso사이에 차이점이 있다. ridge regression은 least important predictor의 coefficient를 zero에 가깝게 shrink 하지만, 완전하게 zero로 만들지는 못한다. In other words, the final model will include all predictors. 
+
+그러나 lasso의 경우, 제외하고 싶은 least important predictor의 coefficient를 완전하게 zero값으로 만들어버릴 수 있다. the L1 penalty has the eﬀect of forcing some of the coeﬃcient estimates to be exactly equal to zero when the tuning parameter λ is suﬃciently large. Therefore, the lasso method also performs variable selection and is said to yield sparse models.
+
+이 차이점은 model interpretability에서 ridge regression의 disadvantage이다. 
+
+<br>
+
+### dropout
+
+dropout 비율 p를 설정해서 매 훈련 step에서 각 neuron이 임시적으로 dropout될 활률을 의미한다. (즉, 이번 step에서는 와전히 무시되지만, 다음 스텝에서는 활성화될 수 있다.) 보통 10~50%사이 값을 지정한다. 순환 신경망에서는 20~30%, 합곱신경망에서는 40~50%사이 값을 지정.
+
+#### MonteCarlo dropout(MC dropout)
+
+#### monte class에서 설정하는 dropout 
+
+#### dropout층 상속, call method override하고, training 매개변수를 True로 설정
+
+<br>
+
+### max-norm regularization
+
+불안정한 gradient를 완화하는데에 활용한다. 매개변수 bias constraints를 조정하여 편향을 조정한다.
 
 <br>
 
@@ -540,3 +596,5 @@ pytorch - compile 및 fit 방식 확인 필요  (build, etc)
 # Reference
 
 1. Geron, Aurelien. Hands on Machine Learning. O'Reilly, 2019 
+1. https://towardsdatascience.com/regularization-in-machine-learning-76441ddcf99a
+
