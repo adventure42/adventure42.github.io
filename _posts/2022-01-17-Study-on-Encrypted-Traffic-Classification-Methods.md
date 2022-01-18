@@ -228,3 +228,19 @@ Generally two types of information common to most protocols can be extracted:
      invalid한 certificate들이 존재한다.
 
      certification authorities에 관한 연구:  Durumeric et al. [30]
+
+<br>
+
+### Encrypted data transport phase
+
+network traffic에 관한 정보는 communicating parties사이에서 transport되는 encrypted data로부터 extract될 수 있다. transport phase동안 exchange되는 packets에서부터 얻을 수 있는 정보는 매우 제한적이다. packet 자체에 대한 정보 - length 또는 authentication field - 이기때문에 network traffic monitoring에 바로 도움이 되진못하지만, 다음 두 가지 methods를 통해 more suitable data를 얻을 수 있다.
+
+(1) first method - direct traffic decryption을 사용하는 방법이다. 만약 shared secret of the connection을 알고있으면 수행 할 수 있다. decryption can be used in networks on the servers' side where organizations know the private key of the connected server. 그러나, 이런 decryption would be impossible if algorithms we used ensure forward secrecy. (what is forward secrecy???)
+
+(2)  second method - traffic features extraction을 기반으로 하는 method이다. 
+
+Miller et al [56] - monitored the size of TLS encrypted packet sequences. 이 data를 바탕으로, 여러가지 predictive model을 사용해서 they are able to identify a specific web page and deduce its content even though the traffic is encrypted. 
+
+Koch와 Rodosek [49] - 이 방식을 통한 SSH traffic analysis
+
+Hellemons et al. [37] - focused on intrusion detection in SSH traffic
