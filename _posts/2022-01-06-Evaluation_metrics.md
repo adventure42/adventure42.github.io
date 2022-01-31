@@ -58,13 +58,9 @@ unbalanced dataset이 주어진 경우, precision과 recall 사이의 tradeoff�
 
 <br>
 
-**AUC(area under the curve)**
+**ROC(Receiver Operating Characteritics) & AUC(area under the curve)**
 
-AUC는 ROC curve아래의 면적을 의미하고, ROC는 TPR(Recall)과 FPR(specificity) 사이의 tradeoff를 표현해준다. 
-
-Precision-recall curve와는 다르게 ROC(receiver operator characteristic) curve는 balanced dataset의 domain에 적합하다. 
-
-AUC의 값은 다른 metric과 동일하게 ranges over 0 and 1. (0.5는 random prediction을 expected value로 여겨진다.) 
+AUC는 ROC curve아래의 면적을 의미하고, ROC는 TPR(Recall)과 FPR(1-specificity) 사이의 tradeoff를 표현해준다. 
 
 ![AUC](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/AUC.PNG)
 
@@ -74,13 +70,31 @@ AUC의 값은 다른 metric과 동일하게 ranges over 0 and 1. (0.5는 random 
 
 
 
-**FPR** (False Positive Rate)은 specificity로도 불리며 다음과 같다:
+**FPR** (False Positive Rate)은 (1-specificity)이며 다음과 같다:
 
 **FPR = false positive / (false positive + true negative)**
 
 --> "실제 negative인것들 중에 맞게 예측한 경우"
 
 FPR은 classifier model의 "false alarm metric"이다. 이 metric은 얼마나 자주 classifier가 negative여야하는 case를 positive로 잘못 예측하는지를 알려준다. 
+
+<br>
+
+Precision-recall curve와는 다르게 ROC(receiver operator characteristic) curve는 balanced dataset의 domain에 적합하다. ROC곡선을 보면 TPR(recall)이 높을수록 분류기가 만드는 FPR이 늘어난다. 
+
+AUC의 값은 다른 metric과 동일하게 ranges over 0 and 1. 
+
+AUC=0.5의 경우는 아래 grpah에서 diagonal line을 의미하며 random prediction expected value로 여겨진다.  성능이 좋은 분류기일수록 이 diagonal line에서 최대한 멀리 떨어져있어야한다. (AUC가 1에 가까워짐.)
+
+<br>
+
+**precision-recall curve vs. ROC(FPR-TPR curve)**
+
+이 두가지 curve중 어떤것을 사용해야할까?
+
+일반적으로는 positive class가 드물거나(unbalanced dataset) 또는 false negative보다 false positive가 더 중요할때에 precision-recall curve를 사용하고, 그렇지 않으면 ROC를 사용한다.
+
+Unbalanced dataset의 경우에는 위 graph와 같이 낮은 FPR에서도 높은 TPR이 확보되는 경우(negative sample들이 positive samples보다 훨씬 많기때문에, true negative가 크고 false negative는 낮아서) AUC값이 높고, 좋은 분류기라고 판단할 수 있지만, precision-recall curve를 보면 분류기의 성능 개선 여지가 얼머나 있는지 더 정확하게 확인할 수 있다. 
 
 <br>
 
