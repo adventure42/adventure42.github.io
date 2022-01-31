@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Classification Methods"                   # (require) a string title
+title: "Dimension Reduction and Classifiers"                   # (require) a string title
 date: 2022-01-28       # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`
@@ -129,9 +129,62 @@ plt.show()
 
 # Dimension Reduction
 
+MNIST 이미지를 생각해보면, 숫자가 그려진 중앙부분외의 가장자리 쪽의 픽셀은 blank 흰색으로, 제거된다고 해도 많은 정보를 잃지 않는다. 또한 인접한 두 픽셀은 종종 많이 연관되어있어서 두 픽셀을 하나로 합친다고해도 잃는 정보가 크게 영향을 주지 않는다. 
+
+이렇게 차원을 축소시키는 방법은 품질이 감소될 수 있는 위험을 감수하는 대신에 훈련 속도를 빠르게 증가시킬 수 있다. 시스템의 성능이 나빠지거나, 작업 pipeline이 조금 더 복잡하게되고 유지 관리가 어려워 지는 단점이 있기때문에, 차원 축소를 고려하기 전에 훈련이 너무 느린지 원본 데이터로 시스템을 훈련시켜보아야 한다. 
+
+어떤 경우에는 훈련 데이터의 차원을 축소시켜서 잡음이나 불필요한 세부 사항을 걸러내서 훈련 속도를 향상시키는 것 외에도 성능을 높이는데에 도움이 될 수 있다. 
+
+종종 높은 차원수를 2D 또는 3D수준으로 낮추어서 graphical visualization을 통해 데이터의 형태를 시각화할 수 있다. 특히 군집과 같은 시각적인 패턴을 통해서 데이터에 대한 중요한 통찰을 얻을 수 있다. 
+
+<br>
+
+## 투영 (projection)
+
+대부분의 훈련 sample이 모든 차원에 걸쳐 균일하게 퍼져있지 않다. Few or several specific feature들이 서로 강하게 연관되어 있다. 그래서 결과적으로 고차원 공간 안의 저차원 subspace(부분 공간)에 훈련 sample들으 놓여 있다. 이 형태를 graph해보면, 3D 공간에있는 2D 부분공간에 data sample들을 그려볼 수있다. 즉, 3D 데이터 sample들을 부분 공간에 수직으로 (sample과 평면 사이의 가장 짧은 직선을 따라) 투영하면, 2D 데이터셋을 얻을 수 있다. 기존 3D 공간에서 특성 x1, x2, x3를 축으로 위치했던 데이터 sample들은 (평면에 투영된 좌표인) 새로운 특성 z1, z2를 축으로 표현될 수 있다. 
+
+<br>
+
+## 매니폴드
+
+만약 3D 공간에서 데이터 sample들이 스위스 롤 형태로 동그랗게 말린 roll형태를 가진 상태이라면, 그냥 평면에 투영시키면 roll 형태의 층이 서로 뭉개져버리는 문제가 발생한다. 이런 경우에는 매니폴드를 모델링하는 방식이 필요하다. 
+
+많은 차원 축소 알고리즘이 훈련 샘플이 놓여있는 매니폴드를 모델링하는 방식으로 작동한다. 이를 매니폴드 학습 (manifold learning)이라고 한다. 
+
+매니폴드는 바로 처리해야하는 작업(e.g., 분류, 회귀, 등)이 저차원의 매니폴드 공간에 표현되면 더 간단해질 것이라는 가정과 함께 병행된다. 이런 가정을 주어진 데이터셋에 따라 valid할 수 있고 아닐수도있다. 전적으로 데이터셋에 달려있다. 
+
+<br>
+
+## PCA
+
+PCA(Principal Component Analysis)는 먼저 데이터에 가장 가까운 초평면(hyperplane)을 정의한 다음, 데이터를 이 평면에 투영시킨다. 올바른 hyperplane을 선택하는 것이 매우 중요한다. 
+
+데이터의 분산이 최대로 보존되는 축을 선택하는것이 정보가 가장 적게 손실되므로 합리적인 선택이된다. (원본 데이터셋과 투영된 것 사이의 평균제곱 거리가 최소화되는 선택임.)
+
+고차원 데이터셋이라면 PCA는 첫번째 축에 직교하고 남은 분산을 최대한 보존하는 두번째 축을 찾고, 그 다음 이전 두 축에 직교하는 세번째 축을 찾고, 데이터셋에 있는 차원의 수 만큼 네번째, 다섯번째, ... n번째 축을 찾는다. 
+
+i번째 축을 이 데이터의 i번째 PC(주성분 principal component)라고 부른다. 
+
+SVD(singular value decomposition)이라는 표준 행렬 분해 기술을 통해서 훈련 데이터 셋의 주성분을 찾을 수 있다.
+
+```python
+X_centered = X - X.mean(axis=0)
+U, s, Vt = np.linalg.svd(X_centered)
+c1 = Vt.T[:,0]
+c2 = Vt.T[:,1]
+```
+
+<br>
+
+## RandomForestRegressor
+
+scikit-learn의 class중 하나로 존재하며, dataset의 feature reduction을 수행하기위해 feature들의 importance value와 같이 reduction의 기준으로 사용할 수 있는 parameter를 RandomForestRegressor를 통해 생성할 수 있다.
 
 
 
+<Br>
+
+<br>
 
 # References
 
