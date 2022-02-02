@@ -34,7 +34,7 @@ cross_val_predict()는 cross_val_score와 동일하게 k-fold cross validation�
 
 cross_val_predict()로 얻은 예측값을 가지고 confusion matrix를 확인할 수 있다. 
 
-
+<br>
 
 ### SGDClassifier
 
@@ -52,7 +52,7 @@ decision threshold (결정 임계값)
 
 ROC = false positive rate vs. true positive rate graph 
 
-
+<br>
 
 ### RandomForestClassifier
 
@@ -62,7 +62,7 @@ RandomForestClassier에는 decision_function()이 없고 그 대신 predict_prob
 
 참고: scikit-learn classifier은 일반적으로 decision_function과 predict_proba 둘 다 또는 둘중 하나를 가지고있다.
 
-
+<br>
 
 ## 다중 분류
 
@@ -93,6 +93,8 @@ ovr_clf.predict([some_digit]) # 분류기가 예측 클래스를 반환
 ```
 
 참고: SGD classifier의 경우에는 직접 다중 클래스로 분류할 수 있기때문에 별도로 scikit-learn의 OvR 또는 OvO를 적용할 필요가 없음.
+
+<br>
 
 ### 에러분석
 
@@ -125,7 +127,9 @@ plt.show()
 
 3과 5의 주요 차이는 위쪽선과 아래쪽 호를 이어주는 작은 직선의 위치이다. 이 연결 부위가 조금 왼쪽으로 치우치면 분류기가 5로 분류할 수 있다. 즉, 이 분류기는 이미지의 위치나 회전 방향에 매우 민감하다. 3과 5를 혼동하는 에러를 줄이기위해서 한가지 방법은 이미지를 중앙에 위치시키고 회전되어 있지않도록 전처리 하는 것이다.  
 
+<br>
 
+<br>
 
 # Dimension Reduction
 
@@ -165,22 +169,192 @@ PCA(Principal Component Analysis)는 먼저 데이터에 가장 가까운 초평
 
 i번째 축을 이 데이터의 i번째 PC(주성분 principal component)라고 부른다. 
 
-SVD(singular value decomposition)이라는 표준 행렬 분해 기술을 통해서 훈련 데이터 셋의 주성분을 찾을 수 있다.
+SVD(singular value decomposition)이라는 표준 행렬 분해 기술을 통해서 훈련 데이터 셋의 주성분을 찾을 수 있다. numpy의 svd() 함수를 사용해서 훈련 세트의 모든 주성분을 구한 후, 처음 두개의 주성분을 정의하는 두 개의 단위 vector를 다음과 같이 추출할 수 있다. 
 
 ```python
+import numpy as np
+
 X_centered = X - X.mean(axis=0)
 U, s, Vt = np.linalg.svd(X_centered)
 c1 = Vt.T[:,0]
 c2 = Vt.T[:,1]
 ```
 
+참고: PCA는 데이터셋의 평균이 0이라고 가정한다. scikit-learn의 PCA python class는 이 작업을 자동으로 처리해준다. 위 코드와 같이 PCA를 직접 구현하거나, 다른 라이브러리를 사용한다면 먼저 데이터를 원점에 맞추어야한다. 
+
 <br>
 
-## RandomForestRegressor
+### d 차원으로 투영하기
 
-scikit-learn의 class중 하나로 존재하며, dataset의 feature reduction을 수행하기위해 feature들의 importance value와 같이 reduction의 기준으로 사용할 수 있는 parameter를 RandomForestRegressor를 통해 생성할 수 있다.
+주성분을 모두 추출해냈다면 처음 d개의 주성분으로 정의한 hyperplane에 투영해서 데이터셋의 차원을 d차원으로 축소시킬 수 있다. 이 hyperplane은 분산을 가능한 최대로 보존하는 투영이다. 
 
+첫 두 개의 주성분으로 정의된 평면에 훈련 세트를 투영하는 코드는 다음과 같다.
 
+```python
+W2 = Vt.T[:, :2]
+X2D = X_centered.dot(W2)
+```
+
+<br>
+
+### scikit-learn 사용하기
+
+PCA모델을 사용해서 데이터셋의 차원을 2로 줄이는 코드는 다음과 같다.
+
+```python
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components = 2)
+X2D = pca.fit_transform(X)
+```
+
+<br>
+
+### 분산의 비율
+
+explained_variance_ratio_ 변수에 저장된 주성분의 "설명된 분산의 비율"은 각 주성분의 축을 따라 있는 데이터셋의 분산 비율을 나타낸다. (e.g., 3D 데이터셋의 처음 두 주성분에 대한 설명된 분산의 비율은 - 예를 들어, 데이터셋 분산의 85%가 첫 번째 PC를 따라 놓여있고, 15%가 두번째 PC를 따라 놓여있음을 알려준다.)
+
+<br>
+
+### 적절한 차원 수 선택하기
+
+축소할 차원 수를 임의로 정하기보다는 충분한 분산 (e.g., 95%)이 될 때까지 더해야 할 차원 수를 선택하는 것이 간단하다. 
+
+```python
+pca = PCA()
+pca.fit(X_train)
+cum_sum = np.cumsum(pca.explained_variance_ratio_)
+d = np.argmax(cum_sum >= 0.95) + 1
+
+pca = PCA(n_components=0.95)
+X_reduced = pca.fit_transform(X_train)
+```
+
+<br>
+
+### random PCA
+
+svd_solver 매개변수를 "randomized"로 지정하면 scikit-learn은 확률적 알고리즘인 random PCA를 사용해서 처음 d개의 주성분에 대한 근삿값을 빠르게 찾는다.
+
+```python
+rnd_pca = PCA(n_components=154, svd_solver="randomized")
+X_reduced = rnd_pca.fit_transform(X_train)
+```
+
+<br>
+
+### incremental PCA
+
+전체 훈련 데이터셋이 너무 크기때문에 SVD 알고리즘 실행을 위해 메모리게 올리는것이 문제가 되는 경우, IPCA (점진적 incremental PCA)알고리즘을 활용할 수 있다. 훈련 데이터셋을 mini batch로 나눈 뒤, IPCA 알고리즘에 한번에 하나씩 주입한다. 이 방식은 데이터 셋이 너무 큰 경우외에도 온라인으로 새로운 데이터가 준비되는대로 실시간으로 PCA를 적용하려할때에 활용될 수 있다. 
+
+예시로 MNIST 데이터셋을 100개의 mini batch로 나누고 scikit-learn의 IncrementalPCA 클래스에 주입하여 MINIST 데이터셋의 차원을 154개로 줄이는 코드가 다음과 같다.
+
+```python
+from sklearn.decomposition import IncrementalPCA
+
+n_batches = 100
+inc_pca = IncrementalPCA(n_components=154)
+for X_batch in np.array_split(X_train, n_batches):
+    inc_pca.partial_fit(X_batch) #전체 훈련세트가 아니기때문에 fit()대신 partial_fit()를 mini batch마다 호출해야함.
+    
+X_reduced = inc_pca.transform(X_train)
+```
+
+다른 방식으로는 numpy 라이브러리의 memmap 클래스를 함께 활용하는 방법이 있다. 하드 디스크의 binary 파일에 저장된 매우 큰 array를 메모리에 들어 있는 것처럼 다루는데, memmap 클래스가 필요한 데이터를 그때그때 메모리에 적재한다. IncrementalPCA는 특정 순간에 array의 일부만 사용하기때문에 메모리 부족 문제의 발생을 방지할 수 있다. 예시 코드는 다음과 같다.
+
+```python
+X_mm = np.memmap(filename, dtype="float32", mode="readonly", shape=(m,n))
+
+n_batches = 100
+batch_size = m // n_batches #전체 데이터셋의 m개의 samples를 n_batches개의 mini batch로 나눔.
+inc_pca = IncrementalPCA(n_components=154, batch_size = batch_size)
+inc_pca.fit(X_mm) #메모리에 올라온 데이터를 사용하는것이기때문에 fit()을 호출함.
+```
+
+<br>
+
+### Kernel PCA
+
+Kernel trick(커널 트릭)은 support vector machine의 비선형 분류와 회귀를 수행하기 위해 sample을 매우 높은 고차원 공간 (특성 공간 feature space)으로 mapping하는 수학적 기법이다. 이 기법을 통해 원본 공간에서는 복잡한 비선형 decision boundary (결정 경계)를 고차원 특성 공간에서의 선형 decision boundary로 표현 할 수 있다. 
+
+이 기법을 PCA에 적용해서 차원 축소를 위한 복잡한 비선형 투영을 실행할 수 있다. 이 방법은 kernel PCA(kPCA)라고 부른다. 투영된 후에 sample의 군집을 유지하거나 꼬인 매니폴드에 가까운 데이터셋을 펼칠때에도 유용하다.
+
+kPCA의 kernel로 선형 커널, RBF 커널, sigmoid 커널, 등을 적용할 수 있다.
+
+RBF 커널을 지정하여 kPCA를 적용한 코드 예시는 다음과 같다.
+
+```python
+from sklearn.decomposition import kernelPCA
+
+rbf_pca = KernelPCA(n_components = 2, kernel="rbf", gamma=0.04)
+X_reduced = rbf_pca.fit_transform(X)
+```
+
+kPCA는 비지도 학습이기때문에 좋은 커널과 hyperparameter를 선택하기위한 명확한 성능 측정 기준은 없다. but, 차원 축소는 종종 지도 학습의 전처리 단계로 활용된다. 이때 grid search를 사용해서 주어진 문제에서 성능이 가장 좋은 커널과 hyperparameter를 선택할 수 있다.
+
+다음 코드는 두 단계의 pipeline을 구축한다 - 먼저 첫번째 단계로 kPCA를 사용해서 차원을 2차원으로 축소하고, 분류를 위해 logistic regression을 적용한다. 그 다음 단계로 GridSearchCV를 사용해서 kPCA의 가장 좋은 커널과 gamma parameter를 찾아서 가장 높은 분류 정확도를 얻는다.
+
+```python
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+
+clf = Pipeline([
+    ("kpca", KernelPCA(n_components=2)),
+    ("log_reg", LogisticRegression())
+])
+
+param_grid = [{
+    "kpca__gamma":np.linspace(0.03, 0.05, 10),
+    "kpca__kernel":["rbf", "sigmoid"]
+}]
+
+grid_search = GridSearchCV(clf, param_grid, cv=3)
+grid_search.fit(X,y)
+
+print(grid_search.best_params_)
+```
+
+가장 좋은 커널과 hyperparameter는 **best_params_**변수에 저장된다.
+
+<br>
+
+## LLE (Locally Linear Embedding)
+
+LLE(지역 선형 임베딩)은 또 다른 비선형 차원 축소 (nonlinear dimensionality reduction, NLDR) 기술이다. LLE는 투영에 의존하지 않는 매니폴드 학습방식이다. 먼저 각 훈련 sample이 가장 가까운 이웃에 얼마나 선형적으로 연관되어있는지 측정한다. 그 다음, 국부적인 관계가 가장 잘 보존되는 저 차원 표현을 찾는다. 이 방법은 잡음이 너무 많지 않다면, 꼬인 매니폴드을 펼치는데에 유용한 방법이다. 
+
+```python
+from sklearn.manifold import LocallyLinearEmbedding
+
+lle = LocallyLinearEmbedding(n_components=2, n_neighbors=10)
+X_reduced = lle.fit_transform(X)
+```
+
+LLE 작동 방식:
+
+1. 알고리즘이 각 훈련 샘플에 대해 가장 가까운 k개의 샘플을 찾는다. (위 코드에서는 k=10)
+
+2. 각 샘플과 나머지 샘플 사이의 제곱 거리가 최소가 되게 만들어주는 가중치 값을 구한다. (이웃에 대한 선형 함수로 각 샘플을 재구성한다. 나머지 샘플이 k개의 이웃에 해당되지 않는 경우에는 가중치값=0)
+
+3. 가중치 행렬은 훈련 샘플사이에 있는 지역 선형 관계를 담고있다.
+
+4. 가능한 이 관계가 보존되도록 훈련 샘플을 d차원 공간으로 mapping한다. (d < n)
+
+5. d차원 공간에서 샘플을 고정하고 최적의 가중치를 찾는 대신, 가중치를 고정하고 저차원의 공간에서 샘플 이미지의 최적 위치를 찾는다.
+
+계산복잡도는 가중치 최적화에 O(mnk^2), 저차원 표현에 O(dm^2)이므로 m^2 term때문에 대량의 데이터셋에 적용하기 어렵다.
+
+<br>
+
+## 다른 차원 축소 기법들
+
+MDS(Multi-Dimensional sScaling), 
+
+Isomap, 
+
+t-SNE(t-Distributed Stochastic Neighbor Embedding), 
+
+LDA(Linear Discriminant Analysis)
 
 <Br>
 
