@@ -35,5 +35,12 @@
 		"url": "https://www.youtube.com/playlist?list=PLJN246lAkhQjX3LOdLVnfdFaCbGouEBeb",
 		"date": "Sep 26, 2020",
 		"tags": ["machinelearning"]
+	},
+	{
+		"name": "Deep Learning, Goodfellow-et-al-2016(MIT Press book)",
+		"image": "neuralnetwork.png",
+		"url": "https://www.deeplearningbook.org/",
+		"date": "2016",
+		"tags": ["deeplearning"]
 	}
 ]
