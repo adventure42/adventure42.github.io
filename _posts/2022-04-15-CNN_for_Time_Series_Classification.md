@@ -1,0 +1,88 @@
+---
+layout: post                          # (require) default post layout
+title: "CNN for Time Series Classification"   # (require) a string title
+date: 2022-04-15       # (require) a post date
+categories: [RCAClassification]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
+tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`
+
+---
+
+<br>
+
+# CNN for Time Series Classification 
+
+<br>
+
+## Time series CNN 
+
+CNN모델을 통해 분류문제를 해결할 수 있는 time series data는 stock indices, climate measurements, medical tests, 등 매우 다양한다. time series classification을 구현하는 방법은 다양하지만 그 방법이 크게 두개의 stages로 구현된다. 
+
+- first stage: 어떤 algorithm을 사용해서 분류하려는 time series의 difference를 측정하거나 또는 활용가능한 statistical tool이나 advanced mathematical methods를 사용해서 time series 데이터를 feature vectors로 변환시킨다. 
+
+- second stage: 어떤 algorithm을 사용해서 분류작업을 수행한다. 여기서 사용할 수 있는 algorithm은 k-nearest neighbors이나 SVM 부터 deep neural network model까지 매우 다양한다. 보통 이런 algorithm들을 적용하기 전에 some kind of feature engineering이 classification전에 따로 수행되어야하는 경우가 많다. 그러나 CNN(convolutional neural networks)과 같은 end-to-end deep learning 모델을 사용하면 feature engineering을 framework내에 포함하여 따로 사람이 진행해야하는 단계를 skip할 수 있다. (able to extract features and create informative representations of time series automatically.)
+
+CNN을 통한 time series classification은 큰 장점을 가지고있다고 한다. Highly noise-resistant한 model이기때문에 time independent하고 informative한 deep features를 extract할 수 있다. 
+
+<br>
+
+## 1-D convolution for time series
+
+time series with length=n, width=k (e.g., 하나의 recorded instance가 k개의 variables로 구성되어있고 각각의 variable들이 n개의 timesteps로 측정되었음. (weather time series data라면 variable들은 temperature, pressure, humidity, 등이 있다.))
+
+convolution kernels는 항상 time series와 같은 width k를 가지고있지만 length n은 다를 수 있다. Given a time series data, kernel이 time series의 beginning에서 부터 end까지 한방향으로 convolution을 수행하며 이동한다. (time을 따라 1-D임. 보통 2-D convolution이 images에 적용되는듯이 image의 width와 height에 따라 좌우로 움직이는것이 아님!) 
+
+![1-D convolution for time series](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/1-D_Convolution_for_Time_Series.png)
+
+Kernel(filter)의 elements들은 특정 given point에서 cover하는 time series data의 corresponding element로 multiply된다. 이 multiplication의 결과들은 더해서 하나의 value로 통합되고, 여기에 nonlinear activation function이 적용된다. 
+
+예시) if convoluting(multiplying) a filter of length=3 with a univariate time series, by setting the filter values = [1/3, 1/3, 1/3], convolution will result in applying a moving average with a sliding window of length=3. 
+
+수학적으로 표현하면,
+
+![mathematical expression of convolution](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/1-D_Convolution_math_function.PNG)
+
+*C_t* = result of a convolution(dot product) applied on a univariate time series *X* of length *T*
+
+*w* = filter of  length *l*
+
+*b* = bias parameter
+
+*f* = final non-linear function (e.g., ReLU)
+
+Resulting value *C_t*(result of a convolution(one filter) on an input time series X)는 filtering 과정을 통과한 새로운 univariate time series가 된다. 그리고 kernel은 time series data에서 시계열 방향으로 계속 이동하며 다음 value를 생성한다. 그래서 새롭게 "filtered"된 time series의 개수는 convolution kernel의 개수와 동일하다. kernel의 length, different aspects, 그리고 properties에 따라서 initial time series data의 "features"가 "filtered"된 series에 capture되는 것이다. (An intuition behind applying several filters on an input time series would be to learn multiple discriminative features useful for the classification task.)
+
+여기서 kernel(filter)을 활용하는 과정은 time series의 generic non-linear transformation (first stage)단계로 볼 수 있다. 
+
+Classical MLP와는 다르게, CNN에서는 "weight sharing" property가 활용된다. All time stamps t (within range=[1,T])에 대한 convolution result를 구하기위해서 동일한 filter values *w*와 *b*를 가진 convolution이 사용된다. 이 property를 통해서 CNN은 time dimension을 관통하며 변하지 않는 filters를 통해 time series data의 특성을 학습할 수 있다. (매우 중요한 property임!) Multivariate time series(MTS)를 convolution layer에 input하는 경우에는, filter는 더이상 one dimension(time)이 아닌, input MTS의 dimension과 동일한 dimension을 갖게된다. 
+
+Filter values *w*는 targeted dataset에 highly dependent하다. optimal filter values는 classifier가 쉽게 dataset class들을 discriminate할 수 있도록 설정되어야한다. 이런 discriminative filter를 찾기위해서, convolution은 discriminative classifier(second stage)로 follow되어야한다.
+
+discriminative classifying을 수행하기전에 보통 local 또는 global pooling을 각각의 filtered time series vector에 적용한다. 주로 사용되는 max pooling은 각 vector에서 가장 큰 value를 가져가는 것이다. (max외에도 average pooling이 사용되기도 한다.) 
+
+Local pooling을 Input time series에 적용하면 time series의 length T를 sliding window구간내에서 aggregate하여 통합한다. 이를 통해서 maximum values로 구성된 새로운 vector가 생성된다.
+
+예시) if sliding window's length=3, resulting pooled time series have length=T/3. (only if stride=sliding window's length)
+
+Global pooling을 적용하면, time series가 whole time dimension구간내에서 하나의 real value로 통합된다. 만약 sliding window의 length가 input time series의 length와 동일할 때에 local pooling을 적용하면 동일한 결과가 확인될것이다. 
+
+일반적으로 model의 parameter 개수를 drastically 감소시켜서 overfitting 위험을 감소시키는 목적으로 local보다는 global aggregation을 사용한다고 한다.
+
+pooling layer외에도 normalization layer과 같은 deep learning architecture를 함께 사용해서 network이 보다 빠르게 converge할 수 있도록 한다. time series data를 위해서는 batch normalization을 each channel에 대해 수행해서 internal covariate shift across one mini-batch training of time series를 방지한다.  
+
+마지막으로 input time series의 representation인 vector가 final feature vector로 regular fully connected layer(final discriminative layer)에 input되어서 분류하려는 class variables에 대한 probability distribution를 구하고 가장 높은 확률을 가진 class variable을 예측 class로 결정한다. 보통 이 layer에서는 softmax operation이 활용된다. 종종 final softmax layer전에 additional non-linear FC layer가 활용되기도 한다. 여기에서는 기존 MLP와 동일하게 feed-forward pass와 backpropagation이 순차적으로 진행된다. 
+
+CNN architecture for TSC(Time-Series Classification):
+
+![FCN network architecture](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/fully_convolutional_time_series_architecure.PNG)
+
+<br>
+
+<Br>
+
+# References
+
+1. [blog] how to use convolutional neural network for time series classification: https://towardsdatascience.com/how-to-use-convolutional-neural-networks-for-time-series-classification-56b1b0a07a57 
+
+2. [paper] multi-scale convolutional neural network: https://arxiv.org/pdf/1603.06995.pdf 
+
+3. [paper] Deep learning for time series classification: a review(2019, Hassan I.F., et al)
