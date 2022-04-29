@@ -21,19 +21,99 @@ CNN모델을 통해 분류문제를 해결할 수 있는 time series data는 sto
 
 - second stage: 어떤 algorithm을 사용해서 분류작업을 수행한다. 여기서 사용할 수 있는 algorithm은 k-nearest neighbors이나 SVM 부터 deep neural network model까지 매우 다양한다. 보통 이런 algorithm들을 적용하기 전에 some kind of feature engineering이 classification전에 따로 수행되어야하는 경우가 많다. 그러나 CNN(convolutional neural networks)과 같은 end-to-end deep learning 모델을 사용하면 feature engineering을 framework내에 포함하여 따로 사람이 진행해야하는 단계를 skip할 수 있다. (able to extract features and create informative representations of time series automatically.)
 
-CNN을 통한 time series classification은 큰 장점을 가지고있다고 한다. Highly noise-resistant한 model이기때문에 time independent하고 informative한 deep features를 extract할 수 있다. 
+CNN을 통한 time series classification은 큰 장점을 가지고있다고 한다. Highly noise-resistant한 model이기때문에 time independent하고 informative한 deep features를 extract할 수 있다. CNN의 weight sharing과 translation invariant의 장점을 활용할 수 있다.
+
+CNN algorithm 기반의 classification model의 전반적인 구조는 다음과 같다:
+
+![TSC CNN model architecture](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/CNN_for_TSC.jpeg)
+
+convolutional layer, pooling layer, fully-connected layer로 형성되어있다. (fully connected layer전에 convolutional과 pooling layer는 필요한 만큼 반복됨.)
 
 <br>
 
-## 1-D convolution for time series
+<br>
 
-time series with length=n, width=k (e.g., 하나의 recorded instance가 k개의 variables로 구성되어있고 각각의 variable들이 n개의 timesteps로 측정되었음. (weather time series data라면 variable들은 temperature, pressure, humidity, 등이 있다.))
+## Convolutional Layer
 
-convolution kernels는 항상 time series와 같은 width k를 가지고있지만 length n은 다를 수 있다. Given a time series data, kernel이 time series의 beginning에서 부터 end까지 한방향으로 convolution을 수행하며 이동한다. (time을 따라 1-D임. 보통 2-D convolution이 images에 적용되는듯이 image의 width와 height에 따라 좌우로 움직이는것이 아님!) 
+convolution operation이 CNN의 핵심 building block이다. Convolution operation은 filter matrix를 적용해서 input series of feature maps에 convolution을 수행하고 different series of feature maps를 output하는 것이다. 이 과정을 통해 high-level features를 추출해내는 것이다. 
+
+<br>
+
+### Review on CNN
+
+지난 posting에서 CNN을 주제로 기본적인 내용이 설명되었음 - [CNN(Convolutional Neural Network)](https://adventure42.github.io/deeplearning/2021/12/15/CNN.html) 여기에서는 2D convolution에 대해 조금 더 상세하게 review해본다.
+
+#### filters & kernels
+
+input layer가 여러 channels(보통 이미지의 경우 3개의 channels - R,G,B)로 구성되어 있듯이, filter는 kernel로 구성되어있다. Hierarchical point of view에서는 the concept of layer = concept of  filter가 동등 level이고 channel과 kernel은 바로 하위 level에 해당한다. Channels와 feature maps는 동일한것이다. 
+
+<img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/filter_kernels.png" alt="filter and kernels" style="zoom:67%;" />
+
+filter과 kernel는 서로 interchangeably 사용되기도 하기때문에 헷갈릴 수 있다. 한다. 정확하게는 kernel은 2D array of weights를 의미한다. filter은 여러개의 kernel들이 stacked된 3D structure를 의미한다. 
+
+"filter = collection of kernels"
+
+각각의 kernel은 input channel의 different aspects를 강조하며 unique하다. 그러나 filter가 2D인 경우에는 filter와 kernel이 동일하게 2D array of weights로 볼 수있다.
+
+multi-channel convolution을 보면, 각 kernel이 previous layer의 각 input channel에 적용되어서 one output channel을 생성해낸다. 이렇게 kernel-wise process를 모든 kernel에 대해 수행하고 multiple channels를 생성한다. 이 channel들은 summed together되어서 one single output channel을 형성한다. 
+
+예시) input layer of 5 x 5 x 3 matrix with 3 channels에 filter of 3 x 3 x 3 matrix를 적용하면 다음과 같이 convolution이 수행된다. each of the kernels in the filter are applied to three channels in the input layer, separately. 이렇게 3개의 convolution이 수행되고 3 channels with size 3 x 3를 결과로 얻게된다.
+
+![kernel applied to channels](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/kenerl_applied_to_channels.gif)
+
+그리고 3개의 channel들이 summed together되어서 (element-wise addition) 하나의 single channel (3 x 3 x 1)을 만든다. 이 channel이 input layer(5 x 5 x 3 matrix)에 filter(3 x 3 x 3 matrix)를 적용한 결과이다.
+
+![channels summed up](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/channels_summed.gif)
+
+3D filter matrix를 input layer를 통해 slide한다고 생각해보면 다음 그림과 같이 convolution이 수행된다고 그려볼 수 있다. input layer와 filter는 동일한 depth를 가지고있다는 것이 확인된다. (number of channels = number of kernels)
+
+![3D filter convolution](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/3D_filter_convolution.png)
+
+3D filter는 input image의 height & width 이 두가지 방향으로만 움직인다. (그래서 such operation is called **2D convolution**) 각각의 sliding position에서 element-wise multiplication과 addition을 수행하고 single number로 결과를 얻는다. 위 그림에서는 filter의 sliding이 5 positions horizontally, 5 positions vertically 움직이며 convolution이 수행된다. 이 과정을 통해 결국엔 single output channel을 얻는다.
+
+input layer가 D_in channels를 가지고있고, output layer가 D_out channels를 가져야한다면, we just need to apply the D-out filters to the input layer. 각 filter는 D_in kernels를 가지고, 각 filter는 one output channel을 output하기때문에, D_out개의 filters를 적용하면, D_out개의 channels를 확보할 수 있다. 이들을 stack해서 원하는 output layer의 형태를 만들 수 있다. 
+
+![std convolution](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/output_layer_of_dpeth_Dout.png)
+
+#### filters
+
+convolution을 통해 input의 different aspects 또는 features를 추출하기위해서 a wide range of different filters가 사용된다. each type of filter helps to extract certain features. (e.g., input image의 horizontal/ vertical/ diagonal edges, etc) 
+
+CNN에서는 convolution을 통해 training 과정으로 학습된 weights를 가진 filters를 사용해서 different feature들을 extract한다. 추출된 features를 결국 통합해서 final decision(예측값)을 만들어낸는 것이다. 
+
+그래서 convolution은 set of filters로 정의된다. filter가 input feature map의 submatrix에 적용되면 결과는 다음 그림과 같이 sum of product of every element of the filter with the element in the same position of the submatrix이다. 
+
+![filter operation](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TSC_CNN_filter_computation.png) 
+
+하나의 input feature map과 하나의 filter로 생성되는 convolution result는 ordered feature map (obtained by applying the filter across the width and height of the input feature map)이다.
+
+![filters applied](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TSC_CNN_filters_applied.png)
+
+하나의 convolutional layer는 every filter과 every input feature map사이에서 convolution을 수행한다. filters의 value들은 trainable weights이고 훈련과정을 통해서 학습된다. 
+
+#### parameters
+
+convolutional layer의 주요 parameter는 stride와 padding이다. 그림으로만 간단하게 각각의 parameter를 표현하자면, 다음과 같다.
+
+stride - In particular, the value of stride indicates how many units must be shifted at a time.
+
+![stride](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TSC_CNN_strides.png)
+
+padding - Padding indicates how many extra columns and rows to add outside an input feature map, before applying a convolution filter. 보통 dummy value (=0)로 채워진다. padding이 사용되는 이유는 convolution filter가 input feature map에 적용되면서 size가 감소되기때문에, original size를 preserve하거나 size가 너무 작아지지 않도록 하기 위해서 padding이 활용된다.
+
+![padding](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/TSC_CNN_padding.png)
+
+<br>
+
+### 1-D Convolution
+
+time series input feature map을 보면 time length=n, width(feature dimension)=k로 설정되있다. (e.g., 하나의 recorded instance가 k개의 variables로 구성되어있고 각각의 variable들이 n개의 time step으로 측정되었음. 시계열 날씨 데이터라면 variable들은 temperature, pressure, humidity, 등이 될 수 있다.)
+
+1-D convolution for time series의 경우에는 다음 그림과 같이 convolution kernels은 항상 time series와 같은 width k를 가지고있지만 length n은 다를 수 있다. Given a time series data, kernel이 time series의 beginning에서 부터 end까지 한방향으로 convolution을 수행하며 이동한다. (time을 따라 1-D이기때문에 보통 2-D convolution이 images에 적용되는듯이 image의 width와 height에 따라 좌우로 움직이는것이 아님.) 
 
 ![1-D convolution for time series](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/1-D_Convolution_for_Time_Series.png)
 
-Kernel(filter)의 elements들은 특정 given point에서 cover하는 time series data의 corresponding element로 multiply된다. 이 multiplication의 결과들은 더해서 하나의 value로 통합되고, 여기에 nonlinear activation function이 적용된다. 
+Kernel(filter)의 element들은 특정 given point에서 cover하는 time series data의 corresponding element로 multiply된다. 이 multiplication의 결과들은 더해서 하나의 value로 통합되고, 여기에 nonlinear activation function이 적용된다. 
 
 예시) if convoluting(multiplying) a filter of length=3 with a univariate time series, by setting the filter values = [1/3, 1/3, 1/3], convolution will result in applying a moving average with a sliding window of length=3. 
 
@@ -77,12 +157,28 @@ CNN architecture for TSC(Time-Series Classification):
 
 <br>
 
+<br>
+
+## Hyperparameters
+
+다음 hyperparameter들을 조정하여 CNN의 성능을 tuning할 수 있다.
+
+- number of convolution filters
+- convolution filter size and initial values
+- pooling method and size
+- weight initialization 
+- activation function
+- number of epochs
+
+<br>
+
 <Br>
 
 # References
 
 1. [blog] how to use convolutional neural network for time series classification: https://towardsdatascience.com/how-to-use-convolutional-neural-networks-for-time-series-classification-56b1b0a07a57 
-
-2. [paper] multi-scale convolutional neural network: https://arxiv.org/pdf/1603.06995.pdf 
-
+2. [blog] Time Series Classification with Deep Learning by Marco Del Pra https://towardsdatascience.com/time-series-classification-with-deep-learning-d238f0147d6f
+3. [blog] A Comprehensive Introduction to Different Types of Convolutions in Deep Learning by Kunlun Bai https://medium.com/towards-data-science/a-comprehensive-introduction-to-different-types-of-convolutions-in-deep-learning-669281e58215
+4. [paper] multi-scale convolutional neural network: https://arxiv.org/pdf/1603.06995.pdf 
 3. [paper] Deep learning for time series classification: a review(2019, Hassan I.F., et al)
+
