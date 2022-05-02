@@ -164,11 +164,28 @@ CNN architecture for TSC(Time-Series Classification):
 다음 hyperparameter들을 조정하여 CNN의 성능을 tuning할 수 있다.
 
 - number of convolution filters
-- convolution filter size and initial values
+
+  number of times the input is processed/interpreted.
+
+- convolution filter size(kernel size) and initial values
+
+  kernel size는 number of time steps (considered in each "read" of the input sequence)를 제어함.
+
+  더 큰 kernel size --> less rigorous reading of the data를 얻게되지만, more generalized snapshot of the input이 확보 가능하기도 함.
+
 - pooling method and size
+
+  보통 max pooling, avg pooling이 사용 됨.
+
 - weight initialization 
+
 - activation function
+
 - number of epochs
+
+- data preparation (e.g., normalization, standardization)
+
+- regularization (e.g., dropout rate)
 
 <br>
 
