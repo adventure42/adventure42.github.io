@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Time-series Multiclass Classification"   # (require) a string title
+title: "CWT and Time-series Multiclass Classification"   # (require) a string title
 date: 2022-04-08       # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`
@@ -9,7 +9,7 @@ tags: [RCAClassification]                      # (custom) tags only for meta `pr
 
 <br>
 
-# Time-series Multiclass Classification
+# CWT기반 Time-series Multiclass Classification
 
 CWT(Continuous Wavelet Transform)와 CNN(Convolutional Neural Network)을 함께 사용해서 non-stationary multiple time series/ signals의 classification을 구현할 수 있다. 
 
