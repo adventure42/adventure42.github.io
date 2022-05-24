@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Evaluation metrics"                   # (require) a string title
+title: "Classification Evaluation metrics"                   # (require) a string title
 date: 2022-01-06       # (require) a post date
 categories: [machinelearning]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [evaluation]                      # (custom) tags only for meta `property="article:tag"`
