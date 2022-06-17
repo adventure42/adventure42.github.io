@@ -71,6 +71,165 @@ CNN 기반의 모델 중, 논문의 실험 결과 가장 성능이 높은 archit
 
 <br>
 
+### FCN(Fully Convolutional Neural Network)
+
+FCN은 local pooling layer없이 convolutional networks로 구성되어있어서 convolution과정동안 time series length가 동일하게 유지된다. 
+
+mention된 FCN 모델은 3개의 convolutional blocks로 구성되어있고, 각 block은 3개의 operations를 포함하고있다 - convolution, followed by batch normalization, followed by ReLU activation function.
+
+마지막 convolutional block의 output은 GAP (Global average pooling)구간에 input되어서 time dimension 전체를 기반으로 average된다. 그 다음, softmax classifier를 fully connected network으로 구현하여 모델의 final output을 구한다. 
+
+GAP를 활용하기때문에 FCN에서는 "invariance in number of parameters across time series of different lengths"와 같은 장점을 가지고있다. 이 invariance 특성이 있기때문에 transfer learning도 적용 가능하다. 
+
+example of FCN:
+
+```python
+# source code provided by "Deep Learning for Time Series Classification" repository (https://github.com/hfawaz/dl-4-tsc)
+
+def build_FCN(self, input_shape, nb_classes):
+    input_layer = keras.layers.Input(input_shape)
+
+    conv1 = keras.layers.Conv1D(filters=128, kernel_size=8, padding='same')(input_layer)
+    conv1 = keras.layers.BatchNormalization()(conv1)
+    conv1 = keras.layers.Activation(activation='relu')(conv1)
+
+    conv2 = keras.layers.Conv1D(filters=256, kernel_size=5, padding='same')(conv1)
+    conv2 = keras.layers.BatchNormalization()(conv2)
+    conv2 = keras.layers.Activation('relu')(conv2)
+
+    conv3 = keras.layers.Conv1D(128, kernel_size=3,padding='same')(conv2)
+    conv3 = keras.layers.BatchNormalization()(conv3)
+    conv3 = keras.layers.Activation('relu')(conv3)
+
+    gap_layer = keras.layers.GlobalAveragePooling1D()(conv3)
+
+    output_layer = keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
+
+    model = keras.models.Model(inputs=input_layer, outputs=output_layer)
+
+    model.compile(loss='categorical_crossentropy', optimizer = keras.optimizers.Adam(), 
+        metrics=['accuracy'])
+
+    reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, 
+        min_lr=0.0001)
+
+    file_path = self.output_directory+'best_model.hdf5'
+
+    model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss', 
+        save_best_only=True)
+
+    self.callbacks = [reduce_lr,model_checkpoint]
+
+    return model 
+```
+
+<br>
+
+<br>
+
+### ResNet
+
+mention된 TSC DL중 가장 deep architecture을 가지고있다. (총 11 layers where first 9 layers are convolutional followed by GAP). ResNet의 주요 특징은 shortcut역할을 하는 residual connection이 convolutional layers 사이에 존재한다는 것이다. 이 shortcut은 linear shortcut으로 residual block의 output을 input과 연결해서 connection을 통해 직접적으로 gradient가 flow되도록 한다. 이런 특징은 vanishing gradient가 발생할 위험을 감소시켜주어서 DL model의 훈련에 더 좋은 영향을 끼친다. 
+
+ResNet 모델은 3개의 residual blocks로 구성되어있고 FCN과 비슷하게 GAP layer와 final softmax classifier로 연결 되어있다. 각 residual block은 3개의 convolutions로 구성되어있고, 이들의 output은 residual block의 input으로 더해져서 다음 layer로 flow된다. 
+
+ResNet도 FCN과 비슷하게 network 모델이 다른 dataset으로 훈련되었어도 동일한 number of parameters를 가지는 장점을 가지고있다. 그래서 network의 hidden layer의 변경 없이도 transfer learning이 가능하다. 
+
+```python
+# source code provided by "Deep Learning for Time Series Classification" repository (https://github.com/hfawaz/dl-4-tsc)
+
+def build_model(self, input_shape, nb_classes):
+        # number of filters for all convolutions is fixed to 64
+        n_feature_maps = 64
+        print("input shape: ",input_shape)
+        print("number of target classes: ",nb_classes)
+        
+        input_layer = keras.layers.Input(input_shape)
+
+        # BLOCK 1 (filter's length(i.e. kernel_size)=8,5,3 for the first, second, third convolutions respectively)
+
+        conv_x = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=8, padding='same')(input_layer)
+        conv_x = keras.layers.BatchNormalization()(conv_x)
+        conv_x = keras.layers.Activation('relu')(conv_x)
+
+        conv_y = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=5, padding='same')(conv_x)
+        conv_y = keras.layers.BatchNormalization()(conv_y)
+        conv_y = keras.layers.Activation('relu')(conv_y)
+
+        conv_z = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=3, padding='same')(conv_y)
+        conv_z = keras.layers.BatchNormalization()(conv_z)
+
+        # expand channels for the sum
+        shortcut_y = keras.layers.Conv1D(filters=n_feature_maps, kernel_size=1, padding='same')(input_layer)
+        shortcut_y = keras.layers.BatchNormalization()(shortcut_y)
+
+        output_block_1 = keras.layers.add([shortcut_y, conv_z])
+        output_block_1 = keras.layers.Activation('relu')(output_block_1)
+
+        # BLOCK 2
+
+        conv_x = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=8, padding='same')(output_block_1)
+        conv_x = keras.layers.BatchNormalization()(conv_x)
+        conv_x = keras.layers.Activation('relu')(conv_x)
+
+        conv_y = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=5, padding='same')(conv_x)
+        conv_y = keras.layers.BatchNormalization()(conv_y)
+        conv_y = keras.layers.Activation('relu')(conv_y)
+
+        conv_z = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=3, padding='same')(conv_y)
+        conv_z = keras.layers.BatchNormalization()(conv_z)
+
+        # expand channels for the sum
+        shortcut_y = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=1, padding='same')(output_block_1)
+        shortcut_y = keras.layers.BatchNormalization()(shortcut_y)
+
+        output_block_2 = keras.layers.add([shortcut_y, conv_z])
+        output_block_2 = keras.layers.Activation('relu')(output_block_2)
+
+        # BLOCK 3
+
+        conv_x = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=8, padding='same')(output_block_2)
+        conv_x = keras.layers.BatchNormalization()(conv_x)
+        conv_x = keras.layers.Activation('relu')(conv_x)
+
+        conv_y = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=5, padding='same')(conv_x)
+        conv_y = keras.layers.BatchNormalization()(conv_y)
+        conv_y = keras.layers.Activation('relu')(conv_y)
+
+        conv_z = keras.layers.Conv1D(filters=n_feature_maps * 2, kernel_size=3, padding='same')(conv_y)
+        conv_z = keras.layers.BatchNormalization()(conv_z)
+
+        # no need to expand channels because they are equal
+        shortcut_y = keras.layers.BatchNormalization()(output_block_2)
+
+        output_block_3 = keras.layers.add([shortcut_y, conv_z])
+        output_block_3 = keras.layers.Activation('relu')(output_block_3)
+
+        # FINAL
+
+        gap_layer = keras.layers.GlobalAveragePooling1D()(output_block_3)
+
+        output_layer = keras.layers.Dense(nb_classes, activation='softmax')(gap_layer)
+
+        model = keras.models.Model(inputs=input_layer, outputs=output_layer)
+
+        model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(),
+                      metrics=['accuracy'])
+
+        reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, min_lr=0.0001)
+
+        file_path = self.output_directory + 'best_model.hdf5'
+
+        model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss',
+                                                           save_best_only=True)
+
+        self.callbacks = [reduce_lr, model_checkpoint]
+
+        return model
+```
+
+<br>
+
 <br>
 
 # References
