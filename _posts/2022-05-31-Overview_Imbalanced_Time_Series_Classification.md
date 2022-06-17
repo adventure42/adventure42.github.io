@@ -1,7 +1,7 @@
 ---
 layout: post                          # (require) default post layout
-title: "Imbalanced Time Series Classification - Resampling method"   # (require) a string title
-date: 2022-05-24       # (require) a post date
+title: "Overview Imbalanced Time-Series Classification"   # (require) a string title
+date: 2022-05-31       # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`
 
