@@ -29,13 +29,76 @@ Fawaz의 논문에서는 DTW(dynamic time warping) 기법 기반의 DTW Barycent
 
 DTW란?
 
-서로 속도가 다른 두 개의 temporal sequence사이의 similarity를 측정하는 방법이다. 두 개의 time series 사이의 같은/다른점을 matching할 수 있어서 pattern recognition 또는 anomaly detection을 위해서도 활용된다. 단순한 Euclidean matching은 다음 그림과 같이 매우 restrictive하다. DTW는 다음 rule을 기반으로 두 time series를 matching한다.
+서로 속도가 다른 두 개의 temporal sequence사이의 similarity를 측정하는 방법이다. 두 개의 time series 사이의 같은/다른점을 matching할 수 있어서 pattern recognition 또는 anomaly detection을 위해서도 활용된다. 단순한 Euclidean matching은 다음 그림과 같이 매우 restrictive하다.
+
+DTW는 다음 rule을 기반으로 주어진 sequence들 사이의 optimal match를 구한다.
 
 <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/dtw-rules-formula.png" alt="dtw_rule" style="zoom:67%;" />
 
+글로 표현해보면,
+
+- first sequence의 모든 index는 second sequence의 one or more indices와 반드시 match되어야 함. and vice versa.
+- first sequence의 first index는 second sequence의 first index와 반드시 match되어야 함. 반드시 1:1일 필요는 없음. second sequence의 다른 indices와도 match 될 수 있음.
+- first sequence의 last index는 second sequence의 last index과 반드시 match 되어야 함. 위와 동일하게 1:1일 필요는 없음.
+- first sequence의 indices가 second sequence의 indices와 mapping되는 관계는 monotonically 증가해야 함. e.g., first sequence의 indices가 j>i라면, second sequence의 indices는 n>m이고, i는 n에, j는 m에 match되어야 함.
+
+DTW를 통해 찾을 수 있는 optimal match는 이 rule들을 모두 만족시키면서 minimal cost를 가지는 match이다. cost는 각각의 match된 pair of indices의 값의 absolute difference를 모두 더한 값으로 계산된다. 
+
+간단하게 표현한 문구는 다음과 같다.
+
+"head and tail must be positionally matched, no cross-match and no left-out"
+
 <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/DTW.jpg" alt="Euclidean vs. DTW" style="zoom:67%;" />
 
-Python에는 fastdtw라는 PyPi library가 있다. 이 library를 import해서 쉽게 matching하려는 두 time series의 distance를 계산할 수 있다.
+위 그림의 두 series에서 보이는바와 같이 blue lines으 red line보다 더 길지만, one-to-one match (Euclidean matching)대신에 one-to-many matching(DTW)을 통해 두 lines의 troughs와 peaks가 같은 pattern으로 match될 수 있다. 
+
+Python으로 계산하는 방식을 구현해보면,
+
+```python
+def dtw(s, t):
+    n, m = len(s), len(t)
+    dtw_matrix = np.zeros((n+1, m+1))
+    for i in range(n+1):
+        for j in range(m+1):
+            dtw_matrix[i, j] = np.inf
+    dtw_matrix[0, 0] = 0
+    
+    for i in range(1, n+1):
+        for j in range(1, m+1):
+            cost = abs(s[i-1] - t[j-1])
+            # take last min from a square box
+            last_min = np.min([dtw_matrix[i-1, j], dtw_matrix[i, j-1], dtw_matrix[i-1, j-1]])
+            dtw_matrix[i, j] = cost + last_min
+    return dtw_matrix
+```
+
+Matching하려는 sequence가 unlimited number of elements를 가진 경우와 같이 mapping이 매우 심하게 bent over되는 경우는 prevent하기 위해서 다음과 같이 'window constraint'를 지정해줄 수 있다.
+
+```python
+def dtw(s, t, window):
+    n, m = len(s), len(t)
+    w = np.max([window, abs(n-m)]) # window constraint
+    dtw_matrix = np.zeros((n+1, m+1))
+    
+    for i in range(n+1):
+        for j in range(m+1):
+            dtw_matrix[i, j] = np.inf
+    dtw_matrix[0, 0] = 0
+    
+    for i in range(1, n+1):
+        for j in range(np.max([1, i-w]), np.min([m, i+w])+1):
+            dtw_matrix[i, j] = 0
+    
+    for i in range(1, n+1):
+        for j in range(np.max([1, i-w]), np.min([m, i+w])+1):
+            cost = abs(s[i-1] - t[j-1])
+            # take last min from a square box
+            last_min = np.min([dtw_matrix[i-1, j], dtw_matrix[i, j-1], dtw_matrix[i-1, j-1]])
+            dtw_matrix[i, j] = cost + last_min
+    return dtw_matrix
+```
+
+fastdtw라는 PyPi library가 있다. 이 library를 import해서 쉽게 matching하려는 두 time series의 distance를 계산할 수 있다.
 
 <br>
 
@@ -86,3 +149,4 @@ DTW기반의 data augmentation을 기반으로 생성된 synthetic data를 통�
 1. Fawaz, Ismail, et al. Data augmentation using synthetic data for time series classification with deep residual networks (2018) 
 1. Wen, Qingsong, et al. Time Series Data Augmentation for Deep Learning: A Survey (2022)
 1. Understanding Dynamic Time Warping by Databricks (https://databricks.com/blog/2019/04/30/understanding-dynamic-time-warping.html)
+1. Dynamic Time Warping: Explanation and Code Implementation by Jeremy Zhang (https://towardsdatascience.com/dynamic-time-warping-3933f25fcdd)
