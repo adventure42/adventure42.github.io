@@ -29,7 +29,7 @@ Fawaz의 논문에서는 DTW(dynamic time warping) 기법 기반의 DTW Barycent
 
 DTW란?
 
-서로 속도가 다른 두 개의 temporal sequence사이의 similarity를 측정하는 방법이다. 두 개의 time series 사이의 같은/다른점을 matching할 수 있어서 pattern recognition 또는 anomaly detection을 위해서도 활용된다. 단순한 Euclidean matching은 다음 그림과 같이 매우 restrictive하다.
+서로 속도가 다른 두 개의 temporal sequence사이의 similarity를 측정하는 방법이다. 두 개의 time series 사이의 같은/다른점을 matching할 수 있어서 pattern recognition 또는 anomaly detection을 위해서도 활용된다. 
 
 DTW는 다음 rule을 기반으로 주어진 sequence들 사이의 optimal match를 구한다.
 
@@ -48,9 +48,11 @@ DTW를 통해 찾을 수 있는 optimal match는 이 rule들을 모두 만족시
 
 "head and tail must be positionally matched, no cross-match and no left-out"
 
+단순한 Euclidean matching은 다음 그림과 같이 매우 restrictive하다.
+
 <img src="https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/DTW.jpg" alt="Euclidean vs. DTW" style="zoom:67%;" />
 
-위 그림의 두 series에서 보이는바와 같이 blue lines으 red line보다 더 길지만, one-to-one match (Euclidean matching)대신에 one-to-many matching(DTW)을 통해 두 lines의 troughs와 peaks가 같은 pattern으로 match될 수 있다. 
+두 series에서 보이는 바와 같이 blue lines으 red line보다 더 길지만, one-to-one match (Euclidean matching)대신에 one-to-many matching(DTW)을 통해 두 lines의 troughs와 peaks가 같은 pattern으로 match될 수 있다. 
 
 Python으로 계산하는 방식을 구현해보면,
 
@@ -100,6 +102,22 @@ def dtw(s, t, window):
 
 fastdtw라는 PyPi library가 있다. 이 library를 import해서 쉽게 matching하려는 두 time series의 distance를 계산할 수 있다.
 
+DTW는 "the optimal alignment between tow time series"를 찾아준다. DTW의 단점 중 하나는 한번에 단 두개의 time series만을 비교할 수 있다는 것이다. 여러개의 time series를 기반으로 comparison을 진행하기위해서는 DTW기반의 DBA(DTW Barycentric Averaging)을 활용할 수 있다. 
+
+DBA는 최근 data mining에서 많이 활용되고있는 algorithm으로 unlimited number of datasets를 한번에 비교하여서 각 dataset의 key joint features를 표현 할 수 있는 "consensus signal"을 생성해낼 수 있다. 이 논문에서는 DBA를 통해 data augmentation을 위한 synthetic data를 생성해냈다. DBA의 주요 장점은 multiple data streams의 average를 구하되, 이들의 key features를 유지할 수 있다는 점이다. 
+
+"tslearn"이라는 time series analysis를 위해 개발된 Python package를 보면, "barycenters"라는 module이 있다. 여기에 dtw_barycenter_averaging() 함수를 통해서 DBA algorithm을 쉽게 구현할 수 있다.
+
+[tslearn.barycenters.dtw_barycenter_averaging documentation](https://tslearn.readthedocs.io/en/stable/gen_modules/barycenters/tslearn.barycenters.dtw_barycenter_averaging.html)
+
+multiple time series의 일반적인 arithmetic mean과 DBA를 시각적으로 비교해보면 다음과 같이 차이점이 뚜렷하게 보인다. 
+
+![arith_mean](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/aboutDBA_arithmetic_mean.png)
+
+![DBA](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/aboutDBA_DBA_mean.png)
+
+
+
 <br>
 
 ## Model
@@ -124,11 +142,11 @@ Residual connection: linking input of a residual block to the input of its conse
 
 ## Data Augmentation
 
-Fawaz가 참고한 논문은 Forestier의 논문 "Generating synthetic time series to augment sparse datasetse (2017)"이다. 참고하는 논문의 DTW Barycentric Averaging (DBA) technique에 가중치를 적용하는 방식을 구현했다. Weighing 방식으로는 Average Selected (selecting a subset of close time series and filling their bounding boxes)가 사용되었다. 
+Fawaz가 참고한 논문은 Forestier의 논문 "Generating synthetic time series to augment sparse datasetse (2017)"이다. 참고하는 논문의 DTW Barycentric Averaging (DBA) technique에 varying 가중치를 적용하는 방식을 구현했다. Weighing 방식으로는 Average Selected (selecting a subset of close time series and filling their bounding boxes)가 사용되었다. 
 
-Weights가 assign되는 과정은 training set에서 random initial time series를 선택하고 initial weight 0.5를 주어주면서 시작된다. Initial time series의 5 nearest neighbors를 DTW를 기반으로 찾고, 이 중에서 random하게 2개를 선택하고 0.15의 weight를 assign한다. 그래서 total sum of assigned weights가 0.5 +(2*0.15) = 0.8이 되도록 한다. Training dataset 전체에서 normalized sum of weights(=1)를 유지하기위해서 나머지 weights는 0.2로 지정한다. 
+Weights가 assign되는 과정은 training set에서 random initial time series를 선택하고 initial weight 0.5를 주어주면서 시작된다. Initial time series의 5 nearest neighbor time series를 DTW를 기반으로 찾고, 이 중에서 random하게 2개를 선택하고 0.15의 weight를 assign한다. 그래서 total sum of assigned weights가 0.5 +(2*0.15) = 0.8이 되도록 한다. Training dataset 전체에서 normalized sum of weights(=1)를 유지하기위해서 나머지 time series들이 나누어 가지는 weights는 0.2로 지정한다. 
 
-Average sequence를 계산하기위해서는 DBA algorithm을 활용했다. 
+이렇게 averaging되는 time series에 주어지는 weights를 변경해가면서 원하는 만큼의 synthetic time series dataset을 생성할 수 있다. 
 
 <br>
 
@@ -147,6 +165,15 @@ DTW기반의 data augmentation을 기반으로 생성된 synthetic data를 통�
 # References
 
 1. Fawaz, Ismail, et al. Data augmentation using synthetic data for time series classification with deep residual networks (2018) 
+
+1. Forestier, G., Petitjean F., et al. Generating synthetic time series to augment sparse datasets (2017)
+
+   [corresponding github repository](https://github.com/fpetitjean/DBA)
+
 1. Wen, Qingsong, et al. Time Series Data Augmentation for Deep Learning: A Survey (2022)
+
 1. Understanding Dynamic Time Warping by Databricks (https://databricks.com/blog/2019/04/30/understanding-dynamic-time-warping.html)
+
 1. Dynamic Time Warping: Explanation and Code Implementation by Jeremy Zhang (https://towardsdatascience.com/dynamic-time-warping-3933f25fcdd)
+
+   
