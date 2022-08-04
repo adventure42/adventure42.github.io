@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Imbalanced Datasets"                   # (require) a string title
+title: "Preprocessing Imbalanced Datasets"                   # (require) a string title
 date: 2022-02-08       # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but makesure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`

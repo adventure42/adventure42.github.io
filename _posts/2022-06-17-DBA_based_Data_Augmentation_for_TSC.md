@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "Data Augmentation for TSC"   # (require) a string title
+title: "DBA based Data Augmentation for TSC"   # (require) a string title
 date: 2022-06-17       # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`
@@ -23,11 +23,11 @@ Time series data에 slicing window 기법을 문제없이 사용하기 위해서
 
 <br>
 
-## DTW
+## Dynamic Time Warping Barycentric Averaging
 
 Fawaz의 논문에서는 DTW(dynamic time warping) 기법 기반의 DTW Barycentric Averaging (DBA)알고리즘을 사용해서 데이터를 증폭하여 분류성능 개선에 도움이 되는지 실험을 진행했다. 
 
-DTW란?
+### DTW
 
 서로 속도가 다른 두 개의 temporal sequence사이의 similarity를 측정하는 방법이다. 두 개의 time series 사이의 같은/다른점을 matching할 수 있어서 pattern recognition 또는 anomaly detection을 위해서도 활용된다. 
 
@@ -103,6 +103,10 @@ def dtw(s, t, window):
 fastdtw라는 PyPi library가 있다. 이 library를 import해서 쉽게 matching하려는 두 time series의 distance를 계산할 수 있다.
 
 DTW는 "the optimal alignment between tow time series"를 찾아준다. DTW의 단점 중 하나는 한번에 단 두개의 time series만을 비교할 수 있다는 것이다. 여러개의 time series를 기반으로 comparison을 진행하기위해서는 DTW기반의 DBA(DTW Barycentric Averaging)을 활용할 수 있다. 
+
+<br>
+
+### DBA
 
 DBA는 최근 data mining에서 많이 활용되고있는 algorithm으로 unlimited number of datasets를 한번에 비교하여서 각 dataset의 key joint features를 표현 할 수 있는 "consensus signal"을 생성해낼 수 있다. 이 논문에서는 DBA를 통해 data augmentation을 위한 synthetic data를 생성해냈다. DBA의 주요 장점은 multiple data streams의 average를 구하되, 이들의 key features를 유지할 수 있다는 점이다. 
 
