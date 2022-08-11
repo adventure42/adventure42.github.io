@@ -34,7 +34,7 @@ Self-attention은 주로 Natural Language Processing을 목적으로 활용되�
 7. sum weighted values to get Output1(초록색)
 8. Repeat steps4~7 for Input2 & Input3
 
-![self-attention operations](C:\SJL\A-RCA\figures\self_attention_operations.gif)
+![self-attention operations](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/self_attention_operations.gif)
 
 <br>
 
@@ -61,7 +61,7 @@ SAITS is composed of 2 learning tasks:
 
 SAITS overview (shows how joint-optimization approach works)
 
-![SAITS overview](C:\SJL\A-RCA\figures\SAITS_overview.PNG)
+![SAITS overview](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SAITS_overview.PNG)
 
 <br>
 
@@ -71,7 +71,7 @@ Artificially masked values를 기반으로 prediction task를 수행한다. For 
 
 MIT task로 부터 다음과 같이 MAE와 MIT loss를 계산한다.
 
-![MIT_loss](C:\SJL\A-RCA\figures\SAITS_MIT_loss.PNG)
+![MIT_loss](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SAITS_MIT_loss.PNG)
 
 <br>
 
@@ -79,7 +79,7 @@ MIT task로 부터 다음과 같이 MAE와 MIT loss를 계산한다.
 
 ORT는 위 RNN기반 방식에서 언급된바와 같이 observed values를 기반으로 한 reconstruction task이다. After model processing, observed values in the output are different from their original values, and they are called reconstruction. ORT loss는 다음과 같이 계산된다.
 
-![ORT_loss](C:\SJL\A-RCA\figures\SAITS_ORT_loss.PNG)
+![ORT_loss](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SAITS_ORT_loss.PNG)
 
 <br>
 
@@ -95,15 +95,13 @@ ORT의 영향 - ensure model converges to the distribution of observed data
 
 
 
-![SAITS architecture](C:\SJL\A-RCA\figures\SAITS_architecture.PNG)
+![SAITS architecture](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SAITS_architecture.PNG)
 
 ### DMSA(Diagonally Masked Self Attention)
 
 To enhance SAITS’ imputation ability, the diagonal masks are applied inside the self-attention. Diagonal mask를 사용하면, t-th step에서의 input value들은 자신들을 볼 수 없고 자신의 estimation에는 기여할 수 없다. (아래 그림 참조) 그래서 그들의 estimation은 other (T-1) time steps의 input values에 의존하게 된다. 이런 특징은 DMSA가 하나의 attention operation만으로도 temporal dependencies와 feature correlation (between time steps in high dimensional space)을 capture할 수 있게해준다. 
 
-![diagonally masked self attention](C:\SJL\A-RCA\figures\SAITS_diagonally_masked_self_attention.PNG)
-
-
+![diagonally masked self attention](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/SAITS_diagonally_masked_self_attention.PNG)
 
 <br>
 
