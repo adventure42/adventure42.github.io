@@ -31,9 +31,33 @@ Python에서는 pandas 라이브러리의 isnull() 또는 notnull() method를 �
 
 Missing Data의 유형은 크게 3 가지로 나눌 수 있다:
 
-1. MAR(Missing at Random): missing value가 전체에서 자치하는 비율과 값이 있는 데이터 (observed data) 사이의 관계가 존재한다. (e.g., 특정 제품의 제조년도가 빠를수록 누락값이 더 많은 경우)
-2. MCAR(Missing Completely at Random): missing value가 전체에서 자치하는 비율이 다른 데이터값들과 아무런 관련이 없다. (e.g., 갑자기 정전으로 인해 설비가 멈추어서 데이터가 record되지 못한 경우)
-3. MNAR(Missing Not at Random): missing values가 우리가 알지 못하는 요인과 연관되어있다. 자칫하면 MCAR로 판단하여 missing data를 처리해버릴 수도 있지만, 먼저 MNAR을 의심하고 가능한 원인을 찾아낸는것이 필요하다. (e.g., 설비 노후로 인하여 점점 더 많은 missing values가 발생하는 경우)
+1. MAR(Missing at Random): missing value가 전체에서 자치하는 비율과 값이 있는 데이터 (observed data) 사이의 관계가 존재한다. (e.g., 특정 제품의 제조년도가 빠를수록 누락값이 더 많은 경우) 
+
+   Missing values depend only on observed values. Probability of being missing is the same ONLY within groups defined by the observed data.
+
+   Missing value를 가진 데이터를 분류하는 가장 broad한 유형이다. MAR is more general and more realistic than MCAR. Modern missing data methods generally start from the MAR assumption.
+
+   예시: 
+
+   1) When placed on a soft surface, a weighing scale may produce more missing values than when placed on a hard surface. If, however, we know surface type and if we can assume MCAR *within* the type of surface, then the data are MAR.
+
+   2) When we take a sample from a population, where the probability to be included depends on some known property. 
+
+2. MCAR(Missing Completely at Random): missing value가 전체에서 자치하는 비율이 다른 데이터값들과 아무런 관련이 없다. (e.g., 갑자기 정전으로 인해 설비가 멈추어서 데이터가 record되지 못한 경우) 
+
+   Missing values are independent of any other values. Probability of being missing is the same for all cases, so causes of the missing data are unrelated to the data. 그래서 일반적으로 missing value로 인한 complexity를 ignore할 수 있고, missing value를 가진 sample을 data set에서 제외하여 분석을 진행한다.
+
+   예시: 
+
+   A weighing scale that ran out of batteries. Some of the data will be missing simply because of bad luck. Another example is when we take a random sample of a population, where each member has the same chance of being included in the sample.
+
+3. MNAR(Missing Not at Random): missing values가 우리가 알지 못하는 요인과 연관되어있다. 자칫하면 MCAR로 판단하여 missing data를 처리해버릴 수도 있지만, 먼저 MNAR을 의심하고 가능한 원인을 찾아낸는것이 필요하다. (e.g., 설비 노후로 인하여 점점 더 많은 missing values가 발생하는 경우) 
+
+   Missing values depend on both observed and unobserved values. Probability of being missing varies for reasons that are unknown to us.
+
+   예시: 
+
+   The weighing scale mechanism may wear out over time, producing more missing data as time progresses, but we may fail to note this. If the heavier objects are measured later in time, then we obtain a distribution of the measurements that will be distorted. MNAR includes the possibility that the scale produces more missing values for the heavier objects (as above), a situation that might be difficult to recognize and handle.
 
 <br>
 
@@ -170,8 +194,9 @@ GMM is trained together with remaining network parameters. To process this proba
 
 # References
 
+1. "Concepts of MCAR, MAR, and MNAR" from "Flexible Imputation of Missing Data" by Stef van Buuren https://stefvanbuuren.name/fimd/sec-MCAR.html
 1. https://ragvenderrawat.medium.com/miss-forest-imputaion-the-best-way-to-handle-missing-data-feature-engineering-techniques-2e6922e5cecb
-1.  https://medium.com/analytics-vidhya/how-to-deal-with-missing-values-in-data-set-8e8f70ecf155
+1. https://medium.com/analytics-vidhya/how-to-deal-with-missing-values-in-data-set-8e8f70ecf155
 1. https://towardsdatascience.com/general-guidelines-on-handling-missing-data-in-pandas-67e03a3e343c
 1. https://www.researchgate.net/post/Is-it-possible-to-train-a-neural-network-with-missing-data
 1. https://towardsdatascience.com/using-the-missingno-python-library-to-identify-and-visualise-missing-data-prior-to-machine-learning-34c8c5b5f009
