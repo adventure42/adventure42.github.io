@@ -35,7 +35,7 @@ Python외에 타 언어에서도 일급함수 컨셉이 있음.
 
 <br>
 
-```Python
+```python
 def factorial(n):
     '''Factorial Function -> n: int'''
     if n == 1: # n < 2
@@ -84,7 +84,7 @@ note: 익명 함수 (lambda): 가급적 주석을 꼭 작성하라(다른사람 
 
 note: partial 사용법
 
-```Python
+```python
 # partial 사용법: 인수 고정 -> 콜백 함수 사용
 from operator import mul
 from functools import partial

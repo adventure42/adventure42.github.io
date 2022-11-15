@@ -15,16 +15,15 @@ tags: [DataProcessing]                      # (custom) tags only for meta `prope
 
 dataframe df의 행과 열 크기를 알려준다. tuple형태로, (행,열) 이 순서대로 출력.
 
-```
+```python
 dataframe.shape
-
 ```
 
 ## 데이터 타입
 
 자료형을 구성하는 데이터 타입 확인
 
-```
+```python
 dataframe.dtypes
 ```
 
@@ -33,7 +32,7 @@ dataframe.dtypes
 
 dataframe의 columns의 이름 확인
 
-```
+```python
 dataframe,columns
 ```
 
@@ -42,7 +41,7 @@ dataframe,columns
 총 인덱스 수, column 수
 column별 이름, non-null 데이터 수, 데이터 타입
 
-```
+```python
 dataframe.info()
 ```
 
@@ -51,7 +50,7 @@ dataframe.info()
 dataframe의 평균, 표준편차, 최소값, 최대값, quartile, 데이터 타입
 (문자열인 경우, count, unique, top, freq 알려줌)
 
-```
+```python
 dataframe.describe()
 
 #dataframe의 description에 numberic값을 가진 column들만 포함
@@ -77,7 +76,7 @@ df.loc[[행],[열]], df.iloc[[행],[열]]으로 특정 행&열을 지정해서 �
 
 데이터프레임내 데이터를 수정/삭제하는 작업을 하는 동안 원본은 유지하도록 복사본을 생성해서 작업할 수 있다. 
 
-```
+```python
 #dataframe의 첫 10줄만 복사본을 생성해서 dataframeC에 저장함.
 dataframeC = dataframe.head(10).copy()
 ```
@@ -86,7 +85,7 @@ dataframeC = dataframe.head(10).copy()
 
 columnA, columnB 별로(이 순서대로) 그룹화 하여 columnC와 columnD의 평균값 구할 수 있다. groupby()함수에 들어가는 column 순서대로 group된다. 먼저 column A의 종류별로 group되고 그 다음, 각 group내에서 columnB의 종류별로 group된다. 
 
-```
+```python
 multi_group_mean = dataframe.groupby(['columnA','ColumnB'])[['columnC','columnD']].mean()
 ```
 
@@ -94,7 +93,7 @@ multi_group_mean = dataframe.groupby(['columnA','ColumnB'])[['columnC','columnD'
 
 nunique()로 빈도수를 구할 수 있다. (아래 예시와 같이 그룹화 한 후 빈도수 구하는 경우가 많음)
 
-```
+```python
 df.groupby('columnA')['columnB'].nunique()
 ```
 
@@ -104,7 +103,7 @@ vector 연산이다.
 
 broadcasting : 시리즈나 데이터프레임에 있는 모든 데이터에 대해 한 번에 연산을 하는 것을 말한다.
 
-```
+```python
 #같은 길이의 백터로 더하기, 곱하기 연산은 같은 길이의 백터가 출력된다.
 #백터 + 백터, 시리즈는 백터의 한 종류이다.
 v1 = columnA + columnB 
@@ -116,7 +115,7 @@ v1 = columnA + columnB
 
 drop메서드에서 : 첫번째 인자는 열이름, 두번째 인자는 axis=1은 **칼럼의 레이블을** 의미하고 axis=0은 **인덱스를** 의미한다.
 
-```
+```python
 #columnA를 삭제한 dataframe2 생성
 dataframe2 = dataframe.drop(['columnA'], axis=1)
 
@@ -130,7 +129,7 @@ astype() 함수에 원하는 data type을 인자값으로 전달해서 열의 dt
 
 tip: 문자열(object)보다 category 데이터타입이 메모리를 적게 차지한다.
 
-```
+```python
 dataframe['columnC'] = dataframe['columnC'].astype(str)
 dataframe['columnC'] = dataframe['columnC'].astype(int)
 dataframe['columnC'] = dataframe['columnC'].astype(float)

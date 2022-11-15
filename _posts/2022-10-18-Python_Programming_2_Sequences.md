@@ -37,7 +37,7 @@ flat: 한개의 자료형만 담을 수 있음. (e.g., str, bytes, bytearray, ar
 
 불변: 한번 선언하면, 변경할 수 없음. (e.g., tuple, str, bytes, 등)
 
-```Python
+```python
 # Mutable (가변형)  vs. Immutable(불변)
 l = (15, 20, 25)
 m = [15, 20, 25]
@@ -165,7 +165,7 @@ print([id(i) for i in marks2])
 
 *asterik을 활용하여 유연한 unpacking/packing을 구현할 수 있음.
 
-```Python
+```python
 # *를 사용해서 unpacking이 가능 함.
 # 그냥 divmod에 숫자 두 개를 주어서 실행.
 print(divmod(100,9))
@@ -199,7 +199,7 @@ print(x, y, w, z, v, rest)
 
 ### 정렬
 
-```Python
+```python
 # sort vs. sorted
 # reverse, key=len, key=str.lower, key=func...
 
@@ -249,7 +249,7 @@ hash table: key에 value를 저장하는 구조. 적은 resource로 많은 데�
 
 접근하는 과정: 값을 해싱 함수에 넣고  -> 해쉬 주소값을 찾고 -> 주소값을 기반으로 key에 대한 value의 위치를 찾아서 value 참조
 
-```Python
+```python
 # Dict Setdefault 예제
 source = (
     ('k1', 'val1'),
@@ -287,7 +287,7 @@ print(new_dict3)
 
 매우 중요한 정보를 보관해야하는 경우 활용 immutable dictionary 또는 immutable set을 다음과 같이 활용할 수 있음.
 
-```Python
+```python
 # Immutable dictionary (읽기 전용의 dictionary)
 from types import MappingProxyType
 

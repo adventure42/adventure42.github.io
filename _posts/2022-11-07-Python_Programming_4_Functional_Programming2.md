@@ -33,7 +33,7 @@ closure는 불변자료구조 및 원자성, 일관성 (atomic, STM)을 통해 �
 
 결과를 누적해 나아가는 방식의 구현:
 
-```Python
+```python
 # 결과 누적 (함수 사용)
 print(sum(range(1,51)))
 print(sum(range(51,101)))
@@ -63,7 +63,7 @@ print(averager_cls(193))
 
 정리: 처음 호출은 outer function(외부)의 호출로 시작됨. inner function(내부)에 내가 define해둔 task들을 수행하고, outer function에 선언된 자유 변수에 inner function의 수행을 통해 얻은 상태를 기억하도록 함.
 
-```Python
+```python
 # Closure 사용
 def closure_ex1():
     # free variable(자유변수)
@@ -88,7 +88,7 @@ print(avg_closure1(50))
 
 
 
-```Python
+```python
 # 잘못된 closure 사용
 def closure_ex2():
     # Free variable
@@ -159,7 +159,7 @@ decorator의 단점:
 
 이미 사용해본 decorator의 예시) @classmethod, @staticmethod
 
-```Python
+```python
 # decorator 실습
 import time
 

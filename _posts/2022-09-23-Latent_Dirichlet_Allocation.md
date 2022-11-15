@@ -27,9 +27,7 @@ Topic modeling을 통해 어떤 topic들이 존재하는지를 비슷한 또는 
 
 # Latent Dirichelet Allocation
 
-A.   LDA(Latent Dirichlet Allocation): Topic modeling을 구현할 수 있는 알고리즘 중 하나이다. Document들을 구성하는 word들을 기반으로 topic을 구분하여 각 document안의 word를 알맞은 topic에 assign하고, 이를 통해 topic들에 document들을 mapping한다. LDA의 동작 원리는 document를 생성하는 방식에 기반되어 있다. 먼저 set of topics를 선택하고, 각 topic에 대해 set of words를 선택하여서 document를 생성하는 것이다. LDA 알고리즘은 위 과정을 반대로 진행하는 방식으로 topic들을 찾는다. 만약 M개의 document들이 주어지고, K개의 topic들이 존재한다면, LDA 알고리즘의 동작 방식은 Fig 1의 plate diagram으로 표현된다.     
-
-<br>                    
+A.   **LDA**(Latent Dirichlet Allocation): Topic modeling을 구현할 수 있는 알고리즘 중 하나이다. Document들을 구성하는 word들을 기반으로 topic을 구분하여 각 document안의 word를 알맞은 topic에 assign하고, 이를 통해 topic들에 document들을 mapping한다. LDA의 동작 원리는 document를 생성하는 방식에 기반되어 있다. 먼저 set of topics를 선택하고, 각 topic에 대해 set of words를 선택하여서 document를 생성하는 것이다. LDA 알고리즘은 위 과정을 반대로 진행하는 방식으로 topic들을 찾는다. 만약 M개의 document들이 주어지고, K개의 topic들이 존재한다면, LDA 알고리즘의 동작 방식은 Fig 1의 plate diagram으로 표현된다.                      
 
 LDA 알고리즘 작동 방식을 표현하는 plate diagram:
 
@@ -43,17 +41,11 @@ LDA 알고리즘 작동 방식을 표현하는 plate diagram:
 
 위 과정을 반복을 통해 각 document에 적용하여 Fig 1에 숨겨진 variable들을 찾는다.
 
- <br>
+B.   **Word**: Document를 구성하는 word들을 가리킨다. 자연어 데이터 처리의 경우, LDA 알고리즘에 입력 할 words들은 전처리 과정을 통해서 topic들을 인식하는 데에 도움을 주지 못할 word들(is, are, of, a, the, 등)이 제거되고, 각 word는 알고리즘이 다룰 수 있는 숫자형태의 vector로 변환된다.
 
-B.   Word: Document를 구성하는 word들을 가리킨다. 자연어 데이터 처리의 경우, LDA 알고리즘에 입력 할 words들은 전처리 과정을 통해서 topic들을 인식하는 데에 도움을 주지 못할 word들(is, are, of, a, the, 등)이 제거되고, 각 word는 알고리즘이 다룰 수 있는 숫자형태의 vector로 변환된다.
+C.   **Document**: Document는 ‘collection of words’ 또는 ‘bag of words’이다. 여기서 word들간의 순서는 고려되지 않고, 자연어 처리의 경우, word의 문법적인 역할 또한 고려되지 않는다.
 
- <br>
-
-C.   Document: Document는 ‘collection of words’ 또는 ‘bag of words’이다. 여기서 word들간의 순서는 고려되지 않고, 자연어 처리의 경우, word의 문법적인 역할 또한 고려되지 않는다.
-
- <br>
-
-D.   Topics: Document들과 그를 구성하는 word들의 군집 또는 빈도수와 같은 특성을 기반으로 구분되는 themes/topic들이다. LDA 알고리즘 훈련 시, document들 내에 존재할 topic들의 개수는LDA알고리즘의 hyperparameter로 설정된다. 
+D.   **Topics**: Document들과 그를 구성하는 word들의 군집 또는 빈도수와 같은 특성을 기반으로 구분되는 themes/topic들이다. LDA 알고리즘 훈련 시, document들 내에 존재할 topic들의 개수는LDA알고리즘의 hyperparameter로 설정된다. 
 
 <br>
 
