@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "How to Control Reprobucibility in ML Model"   # (require) a string title
+title: "How to Control Reproducibility in ML Model"   # (require) a string title
 date: 2022-07-28      # (require) a post date
 categories: [RCAClassification]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
 tags: [RCAClassification]                      # (custom) tags only for meta `property="article:tag"`

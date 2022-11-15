@@ -40,7 +40,7 @@ Python code로 구현 할 수 있는 연산을 Cython을 통해서 C로 구현�
 
 2. setup file 생성
 
-   다음과 같은 내용을 담은 setup.py 파일을 생성해쟈지만 Cython이 C로 translate될 수 있다.
+   다음과 같은 내용을 담은 setup.py 파일을 생성해야지만 Cython이 C로 translate될 수 있다.
 
    ```python
    from distutils.core import setup
