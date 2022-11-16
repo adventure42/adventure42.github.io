@@ -22,31 +22,45 @@ import pandas as pd
 
 # dataframe 생성
 
-## 1. 파일에서 읽어오기
-1. xlsx, csv, pickle 파일한번에 열기
-read_csv() / read_excel() / read_pickle()
-파일 경로는 full 경로로 넣어도된다. 또는 현재 위치라면 ./을 사용, 상위 폴더에서 경로를 지정하려면 ../을 사용한다.
-```python
-# sep를 따로 지정하지 않으면 default는 comma이다.
-dataframe = pd.read_csv('읽어오려는 파일 폴더 경로/file.csv', sep='\t')
 
-dataframe = pd.read_pickle('읽어오려는 파일 폴더 경로/file.pickle')
-```
+
+## 1. 파일에서 읽어오기
+
+1. xlsx, csv, pickle 파일한번에 열기
+
+  read_csv() / read_excel() / read_pickle()
+
+  파일 경로는 full 경로로 넣어도된다. 또는 현재 위치라면 ./을 사용, 상위 폴더에서 경로를 지정하려면 ../을 사용한다.
+
+  ```python
+  # sep를 따로 지정하지 않으면 default는 comma이다.
+  dataframe = pd.read_csv('읽어오려는 파일 폴더 경로/file.csv', sep='\t')
+  
+  dataframe = pd.read_pickle('읽어오려는 파일 폴더 경로/file.pickle')
+  ```
+
+
+
 2. pickle library사용
-pickle.load()
-```python
-import pickle
-with open("읽어오려는 파일 폴더 경로/file.pkl", "rb") as f:
-    dataframe = pickle.load(f)
-```
+  pickle.load()
+
+  ```python
+  import pickle
+  with open("읽어오려는 파일 폴더 경로/file.pkl", "rb") as f:
+      dataframe = pickle.load(f)
+  ```
+
+
 
 3. json file
-json file안에 한줄에 한개의 record가 있는경우, lines = True로 지정해서 한줄씩 json object를 읽어오게 한다.
-```python
-dataframe = pd.read_json('data.json',lines=True)
-```
 
-<br>
+  json file안에 한줄에 한개의 record가 있는경우, lines = True로 지정해서 한줄씩 json object를 읽어오게 한다.
+
+  ```python
+  dataframe = pd.read_json('data.json',lines=True)
+  ```
+
+  <br>
 
 ## 2. constructor pd.DataFrame()
 
