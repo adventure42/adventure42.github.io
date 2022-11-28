@@ -156,6 +156,8 @@ switching 비용이 큰 경우가 종종 있기 때문에, multi thread보다 �
 
 **coroutine**: 단일 (single) thread를 의미함. 메인과 서브가 서로 상호 작용하면서 stack을 기반으로 동작하는 비동기 작업. 단일 thread에서도 순차적으로 상호작용을 하면서 여러 작업이 진행될 수 있음. coroutine은 Python외에 Golang과 같은 다른 언어에서도 구현 가능함.
 
+즉, main function 안에서 여러 sub routine을 실행 + 중지하는 과정을 구현해서 하나의 thread안에서 여러 작업이 동기화되어 진행 될 수 있도록 한다. 여기서 yield와 send를 통해 main과 sub가 서로 데이터를 주고 받을 수 있다.
+
 <br>
 
 **yield**: yield라는 keyword를 통해서 메인 <-> 서브 루틴이 서로 상호작용함. coroutine을 제어 할때에 yield keyword를 사용 함. yield와 send를 통해서 coroutine을 제어하고, 상태를 저장하고, 양방향으로 데이터 전송을 함.
@@ -264,6 +266,46 @@ print(getgeneratorstate(cr3))
 print("확인")
 print(cr3.send(100)) # output = send의 결과로 ">>> coroutine received : 100" 그리고 subroutine이 나에게 주는 값 "110"은 print의 결과로 확인
 ```
+
+<br>
+
+Iterable한 object내 element를 순차적으로 꺼내기 위해서 다음과 같이 coroutine을 활용해볼 수 있다.
+
+```python
+# Coroutine Ex3
+def generator1():
+    for x in 'AB': # iterable한 string에서 순차적으로 끝날때까지
+        yield x
+    for y in range(1,4): # 사실, range가 list를 반환해주는 것도 generator를 활용하는 것임.
+        yield y
+
+t1 = generator1()
+print(next(t1))
+print(next(t1))
+print(next(t1))
+print(next(t1))
+print(next(t1))
+# print(next(t1)) # StopIteration 예외 발생
+
+t2 = generator1()
+print(list(t2)) # 알아서 next가 호출되어서 list가 생성됨.
+
+
+# yield from을 활용해보기
+def generator2():
+    yield from 'AB' 
+    yield from range(1,4) 
+
+t3 = generator2()
+print(next(t3))
+print(next(t3))
+print(next(t3))
+print(next(t3))
+print(next(t3))
+# print(next(t3)) # StopIteration 예외 발생
+```
+
+
 
 <br>
 
