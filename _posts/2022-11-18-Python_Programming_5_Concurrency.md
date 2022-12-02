@@ -132,7 +132,11 @@ for chr, group in gen9:
 
 장점: 단일 프로그램안에서 여러 일을 해결
 
+Concurrency가 더 적합한 경우:
 
+실행하려는 task가 IO-bound operations (e.g., querying a web service or reading large files) 이라면, concurrency option이 더 적합하다. If we run two CPU bound operations as two threads then they will run sequentially and we will not yield any benefits in Python. IO-bound operations에는 external resources (e.g., hardware or network)와 communicate해야하는 과정이 요구되고, I/O bound operation이 I/O waiting 상태로 external resource로 부터 result를 반환 받기까지 기다려야하기 때문임. 또한 context switching이나 lock acquisition 때문에 여러 thread로 실행하게되면 오히려 더 긴 소요시간이 발생할 수 있다. 
+
+<br>
 
 **병렬성(parallelism)** - 여러 computer가 여러 작업을 동시에 수행. worker가 여러 작업을 동시에 수행
 
@@ -141,6 +145,12 @@ for chr, group in gen9:
 동시에 다 작업해서 취합은 한곳에서
 
 장점: 속도
+
+Parallelism이 더 적합한 경우:
+
+"At a high level, if your Python application is performing CPU bound operations such as number crunching or text manipulation then go for **parallelism**. Concurrency will not yield many benefits in those scenarios."
+
+<br>
 
 <br>
 
@@ -305,8 +315,6 @@ print(next(t3))
 # print(next(t3)) # StopIteration 예외 발생
 ```
 
-
-
 <br>
 
 <br>
@@ -314,3 +322,5 @@ print(next(t3))
 # References
 
 1. 우리를 위한 프로그래밍: 파이썬 중급 인프런 오리지널
+1. "Advanced Python concurrency and parallelism": https://medium.com/fintechexplained/advanced-python-concurrency-and-parallelism-82e378f26ced
+1. "Python concurrency - making sense of asyncio": https://learningdaily.dev/python-concurrency-making-sense-of-asyncio-ebf18d722341

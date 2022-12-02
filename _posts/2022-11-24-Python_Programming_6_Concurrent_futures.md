@@ -59,12 +59,27 @@ if __name__ == '__main__': # 이렇게 시작점을 명시적으로 작성
 ```
 
 1. 멀티스레딩/ 멀티 프로세싱 API가 통일되어있어서 -> 적합한 목적에 따라 선택하여 사용하기가 매우 쉬움.
-
 2. 실행 중에 작업 취소, 완료여부 체크, 타임아웃 옵션, 콜백 추가, 동기화 코드 매우 쉽게 작성 -> Promise 개념
 
-GIL : Global Interpreter Lock - 전체가 lock이 걸리는 현상. 두 개 이상의 스레드가 동시에 실행될때, 하나의 자원을 엑세스 하는 경우 -> 문제점을 방지하기 위해
+<br>
+
+<br>
+
+## GIL (Global Interpreter Lock)
+
+Python interpreter가 GIL을 사용해서 thread에 lock을 건다. 여러 thread가 shared memory에 있는 python object를 동시에 access하여 문제가 발생하는것을 방지해준다.
+
+GIL : Global Interpreter Lock - 전체가 lock이 걸리는 현상. 두 개 이상의 스레드가 동시에 실행될때, 하나의 자원을 엑세스 하는 경우 ->  문제점을 방지하기 위해
+
+"GIL ensures that only one thread can run the interpreter at a given instance of time."
 
 GIL 실행, 리소스 전체에 lock이 걸린다. --> Context Switch (문맥 교환) GIL 때문에 차라리 스레드 하나만을 쓸때 더 빠를 때도 있음. GIL은 멀티프로세싱 사용, CPython(GIL 걸리지 않음) 
+
+그래서 GIL prevents the CPU-bound threads from executing in parallel.
+
+그렇다고 multi thread 작업이 불가능한것이 아님. Multi-threads improve the performance of the Python application for IO-bound operations even though the interpreter is only executing the code for one thread at a time. 다음 그림과 같이 multi thread 작업이 수행된다. GIL is only acquired by one thread at a time.
+
+![how multi-thread works in Python](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multi-thread_GIL.png)
 
 <br>
 
