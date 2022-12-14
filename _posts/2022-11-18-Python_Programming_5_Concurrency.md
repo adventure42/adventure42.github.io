@@ -17,11 +17,11 @@ Python generators : simple way of creating iterators. A generator, in simple wor
 
 iterator : 반복 가능한 객체 (iterable objects) can be used in for loops.
 
-examples of iterator: collections, text files, list, Dict, Set, Tuple, unpacking, *args...
+examples of iterator: collections, strings, lists, dictionaries, sets, tuples, unpacking, *args...
 
 <br>
 
-Iterator
+### Iterator
 
 반복가능한 이유 : iter(x) 함수 호출 가능.  
 
@@ -40,17 +40,113 @@ while True:
         break
 ```
 
+<br>
 
+<br>
 
-generator 패턴
+### Generator
 
-1. 지능형 리스트, 딕션어리, 집합 -> 데이터 양 증가 후, 메모리 사용량 증강 -> generator 사용 권장
+기본 class를 사용하여 iterator를 만들려면 다음과 같이 다소 긴 code가 필요하다.
 
-2. 단위 실행 가능한 coroutine  구현과 연동
+```python
+# class-based iterator to produce odd numbers
+class get_odds:
+    def __init__(self, max):
+        self.n=3
+        self.max=max
+    
+    # return the iterator object
+    def __iter__(self):
+        return self
+    
+    # return the next value in the sequence (or raise StopIteration when there are no values to be returned)
+    def __next__(self):
+        if self.n <= self.max:
+            result = self.n
+            self.n += 2
+            return result
+        else:
+            raise StopIteration
+   
 
-3. 작은 메모리 조각 사용 
+numbers = get_odds(10)
+print(next(numbers))
+print(next(numbers))
+print(next(numbers))
+```
 
-Generator는 built-in keyword (yield)를 사용해서 다음에 return할 요소의 위치를 기억함. index를 굳이 사용하지 않아도 됨. 나중에 yield는 coroutine에 사용 됨.
+output은 3, 5, 7이다.
+
+"get_odd" class에서 위 code와 같이 iter와 next 함수가 implement되어야한다. 
+
+generator를 사용하며느 이 과정이 훨씬 더 간소화될 수 있다.
+
+<br>
+
+#### regular function vs. generator function
+
+- In regular function, return statement terminates the function completely, but in generator function, by using the built-in keyword**yield** it can save the state of the function. 
+- When using generator function, next time the function is called, execution continues from where it left off, with the same variable values it had before yielding
+- generator function은 function을 수행하지않고, generator object를 생성하여 반환만 한다. generator object에 next() 함수가 호출될때에만 generator function내의 내용이 수행된다. 
+
+<br>
+
+Generator를 사용해서 위와 동일한 iterator를 구현할 수 있다.
+
+```python
+def get_odds_generator():
+    n=1
+    n+=2
+    yield n
+    n+=2
+    yield n 
+    n+=2
+    yield n
+    
+    
+# Call the generator function to get the generator or the iterator object returned as "numbers"
+numbers=get_odds_generator()
+# Call next() method to retrieve elements from the iterator object "numbers"
+# value of first yield = 3
+print(next(numbers))
+# value of second yield = 5
+print(next(numbers))
+# value of third yield = 7
+print(next(numbers))
+```
+
+output은 동일하게 3, 5, 7이다.
+
+또 다른 예시,
+
+```python
+def fibonacci_generator():
+    n1=0
+    n2=1
+    while True:
+        yield n1
+        n1, n2 = n2, n1 + n2
+   
+
+sequence= fibonacci_generator()
+print(next(sequence))
+print(next(sequence))
+print(next(sequence))
+print(next(sequence))
+print(next(sequence))
+```
+
+output은 Fibonacci numbers 시퀀스의 첫 5개 숫자인  0, 1, 1, 2, 3 이다.
+
+<br>
+
+A function becomes a generator function if it contains at least one **yield** statement
+
+generator function을 활용한 다른 예시:
+
+일반적으로 generator는 loop과 함께 implement된다. 위 예시들은 next()함수의 기능을 보여주기 위한것이고, 일반적으로 generator 함수를 통해 item을 하나씩 꺼내려면, 당연히 loop이 필요할 것이다.
+
+Generator는 built-in keyword **yield**를 사용해서 다음에 return할 요소의 위치를 기억함. index를 굳이 사용하지 않아도 됨. (나중에 yield는 coroutine에 사용 됨.)
 
 ```python
 class WordSplitterGenerator: 
@@ -68,9 +164,75 @@ class WordSplitterGenerator:
         return 'WordSplitterGenerator(%s)' % (self._text)
 ```
 
-Generator의 주요 함수를 사용해서 데이터를 센스있게 잘 다룰 수 있음.
+<br>
 
-ex) count, takewhile, filterfalse, accmulate, chain, product, groupby, etc,,,
+generator의 활용 cases:
+
+1. 지능형 리스트, 딕션어리, 집합 -> 데이터 양 증가 또는 메모리 사용량 증강 시,  generator 사용 권장
+2. 단위 실행 가능한 coroutine  구현과 연동
+3. 작은 메모리 조각 사용 
+
+<br>
+
+#### Generator expression
+
+Lambda function이 anonymous functions를 생성하는것과 같이, generator expression은 anonymous generator function을 생성한다. 
+
+list comprehension과 비슷한 syntax를 사용한다.
+
+##### generator expression vs. list comprehension
+
+```python
+#Generator Expression
+accumulated_gexp = sum((1 + x for x in range(2000000)))
+print(accumulated_gexp)
+>> 2000001000000
+
+#List Comprehension
+accumulated_listcomp = sum([1 + x for x in range(2000000)])
+print(accumulated_listcomp)
+>>2000001000000
+```
+
+code를 작성할때에는 [ ] 와 ( ) 의 차이로 매우 비슷해보이지만, memory efficiency 관점에서는 generator expression을 활용하는것이 더 낫다. 
+
+generator는 위에서 언급한 python iterator protocol **yield**를 활용하기때문이다. Generator은 yield를 통해 iterator내 item이 필요한 시점에 그 item만 다루면 되지만 (lazy execution), list comprehension의 경우에는 생성된 list의 content를 다 다루어야 한다. 
+
+```python
+from sys import getsizeof
+import timeit
+
+# comparison of memory efficiency
+accumulated_gexp = (1 + x for x in range(2000000))print(type(accumulated_gexp))
+print(getsizeof(accumulated_gexp))
+>> <class 'generator'>
+>> 112
+accumulated_listcomp = [1 + x for x in range(2000000)]
+print(type(accumulated_listcomp))
+print(getsizeof(accumulated_listcomp))
+>> <class 'list'>
+>> 17632624
+
+# comparison of time efficiency
+generator_exp_time = timeit.timeit('''accumulated_gexp = (1 + x for x in range(200))''', number=1000000)
+print(generator_exp_time)
+>> 1.5132575110037578
+list_comp_time = timeit.timeit('''accumulated_listcomp = [1 + x for x in range(200)]''', number=1000000)
+print(list_comp_time)
+>> 29.604462443996454
+```
+
+<br>
+
+<br>
+
+### Itertools
+
+Itertools = Python's module that provides various functions that work on iterators to produce complex iterators. Itertools works as a fast, memory-efficient tools.
+
+Itertools의 주요 함수를 사용해서 iterator를 implement하고 데이터를 센스있게 잘 다룰 수 있음.
+
+ex) count, takewhile, filterfalse, accumulate, chain, product, groupby, etc,,,
 
 ```python
 import itertools
@@ -168,11 +330,15 @@ switching 비용이 큰 경우가 종종 있기 때문에, multi thread보다 �
 
 즉, main function 안에서 여러 sub routine을 실행 + 중지하는 과정을 구현해서 하나의 thread안에서 여러 작업이 동기화되어 진행 될 수 있도록 한다. 여기서 yield와 send를 통해 main과 sub가 서로 데이터를 주고 받을 수 있다.
 
+Think of coroutine as a function that has one or more checkpoints where the execution will be paused and control will be returned to the point where it was called from.
+
+A coroutine is a function divided into many parts and we can execute each part of a coroutine as we execute each iteration of a for loop using the next function.
+
 <br>
 
 **yield**: yield라는 keyword를 통해서 메인 <-> 서브 루틴이 서로 상호작용함. coroutine을 제어 할때에 yield keyword를 사용 함. yield와 send를 통해서 coroutine을 제어하고, 상태를 저장하고, 양방향으로 데이터 전송을 함.
 
-subroutine: "흐름 제어" - main routine에서 호출하면 -> sub routine에서 수행
+sub routine: "흐름 제어" - main routine에서 호출하면 -> sub routine에서 수행
 
 coroutine: "동시성 프로그래밍" - 루틴을 실행 중, 중지하고(상태를 기억하고), 다시 재 실행할 수 있음. 
 
@@ -195,21 +361,17 @@ cr1 = coroutine1() # Main routine이며, "일"하나에 해되며 coroutine1() �
 # generator 객체라고 출력됨.
 print(cr1, type(cr1)) # output = "<generator object coroutine1 at 0x0000020D7E9BB740> <class 'generator'>""
 
-
 # 여기에서 subroutine은 main에서 반환값을 주는 것 밖에는 없었음. 수동적임.
 # 첫번째 next(cr1)에서는 coroutine()이라는 generator내의 첫번째 yield 지점까지 subroutine을 수행 하고 정지. 여기 상태를 기억.
 next(cr1)
-# 두번째 next(cr1)에서는 기본 전달 값=None. 그리고 Stopiteration 예외가 발생함.
-# next(cr1)
-
 # 값 전송
 # send(): main routine과 subroutine이 서로 data를 주고받을 수 있게 함. next()의 기능도 포함하고 있음.
-# cr1.send(100) # coroutine이 100을 받는다. output = "">>> coroutine received : 100"
+cr1.send(100) # coroutine이 100을 받는다. output = "">>> coroutine received : 100"
 
 # 잘못된 사용
 # 다음과 같이 generator 선언 후, 바로 send()의 parameter로 값을 전달하는 경우, 예외 발생
 cr2 = coroutine1()
-# cr2.send(100) # output = "TypeError: can't send non-None value to a just-started generator"
+cr2.send(100) # output = "TypeError: can't send non-None value to a just-started generator"
 
 # 맞는 사용법
 def coroutine():
@@ -218,8 +380,110 @@ def coroutine():
     print('>>> coroutine received : {}'.format(i))
 cr3 = coroutine()
 next(cr3)
-# cr3.send(50)
+cr3.send(50)
 ```
+
+<br>
+
+인프런 과정에서의 설명이 헷갈린다. 다음 예시가 yield와 send의 역할을 좀 더 간단명료하게 보여준다.
+
+```python
+def func():
+    print('Function part 1')
+    x = yield
+    print(x)
+    print('Function part 2')
+    a = yield
+    print(a)
+    print('Function part 3')
+
+# 위 generator function을 통해 send와 yield 활용해보기    
+try:
+    y = func()
+    next(y)	        # Function part 1 executed, to reach the first yield we used next
+    y.send(6)		# Function part 2 executed and value sent 6
+    y.send(12)		# Function part 2 executed and value sent 12 and StopIteration raised
+
+except StopIteration as e:
+    pass
+```
+
+output:
+
+Function part 1
+6
+Function part 2
+12
+Function part 3
+
+위 실행 output과 같이 send를 통해 숫자를 보내려면, next() 함수를 한번 호출해서 yield checkpoint에 도달해있어야한다. (그래서 generator object y를 생성한 뒤, next(y)를 먼저 호출함.)
+
+<br>
+
+### coroutine 활용하기
+
+```python
+def func1():
+    print('Function 1 part 1')
+    yield
+    print('Function 1 part 2')
+    yield
+    print('Function 1 part 3')
+    yield
+    print('Function 1 part 4')
+    yield
+    print('Function 1 part 5')
+
+def func2():
+    print('Function 2 part 1')
+    yield
+    print('Function 2 part 2')
+    yield
+    print('Function 2 part 3')
+    yield
+    print('Function 2 part 4')
+    yield
+    print('Function 2 part 5')
+
+
+try:
+    a = func1()
+    b = func2()
+    next(a)  	# Will execute Function 1 part 1
+    next(b)  	# Will execute Function 2 part 1
+    next(a)  	# Will execute Function 1 part 2
+    next(a)  	# Will execute Function 1 part 3
+    next(b)  	# Will execute Function 2 part 2
+    next(b)  	# Will execute Function 2 part 3
+    next(b)  	# Will execute Function 2 part 4
+    next(a)  	# Will execute Function 1 part 4
+    next(a)  	# Will execute Function 1 part 5 and raise StopIteration exception
+
+except StopIteration as e:
+    pass
+```
+
+output:
+
+Function 1 part 1
+Function 2 part 1
+Function 1 part 2
+Function 1 part 3
+Function 2 part 2
+Function 2 part 3
+Function 2 part 4
+Function 1 part 4
+Function 1 part 5
+
+이렇게 위와 같이 두 개의 coroutines를 부분적으로 수행하며 왔다갔다 오갈 수 있다. 
+
+원하는 조건과 순서가 구현된 scheduler을 작성하여 multiple coroutine들 사이에서 원하는 switching을 구현해서 single threading만으로 multithreading의 효과를 만들어 낼 수 있다.
+
+이런 coroutine의 기능은 concurrency가 구현되어야하는 producer-consumer or sender-receiver 형태의 기능이 필요한 network programming에서 유용하게 활용될 수 있다.
+
+<br>
+
+### generator state 확인
 
 getgeneratorstate를 통해서 coroutine의 상태를 확인할 수 있다. 
 
@@ -315,6 +579,132 @@ print(next(t3))
 # print(next(t3)) # StopIteration 예외 발생
 ```
 
+Coroutine은 asyncio, twisted, aiohttp와 같은 framework들의 building block으로 활용된다.
+
+<br>
+
+### yield from
+
+keyword **yield from**을 사용해서 하나의 generator function을 다른 generator function에  embed할수도 있다. 
+
+예시:
+
+```python
+def step_generator(start, stop, step):
+    i = 0
+    while start + step * i != stop:
+        yield start + step * i
+        i += 1
+    return i
+
+
+def wrapper_generator():
+    count = yield from step_generator(0, 10, 2)
+    print(f"Generated {count} numbers")
+
+
+if __name__ == "__main__":
+    for f in wrapper_generator():
+        print(f)
+```
+
+output:
+
+```
+0
+2
+4
+6
+8
+Generated 5 numbers
+```
+
+<br>
+
+### generator를 활용한 async code 
+
+```python
+counter = 0
+
+
+def wait_for_b():
+    yield "B"
+
+
+def wait_for_c():
+    yield "C"
+
+
+def task_generator():
+    global counter
+    id = counter
+    counter += 1
+
+    print(f"{id} Processing event A, blocking on B")
+    yield from wait_for_b()
+    print(f"{id} Processing event B, blocking on C")
+    yield from wait_for_c()
+    print(f"{id} Processing event C, task done")
+
+
+def app():
+    tasks = {"A": [], "B": [], "C": []}
+    while True:
+        print(f"Task queue size {len(tasks['A'] + tasks['B'] + tasks['C'])}")
+        event = input("> ").strip()
+
+        if event == "A":
+            new_task = task_generator()
+            waiting_for = new_task.send(None)
+            tasks[waiting_for].append(new_task)
+
+        if len(tasks[event]):
+            task = tasks[event][0]
+            tasks[event].remove(task)
+            try:
+                waiting_for = task.send(None)
+                tasks[waiting_for].append(task)
+            except StopIteration:
+                pass
+
+
+if __name__ == "__main__":
+    app()
+```
+
+output:
+
+```
+Task queue size 0
+> A
+0 Processing event A, blocking on B
+Task queue size 1
+> A
+1 Processing event A, blocking on B
+Task queue size 2
+> A
+2 Processing event A, blocking on B
+Task queue size 3
+> B
+0 Processing event B, blocking on C
+Task queue size 3
+> B
+1 Processing event B, blocking on C
+Task queue size 3
+> C
+0 Processing event C, task done
+Task queue size 2
+> C
+1 Processing event C, task done
+Task queue size 1
+> B
+2 Processing event B, blocking on C
+Task queue size 1
+> C
+2 Processing event C, task done
+Task queue size 0
+```
+
 <br>
 
 <br>
@@ -324,3 +714,7 @@ print(next(t3))
 1. 우리를 위한 프로그래밍: 파이썬 중급 인프런 오리지널
 1. "Advanced Python concurrency and parallelism": https://medium.com/fintechexplained/advanced-python-concurrency-and-parallelism-82e378f26ced
 1. "Python concurrency - making sense of asyncio": https://learningdaily.dev/python-concurrency-making-sense-of-asyncio-ebf18d722341
+1. "Understanding Generator Expressions in Python" https://towardsdatascience.com/understanding-generator-expressions-in-python-fe0c4534619
+1. "What is Generator in Python and How Does it Work" https://blog.devgenius.io/what-is-generator-in-python-and-how-does-it-work-e6e0588785c3
+1. "Coroutine in Python" https://betterprogramming.pub/coroutines-in-python-building-blocks-of-asynchronous-programming-40c39d9ed420
+1. "How to coroutines work internally in Python" https://blog.allegro.tech/2022/01/how-do-coroutines-work-internally-in-python.html
