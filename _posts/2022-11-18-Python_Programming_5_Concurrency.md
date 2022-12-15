@@ -83,9 +83,11 @@ generator를 사용하며느 이 과정이 훨씬 더 간소화될 수 있다.
 
 <br>
 
-#### regular function vs. generator function
+#### yield
 
-- In regular function, return statement terminates the function completely, but in generator function, by using the built-in keyword**yield** it can save the state of the function. 
+regular function vs. generator function: 
+
+- In regular function, return statement terminates the function completely, but in generator function, by using the built-in keyword **yield** it can save the state of the function. 
 - When using generator function, next time the function is called, execution continues from where it left off, with the same variable values it had before yielding
 - generator function은 function을 수행하지않고, generator object를 생성하여 반환만 한다. generator object에 next() 함수가 호출될때에만 generator function내의 내용이 수행된다. 
 
@@ -174,7 +176,7 @@ generator의 활용 cases:
 
 <br>
 
-#### Generator expression
+#### generator expression
 
 Lambda function이 anonymous functions를 생성하는것과 같이, generator expression은 anonymous generator function을 생성한다. 
 
@@ -198,29 +200,90 @@ code를 작성할때에는 [ ] 와 ( ) 의 차이로 매우 비슷해보이지�
 
 generator는 위에서 언급한 python iterator protocol **yield**를 활용하기때문이다. Generator은 yield를 통해 iterator내 item이 필요한 시점에 그 item만 다루면 되지만 (lazy execution), list comprehension의 경우에는 생성된 list의 content를 다 다루어야 한다. 
 
+1. Comparison of memory efficiency
+
 ```python
 from sys import getsizeof
-import timeit
 
-# comparison of memory efficiency
-accumulated_gexp = (1 + x for x in range(2000000))print(type(accumulated_gexp))
+accumulated_gexp = (1 + x for x in range(2000000))
+print(type(accumulated_gexp))
 print(getsizeof(accumulated_gexp))
->> <class 'generator'>
->> 112
+```
+
+output:
+
+<class 'generator'>
+
+112
+
+```python
 accumulated_listcomp = [1 + x for x in range(2000000)]
 print(type(accumulated_listcomp))
 print(getsizeof(accumulated_listcomp))
->> <class 'list'>
->> 17632624
+```
 
-# comparison of time efficiency
+output:
+
+<class 'list'>
+
+17632624
+
+<br>
+
+2. Comparison of time efficiency
+
+```python
+import timeit
+
 generator_exp_time = timeit.timeit('''accumulated_gexp = (1 + x for x in range(200))''', number=1000000)
 print(generator_exp_time)
->> 1.5132575110037578
+```
+
+output: 
+
+1.5132575110037578
+
+```python
 list_comp_time = timeit.timeit('''accumulated_listcomp = [1 + x for x in range(200)]''', number=1000000)
 print(list_comp_time)
->> 29.604462443996454
 ```
+
+output:
+
+29.604462443996454
+
+<br>
+
+#### send
+
+yield를 통해 generator 함수에서 생성된 값을 하나씩 받는 것 외에도, generator에게 값을 전달해서 generator 함수내의 동작을 control할 수 있다. 이때 사용되는 keyword는 **send** 이다. 
+
+**send**를 통해 보내는 값은 "current" yield expression의 결과 값일 것이고, generator 함수가 yield한 "next" value를 반환해줄 것이다.
+
+>  don't expect the generator to return the value we have just sent because it will return the next one.
+
+다음 예시는 generator에게 특정 단어를 send하여 동작을 멈추게 하는 것이다. 
+
+"stop"이라는 단어가 외부에서부터 send되면, generator는 loop을 terminate하도록 설정되어있다.
+
+```python
+def gen_roster(names):
+    while names:
+        for name in names:
+            current_name = yield name
+            if current_name == 'stop':
+                names = None
+                break
+                
+# run                
+roster = gen_roster(names)
+for i in range(10):
+    if i == 3:
+        roster.send('stop')
+    print(next(roster))
+```
+
+Output으로는 names 리스트의 첫 3개의 이름이 출력되고 4번째 순서일때에 (i=3) generator 함수내의 내용이 수행되지않고 StopIteration exception이 발생한다. 
 
 <br>
 
@@ -410,11 +473,13 @@ except StopIteration as e:
 
 output:
 
+```py
 Function part 1
 6
 Function part 2
 12
 Function part 3
+```
 
 위 실행 output과 같이 send를 통해 숫자를 보내려면, next() 함수를 한번 호출해서 yield checkpoint에 도달해있어야한다. (그래서 generator object y를 생성한 뒤, next(y)를 먼저 호출함.)
 
@@ -465,6 +530,7 @@ except StopIteration as e:
 
 output:
 
+```py
 Function 1 part 1
 Function 2 part 1
 Function 1 part 2
@@ -474,6 +540,7 @@ Function 2 part 3
 Function 2 part 4
 Function 1 part 4
 Function 1 part 5
+```
 
 이렇게 위와 같이 두 개의 coroutines를 부분적으로 수행하며 왔다갔다 오갈 수 있다. 
 
@@ -623,29 +690,28 @@ Generated 5 numbers
 
 ### generator를 활용한 async code 
 
+generators could be kept in a map, connecting the generator to the event it is waiting for. when the event occurs we can simply take the next event from the generator and again wait for it to happen.
+
+Inside the generator we can have any amount of logic among **yield** expressions as long as there are no blocking operations. Basically, we write our logic as if it was synchronous code but instead of blocking on some operation we yield what we are waiting for.
+
 ```python
 counter = 0
-
 
 def wait_for_b():
     yield "B"
 
-
 def wait_for_c():
     yield "C"
-
 
 def task_generator():
     global counter
     id = counter
     counter += 1
-
     print(f"{id} Processing event A, blocking on B")
     yield from wait_for_b()
     print(f"{id} Processing event B, blocking on C")
     yield from wait_for_c()
     print(f"{id} Processing event C, task done")
-
 
 def app():
     tasks = {"A": [], "B": [], "C": []}

@@ -1,6 +1,6 @@
 ---
 layout: post                          # (require) default post layout
-title: "concurrent.futures"   # (require) a string title
+title: "Concurrent.futures"   # (require) a string title
 date: 2022-11-24       # (require) a post date
 categories: [PythonProgramming]          # (custom) some categories, but make sure these categories already exists inside path of `category/`
 tags: [PythonProgramming]                      # (custom) tags only for meta `property="article:tag"`
