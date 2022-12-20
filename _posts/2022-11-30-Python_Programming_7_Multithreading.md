@@ -43,6 +43,8 @@ Process 자원 사용 - Stack만 별도로 만들어짐. 나머지는 공유(Cod
 
 통신 부담이 감소되나, 디버깅은 어려움, 단일 프로세스에는 효과 미약, 자원 공유 문제 (교착 상태 - deadlock) 프로세스에 영향을 줌.
 
+more appropriate for I/O bound tasks (e.g., file read/save, web 접속이 필요한 tasks, 등)
+
 ### Multi-process
 
 한 개의 단일 어플리케이션 (e.g., 응용 프로그램) -> 여러 프로세스 구성 후 작업 처리
@@ -50,6 +52,8 @@ Process 자원 사용 - Stack만 별도로 만들어짐. 나머지는 공유(Cod
 한 개의 프로세스 문제 발생은 확산이 없음. (프로세스 kill)
 
 cache change, cost 비용이 내우 높음 (overhead), 복잡한 통신 방식 사용
+
+more appropriate for CPU bound tasks (e.g., computationally intense tasks)
 
 <br>
 
@@ -466,3 +470,5 @@ output:
 # References
 
 1. 프로그래밍-파이썬-완성-인프런-오리지널
+1. Multi-threading and Multi-processing: https://pub.towardsai.net/the-why-when-and-how-of-using-python-multi-threading-and-multi-processing-afd1b8a8ecca
+3. Multi-threading and Multi-processing: https://medium.com/contentsquare-engineering-blog/multithreading-vs-multiprocessing-in-python-ece023ad55a
