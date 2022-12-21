@@ -25,9 +25,13 @@ tags: [PythonProgramming]                      # (custom) tags only for meta `pr
 - 독립된 메모리(process), 공유된 메모리(thread)
 - 많은 메모리 필요(process), 적은 메모리(thread)
 - 좀비(dead) process는 생성 가능성이 높지만, 좀비(dead) thread 생성은 쉽지 않음.
-- 오버헤드 큼(프로세스), 오버헤드 작음(스레드)
-- 생성/ 소멸 다소 느림(프로세스), 생성/소명이 상대적으로 빠름(스레드)
-- 코드 작성이 쉬움/ 디버깅 어려움(프로세스), 코드 작성이 어려움/디버깅 어려움(스레드)
+- 오버헤드 큼(process), 오버헤드 작음(thread)
+- 생성/ 소멸 다소 느림(process), 생성/소명이 상대적으로 빠름(thread)
+- 코드 작성이 쉬움/ 디버깅 어려움(process), 코드 작성이 어려움/디버깅 어려움(thread)
+- Process에서는 code, data, heap, stack 모두 개별적으로 만들어짐.
+- Thread의 경우에는 stack만 개별적으로 만들어지고 나머지(code, data, heap)은 process내 thread들이 share함. Local variables, function arguments, return values와 같은 stack의 요소들, copy of the register, programing counter, 그리고 그 외 thread-specific data를 thread에 개별적으로 생성하여 개별적인 scheduling에 따라 task를 수행할 수 있도록 한다.
+
+![gRPC](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/multiprocess_multithread.PNG)
 
 <br>
 
