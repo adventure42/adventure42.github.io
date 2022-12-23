@@ -349,21 +349,24 @@ for chr, group in gen9:
 
 <br>
 
-## Concurrency vs. parallelism
+## Concurrency and parallelism
 
-**병행성(concurrency)** - 하나의 computer가 여러 일을 동시에 수행하는 것 (하나의 cpu, 하나의 thread, 등등). 내가 멈춘 위치를 잘 알고 그대로 pickup할 수 있어야 (closure, generator의 yield, 등 활용 가능)
+### 동시성(concurrency)
+
+- CPU 가용성 극대화를 위해 Parallelism의 단점 및 어려움을 software(구현) level에서 해결하기 위한 방법
+- 싱글코어에 멀티스레드 패턴으로 작업 처리
+- 동시 작업에 있어서 일정양 처리 후 다음 작업으로 넘기는 방식. 즉, 제어권을 주고 받으며 작업 처리 패턴. 병렬적은 아니나 유사한 처리 방식
+- 하나의 computer가 여러 일을 동시에 수행하는 것 (하나의 cpu, 하나의 thread, 등등). 내가 멈춘 위치를 잘 알고 그대로 pickup할 수 있어야 (closure, generator의 yield, 등 활용)
 
 예시) coroutine의 활용 - thread는 하나 이지만, 마치 여러 작업을 동시에 하는 듯
 
 장점: 단일 프로그램안에서 여러 일을 해결
 
-Concurrency가 더 적합한 경우:
-
-실행하려는 task가 IO-bound operations (e.g., querying a web service or reading large files) 이라면, concurrency option이 더 적합하다. If we run two CPU bound operations as two threads then they will run sequentially and we will not yield any benefits in Python. IO-bound operations에는 external resources (e.g., hardware or network)와 communicate해야하는 과정이 요구되고, I/O bound operation이 I/O waiting 상태로 external resource로 부터 result를 반환 받기까지 기다려야하기 때문임. 또한 context switching이나 lock acquisition 때문에 여러 thread로 실행하게되면 오히려 더 긴 소요시간이 발생할 수 있다. 
-
 <br>
 
-**병렬성(parallelism)** - 여러 computer가 여러 작업을 동시에 수행. worker가 여러 작업을 동시에 수행
+### 병렬성(parallelism)
+
+여러 computer가 여러 작업을 동시에 수행. worker가 여러 작업을 동시에 수행
 
 예시) Data scientist - 병렬로 동시에 여러 site에서 crawling작업 수행. 
 
@@ -371,9 +374,35 @@ Concurrency가 더 적합한 경우:
 
 장점: 속도
 
-Parallelism이 더 적합한 경우:
+<br>
+
+### concurrency vs. parallelism
+
+**Concurrency:**
+
+논리적, 동시 실행 패턴(논리적), 싱글 코어, 멀티 코어에서 실행 가능, 한 개의 작업 공유 처리, 디버깅 매우 어려움. mutex와 deadlock 같은 기능을 활용하여 synchronization 구현. OS에 대한 이해가 필요함.
+
+Concurrency가 적합한 경우:
+
+실행하려는 task가 IO-bound operations (e.g., querying a web service or reading large files) 이라면, concurrency option이 더 적합하다. If we run two CPU bound operations as two threads then they will run sequentially and we will not yield any benefits in Python. IO-bound operations에는 external resources (e.g., hardware or network)와 communicate해야하는 과정이 요구되고, I/O bound operation이 I/O waiting 상태로 external resource로 부터 result를 반환 받기까지 기다려야하기 때문임. 또한 context switching이나 lock acquisition 때문에 여러 thread로 실행하게되면 오히려 더 긴 소요시간이 발생할 수 있다. 
+
+<br>
+
+**Parallelism:**
+
+물리적으로 동시 실행, 멀티 코어에서 구현 가능, 주로 별개의 작업 처리, 디버깅 어려움, openMP, MPI, CUDA
+
+Parallelism이 적합한 경우:
 
 "At a high level, if your Python application is performing CPU bound operations such as number crunching or text manipulation then go for **parallelism**. Concurrency will not yield many benefits in those scenarios."
+
+<br>
+
+**sequential vs. concurrent vs. parallel:**
+
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/concurrency_vs_parallelism.PNG)
+
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/concurrency_vs_parallelism2.PNG)
 
 <br>
 
@@ -770,6 +799,41 @@ Task queue size 1
 2 Processing event C, task done
 Task queue size 0
 ```
+
+<br>
+
+<br>
+
+## Blocking I/O and Non-blocking I/O
+
+Blocking I/O:
+
+- 시스템 콜 요청 시 -> kernel I/O 작업 완료 시 까지 응답 대기
+
+- 제어권(I/O 작업) -> kernel 소유 -> 응답(response)전 까지 대기(Block) -> 다른 작업 수행 불가(대기)
+
+Non-blocking I/O:
+
+- 시스템 콜 요청 시 -> kernel I/O 작업 완료 여부 상관없이 즉시 응답
+- 제어권(I/O 작업) -> 유저 프로세스 -> 다른 작업 수행 가능(지속) -> 주기적으로 시스템 콜 통해서 I/O작업 완료 여부 확인
+
+Async vs. Sync
+
+- Async:
+
+  I/O 작업 완료 여부에 대한 notice는 Kernel(호출되는 함수) -> 유저 프로세스(호출하는 함수)
+
+  ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/async.PNG)
+
+- Sync:
+
+  I/O 작업 완료 여부에 대한 notice는 유저 프로세스(호출하는 함수) -> kernel(호출되는 함수)
+
+  ![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/Sync.PNG)
+
+- comparison:
+
+![](https://raw.githubusercontent.com/adventure42/adventure42.github.io/master/static/img/_posts/sync_async_block_nonblock.PNG)
 
 <br>
 
