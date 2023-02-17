@@ -775,6 +775,50 @@ The protocol buffer compiler also generates a "stub" implementation of every ser
 
 data에 null이 있는경우 encoding - parsing 과정에서 원치않는 data 변형이 일어나지는 않는지 확인이 필요하다. null에 해당하는 [default value][https://protobuf.dev/programming-guides/proto3/#default]의 확인이 필요함. (JSON Mapping 참고)
 
+## repeated fields vs. stream service
+
+```protobuf
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+message Dummy {
+  string foo = 1;
+  string bar = 2;
+}
+
+message DummyList {
+  repeated Dummy dummy = 1;
+}
+
+service DummyService {
+  rpc getDummyListWithStream(google.protobuf.Empty) returns (stream Dummy) {}
+  rpc getDummyListWithRepeated(google.protobuf.Empty) returns (DummyList) {}
+}
+```
+
+Microsoft에서 제공하는 tutorial에서는 다음과 같은 요소들을 고려해서 결정하라고 제안한다.
+
+- The overall size of the dataset.
+- The time it took to create the dataset at either the client or server end.
+- Whether the consumer of the dataset can start acting on it as soon as the first item is available, or needs the complete dataset to do anything useful.
+
+**repeated fields 사용 case**
+
+> 첫 번째 message를 define하고, 두 번째 message를 define해서 첫 번째 message가 repeated field로 정의된다. Declare a list or arrays of messages within another message. 그리고 service method를 하나 정의하여 두 번째 message를 return하도록 한다. 
+
+dataset의 size가 제한적이고, set 전체가 짧은 시간 내에 생성될 수 있는 경우 (i.e, under 1 sec), 또는 "batching"의 성격을 띄고있는 경우 repeated field를 사용하는 것이 적합하다. dataset을 보내는 쪽에서 set전체를 보내기 전에 다 준비해야하고, 받는 쪽에서도 set을 다 받아야 데이터의 처리가 시작될 수 있는 경우이다. 또한, repeated fields가 highly compressible하다면, single message로 전송하는 것이 더 효율적이다.
+
+e.g., e-commerce system, to build a list of items within an order (assuming that the list won't be very large)
+
+<br>
+
+**stream service 사용 case**
+
+> message를 하나 define하고, 이 message를 stream 형태로 return하는 service method를 정의한다. Utilize a long-running persistent connection
+
+dataset의 size가 크고, message를 받는쪽에서 incoming message가 도달하는 대로 바로바로 처리 가능하다면, stream이 더 적합하다. construct a large object in memory, write it to  the network, then free up the resources. service의 scalability를 개선할 수 있는 자율성이 더 주어진다. 받는쪽에서 모든 incoming messages가 도착하기까지 blocking해야 하는 경우 repeated fields 방식이 더 적합하겠지만, 이런 case에서도 stream방식도 적절하다는 의견도 있다[5].
+
 <br>
 
 <br>
@@ -785,3 +829,7 @@ data에 null이 있는경우 encoding - parsing 과정에서 원치않는 data �
 2. Protobuf tutorial for Python implementation https://protobuf.dev/reference/python/python-generated/
 
 3. Protocol Buffer Basics: Python https://protobuf.dev/getting-started/pythontutorial/
+
+4. gRPC for WCF Developers https://learn.microsoft.com/ko-kr/dotnet/architecture/grpc-for-wcf-developers/protobuf-messages
+
+5. https://groups.google.com/g/grpc-io/c/F23vXwilTq0
